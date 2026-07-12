@@ -1,0 +1,260 @@
+/* Rotterdam by Ferry — huisstijl
+   Palet: licht beton, havenstaal-zwart, Rotterdams groen */
+:root {
+  --papier: #FAF9F5;
+  --ink: #15191B;
+  --staal: #5C666B;
+  --groen: #1D7A46;
+  --groen-licht: #E7F2EB;
+  --lijn: #E3E1D9;
+  --breedte: 1080px;
+  --leesbreedte: 680px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+h1, h2, h3, .display {
+  font-family: "Archivo", "Arial Black", sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+}
+
+a { color: var(--groen); }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--groen);
+  outline-offset: 2px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  border-bottom: 3px solid var(--ink);
+  background: var(--papier);
+}
+.site-header .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.wordmark {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+.wordmark .hart { color: var(--groen); }
+.site-header nav a {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--ink);
+  margin-left: 1.25rem;
+}
+.site-header nav a:hover { color: var(--groen); }
+
+/* ---------- Hero ---------- */
+.hero {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 2rem;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  text-transform: uppercase;
+  max-width: 18ch;
+}
+.hero h1 .groen { color: var(--groen); }
+.hero p {
+  max-width: 52ch;
+  font-size: 1.15rem;
+  color: var(--staal);
+  margin: 0;
+}
+
+/* ---------- Havenlabels (categorie & gebied) ---------- */
+.tag {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+}
+.tag.gebied {
+  border-color: var(--groen);
+  color: var(--groen);
+  background: var(--groen-licht);
+}
+
+/* ---------- Filters ---------- */
+.filters {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 1.5rem;
+}
+.filters .groep {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.filters .label {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--staal);
+  min-width: 6.5rem;
+}
+.filterknop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 999px;
+}
+.filterknop[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--papier);
+}
+.filterknop:hover { border-color: var(--groen); color: var(--groen); }
+.filterknop[aria-pressed="true"]:hover { color: var(--papier); }
+
+/* ---------- Postkaarten ---------- */
+.grid {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.kaart {
+  border: 2px solid var(--ink);
+  background: #fff;
+  padding: 1.4rem 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.kaart .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.kaart h2 { font-size: 1.45rem; margin: 0; }
+.kaart h2 a { color: var(--ink); text-decoration: none; }
+.kaart h2 a:hover { color: var(--groen); }
+.kaart p { margin: 0; color: var(--staal); font-size: 1rem; }
+.kaart .lees {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-top: auto;
+}
+.kaart.binnenkort { border-style: dashed; background: transparent; }
+.kaart.binnenkort .status {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
+.leeg {
+  grid-column: 1 / -1;
+  color: var(--staal);
+  font-style: italic;
+}
+
+/* ---------- Artikel ---------- */
+.artikel {
+  max-width: var(--leesbreedte);
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+.artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.artikel h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  max-width: 20ch;
+}
+.artikel .intro { font-size: 1.25rem; }
+.artikel .meta {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.85rem;
+  color: var(--staal);
+  margin-bottom: 2rem;
+}
+.artikel p { margin: 0 0 1.3em; }
+.praktisch {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+  font-size: 1rem;
+}
+.praktisch .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.terug {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--papier);
+}
+.site-footer .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+}
+.site-footer a { color: var(--papier); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .kaart { transition: transform 0.15s ease; }
+  .kaart:hover { transform: translateY(-3px); }
+}

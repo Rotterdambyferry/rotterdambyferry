@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotterdam by Ferry — Mijn Rotterdam 💚</title>
+  <meta name="description" content="Skyline, food, bruine kroegen en kidsproof plekken in Rotterdam. Van Zuid tot Noord, gewoon door een Rotterdammer.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="wordmark" href="index.html">Rotterdam by Ferry <span class="hart">&#10084;</span></a>
+    <nav>
+      <a href="index.html">Verhalen</a>
+      <a href="over.html">Over Ferry</a>
+      <a href="https://www.instagram.com/rotterdambyferry/">Instagram</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
+  <p>Bruine kroegen, lunchspots, skyline en kidsproof tips &mdash; van Zuid tot Noord.</p>
+</section>
+
+<section class="filters" aria-label="Filter verhalen">
+  <div class="groep">
+    <span class="label">Categorie</span>
+    <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
+    <button class="filterknop" data-filter="categorie" data-waarde="lunchplek" aria-pressed="false">Lunchplek</button>
+    <button class="filterknop" data-filter="categorie" data-waarde="bruine-kroeg" aria-pressed="false">Bruine kroeg</button>
+    <button class="filterknop" data-filter="categorie" data-waarde="kidsproof" aria-pressed="false">Kidsproof</button>
+    <button class="filterknop" data-filter="categorie" data-waarde="delicatessen" aria-pressed="false">Delicatessen</button>
+  </div>
+  <div class="groep">
+    <span class="label">Gebied</span>
+    <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
+    <button class="filterknop" data-filter="gebied" data-waarde="centrum" aria-pressed="false">Centrum</button>
+    <button class="filterknop" data-filter="gebied" data-waarde="zuid" aria-pressed="false">Zuid</button>
+    <button class="filterknop" data-filter="gebied" data-waarde="noord" aria-pressed="false">Noord</button>
+    <button class="filterknop" data-filter="gebied" data-waarde="delfshaven" aria-pressed="false">Delfshaven</button>
+  </div>
+</section>
+
+<main class="grid" id="verhalen">
+
+  <article class="kaart" data-categorie="lunchplek delicatessen" data-gebied="centrum">
+    <div class="tags">
+      <span class="tag">Lunchplek</span>
+      <span class="tag">Delicatessen</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <h2><a href="posts/little-italy.html">Little Italy &mdash; puur Itali&euml; tussen de parkeergarage en de Meent</a></h2>
+    <p>Van buiten loop je er zo voorbij. Van binnen: verse broodjes, plaatpizza en het ultieme vakantiegevoel. Rotterdammers weten het al lang &mdash; de rij begint om 11.45 uur.</p>
+    <a class="lees" href="posts/little-italy.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <article class="kaart binnenkort" data-categorie="kidsproof" data-gebied="centrum">
+    <span class="status">Binnenkort</span>
+    <div class="tags">
+      <span class="tag">Kidsproof</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <h2>Surfen midden in de stad &mdash; Rif010</h2>
+    <p>De eerste surfpool ter wereld midden in een stad. En de beste plek om &rsquo;m te bekijken, met een bubble tea uit de Markthal erbij.</p>
+  </article>
+
+  <article class="kaart binnenkort" data-categorie="bruine-kroeg" data-gebied="delfshaven">
+    <span class="status">Binnenkort</span>
+    <div class="tags">
+      <span class="tag">Bruine kroeg</span>
+      <span class="tag gebied">Delfshaven</span>
+    </div>
+    <h2>Rondje bruine kroegen in Delfshaven</h2>
+    <p>Vrijdagavond, vrienden, en de mooiste oude kroegen van de stad. Dit rondje lopen wij zelf.</p>
+  </article>
+
+  <p class="leeg" hidden>Nog geen verhalen in deze combinatie &mdash; die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/">@rotterdambyferry</a> voor het laatste nieuws.</p>
+
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>Rotterdam by Ferry &mdash; van Zuid tot Noord, gewoon door een Rotterdammer</span>
+    <a href="https://www.instagram.com/rotterdambyferry/">@rotterdambyferry</a>
+  </div>
+</footer>
+
+<script>
+  // Eenvoudige filters: één actieve categorie + één actief gebied
+  const actief = { categorie: "alles", gebied: "alles" };
+  const knoppen = document.querySelectorAll(".filterknop");
+  const kaarten = document.querySelectorAll(".kaart");
+  const leeg = document.querySelector(".leeg");
+
+  knoppen.forEach(function (knop) {
+    knop.addEventListener("click", function () {
+      const soort = knop.dataset.filter;
+      actief[soort] = knop.dataset.waarde;
+      knoppen.forEach(function (k) {
+        if (k.dataset.filter === soort) {
+          k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+        }
+      });
+      let zichtbaar = 0;
+      kaarten.forEach(function (kaart) {
+        const catOk = actief.categorie === "alles" || (kaart.dataset.categorie || "").split(" ").includes(actief.categorie);
+        const gebOk = actief.gebied === "alles" || (kaart.dataset.gebied || "").split(" ").includes(actief.gebied);
+        const toon = catOk && gebOk;
+        kaart.hidden = !toon;
+        if (toon) zichtbaar++;
+      });
+      leeg.hidden = zichtbaar > 0;
+    });
+  });
+</script>
+
+</body>
+</html>
