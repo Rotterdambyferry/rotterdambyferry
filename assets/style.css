@@ -178,6 +178,17 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   margin-top: auto;
 }
+.kaart .thumb {
+  display: block;
+  margin: -1.4rem -1.4rem 0;
+  border-bottom: 2px solid var(--ink);
+}
+.kaart .thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
 .kaart.binnenkort { border-style: dashed; background: transparent; }
 .kaart.binnenkort .status {
   font-family: "Archivo", sans-serif;
@@ -212,6 +223,21 @@ a:focus-visible, button:focus-visible {
   margin-bottom: 2rem;
 }
 .artikel p { margin: 0 0 1.3em; }
+.artikel .foto {
+  margin: 0 0 2rem;
+}
+.artikel .foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 2px solid var(--ink);
+}
+.artikel .foto figcaption {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+  margin-top: 0.5rem;
+}
 .praktisch {
   border-top: 3px solid var(--ink);
   margin-top: 2.5rem;
