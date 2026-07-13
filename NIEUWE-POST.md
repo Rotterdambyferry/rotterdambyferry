@@ -42,10 +42,14 @@ een streepje in plaats van een spatie. De keuzes die de filters kennen:
 
 - Categorie: `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`
   (meerdere mag, met een spatie ertussen: `"lunchplek delicatessen"`)
-- Gebied: `centrum`, `zuid`, `noord`, `delfshaven`
+- Gebied: `centrum`, `noord`, `oost`, `zuid`, `west`
+
+Twijfel je welk gebied het is? In CLAUDE.md staat onder "Wijkindeling"
+precies welke wijk bij welk gebied hoort (Delfshaven is bijvoorbeeld
+West, en Katendrecht en Kop van Zuid tellen als Centrum).
 
 De zichtbare labels in `<span class="tag">` mogen wél gewoon met
-hoofdletter en spatie: "Bruine kroeg", "Delfshaven".
+hoofdletter en spatie: "Bruine kroeg", "West".
 
 Stond je post al als "binnenkort"-kaart op de homepage? Verwijder dan
 uit dat blokje de regel `<span class="status">Binnenkort</span>` en het

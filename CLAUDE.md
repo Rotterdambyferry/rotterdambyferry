@@ -33,9 +33,19 @@ Elke post is een kopie van `posts/_template.html`:
 
 1. `<head>`: titel, meta description, en (zie `posts/rif010.html` als voorbeeld) og-tags + canonical met absolute URL `https://rotterdambyferry.nl/posts/BESTAND.html`. Het template bevat de og-tags nog niet — voeg ze toe zoals in bestaande posts.
 2. `<main class="artikel">`: terug-link, tags (`.tag` = categorie, `.tag.gebied` = gebied), `<h1>`, `.meta` ("Door Ferry · maand jaar"), optioneel `<figure class="foto">`, eerste alinea als `.intro`, gewone `<p>`-alinea's, en afsluitend blok `.praktisch` met adres/tips.
-3. Kaart op de homepage: `<article class="kaart">`-blok in `index.html` onder `<main class="grid" id="verhalen">`, met `data-categorie` en `data-gebied` in kleine letters met streepjes (meerdere waarden gescheiden door spatie). Geldige waarden — categorie: `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`; gebied: `centrum`, `zuid`, `noord`, `delfshaven`. De filters werken puur op deze data-attributen; verborgen kaarten krijgen het `hidden`-attribuut (niet `display` via inline style).
+3. Kaart op de homepage: `<article class="kaart">`-blok in `index.html` onder `<main class="grid" id="verhalen">`, met `data-categorie` en `data-gebied` in kleine letters met streepjes (meerdere waarden gescheiden door spatie). Geldige waarden — categorie: `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`; gebied: `centrum`, `noord`, `oost`, `zuid`, `west` (bepaal het gebied met de wijkindeling hieronder). De filters werken puur op deze data-attributen; verborgen kaarten krijgen het `hidden`-attribuut (niet `display` via inline style).
 4. Nieuwe post ook toevoegen aan `sitemap.xml`.
 5. "Binnenkort"-kaarten hebben `class="kaart binnenkort"` en een `<span class="status">`; bij publicatie die status en de klasse `binnenkort` verwijderen en links toevoegen.
+
+### Wijkindeling → hoofdgebied
+
+Bij elke nieuwe post het gebied bepalen aan de hand van de wijk waar de plek ligt:
+
+- **Centrum**: Stadsdriehoek, Cool, Oude Westen, Scheepvaartkwartier, Nieuwe Werk, Dijkzigt, Katendrecht en Kop van Zuid (horen gevoelsmatig bij het centrum, ook al liggen ze onder de Maas).
+- **Noord**: Blijdorp, Bergpolder, Liskwartier, Oude Noorden, Agniesebuurt, Provenierswijk, Hillegersberg, Schiebroek, Overschie.
+- **Oost**: Kralingen, Crooswijk, De Esch, Prins Alexander (Ommoord, Zevenkamp, Nesselande, Oosterflank, Lage Land).
+- **Zuid**: alles onder de Maas behalve Katendrecht en Kop van Zuid — dus Charlois, Feijenoord, Afrikaanderwijk, Bloemhof, Hillesluis, Tarwewijk, Carnisse, Zuidwijk, Pendrecht, Zuidplein, Lombardijen, IJsselmonde, Vreewijk, Beverwaard, Hoogvliet, Pernis.
+- **West**: Delfshaven, Spangen, Bospolder-Tussendijken, Middelland, Nieuwe Westen, Oud-Mathenesse, Schiemond.
 
 Foto's: originelen heten `*-origineel.jpg` en blijven lokaal (staan in `.gitignore`). In `assets/img/` komen twee verkleinde versies: `naam.jpg` (groot, in het artikel) en `naam-kaart.jpg` (16:10-thumbnail voor de homepagekaart). Er is geen Python of Node op deze machine — verklein foto's met een PowerShell/.NET-oplossing (System.Drawing) of vraag anders.
 
