@@ -12,6 +12,9 @@ onderaan.
 3. Open het bestand en vervang alles wat tussen [BLOKHAKEN] staat door
    je eigen tekst. Voor een extra alinea kopieer je een regel die met
    `<p>` begint en eindigt op `</p>`.
+4. Onderaan staat al een blok met deelknoppen (WhatsApp + link
+   kopiëren). Laat dat gewoon staan; vul alleen in de WhatsApp-regel
+   [BESTANDSNAAM] in met de naam van je bestand (zonder `.html`).
 
 ## Stap 2 — Kaart op de homepage
 

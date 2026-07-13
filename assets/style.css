@@ -253,6 +253,48 @@ a:focus-visible, button:focus-visible {
   text-transform: uppercase;
   margin-bottom: 0.4rem;
 }
+/* ---------- Deelknoppen ---------- */
+.delen {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+}
+.delen .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.delen .knoppen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.deelknop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+.deelknop svg { flex-shrink: 0; }
+.deelknop.whatsapp {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.deelknop.whatsapp:hover { background: var(--ink); border-color: var(--ink); }
+.deelknop.kopieer:hover { border-color: var(--groen); color: var(--groen); }
+
 .terug {
   font-family: "Archivo", sans-serif;
   font-weight: 700;
