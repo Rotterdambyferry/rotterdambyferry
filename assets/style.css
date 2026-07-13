@@ -158,6 +158,7 @@ a:focus-visible, button:focus-visible {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
+.kaart[hidden] { display: none; }
 .kaart {
   border: 2px solid var(--ink);
   background: #fff;
