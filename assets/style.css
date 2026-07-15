@@ -71,22 +71,43 @@ a:focus-visible, button:focus-visible {
 }
 .site-header nav a:hover { color: var(--groen); }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero met achtergrondfoto ---------- */
 .hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(300px, 42vw, 440px);
+  background-color: var(--ink);
+  background-size: cover;
+  background-position: center;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(21, 25, 27, 0.78) 0%,
+    rgba(21, 25, 27, 0.35) 45%,
+    rgba(21, 25, 27, 0) 75%);
+}
+.hero .inner {
+  position: relative;
+  z-index: 1;
   max-width: var(--breedte);
   margin: 0 auto;
-  padding: 3.5rem 1.25rem 2rem;
+  width: 100%;
+  padding: 5rem 1.25rem 1.9rem;
 }
 .hero h1 {
-  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-size: clamp(1.7rem, 3.5vw, 2.4rem);
   text-transform: uppercase;
-  max-width: 18ch;
+  color: #fff;
+  margin: 0 0 0.75rem;
 }
-.hero h1 .groen { color: var(--groen); }
 .hero p {
   max-width: 52ch;
-  font-size: 1.15rem;
-  color: var(--staal);
+  font-size: clamp(1.15rem, 2vw, 1.3rem);
+  color: rgba(255, 255, 255, 0.92);
   margin: 0;
 }
 
@@ -111,25 +132,58 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- Filters ---------- */
 .filters {
+  border-top: 1px solid var(--lijn);
+  border-bottom: 1px solid var(--lijn);
+  padding: 1.4rem 0 1.5rem;
+  margin-bottom: 2rem;
+  background: var(--papier);
+}
+.filters .inner {
   max-width: var(--breedte);
   margin: 0 auto;
-  padding: 0 1.25rem 1.5rem;
+  padding: 0 1.25rem;
 }
 .filters .groep {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.6rem;
+  margin-bottom: 1rem;
 }
+.filters .groep:last-child { margin-bottom: 0; }
 .filters .label {
+  display: block;
   font-family: "Archivo", sans-serif;
   font-weight: 700;
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--staal);
-  min-width: 6.5rem;
+  margin-bottom: 0.5rem;
+}
+.filters .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+/* Op mobiel niet wrappen maar horizontaal scrollen, met een fade rechts */
+@media (max-width: 640px) {
+  .filters .groep { position: relative; }
+  .filters .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: 2.5rem;
+  }
+  .filters .chips::-webkit-scrollbar { display: none; }
+  .filterknop { flex-shrink: 0; }
+  .filters .groep::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -1.25rem;
+    bottom: 0;
+    width: 3rem;
+    background: linear-gradient(to right, rgba(250, 249, 245, 0), var(--papier));
+    pointer-events: none;
+  }
 }
 .filterknop {
   font-family: "Archivo", sans-serif;

@@ -50,6 +50,15 @@ Bij elke nieuwe post het gebied bepalen aan de hand van de wijk waar de plek lig
 
 Foto's: originelen heten `*-origineel.jpg` en blijven lokaal (staan in `.gitignore`). In `assets/img/` komen twee verkleinde versies: `naam.jpg` (groot, in het artikel) en `naam-kaart.jpg` (16:10-thumbnail voor de homepagekaart). Er is geen Python of Node op deze machine — verklein foto's met een PowerShell/.NET-oplossing (System.Drawing) of vraag anders.
 
+## Hero-foto's op de homepage
+
+De homepage heeft een hero met een roterende achtergrondfoto. Zonder JavaScript (en bij het allereerste bezoek) toont hij altijd `hero-skyline-euromast.jpg` (die staat hard in de HTML en is ook de og:image); bij herhaalbezoek kiest een klein inline script in `index.html` willekeurig een andere foto dan de vorige (onthouden via localStorage-sleutel `heroFoto`).
+
+Een foto toevoegen aan de rotatie:
+
+1. Zet het bestand in `assets/img/`, bijgesneden naar 16:9, ± 1600px breed, 300–400 KB, naam `hero-*.jpg`.
+2. Voeg in `index.html` één regel met de bestandsnaam toe aan de array `heroFotos` in het script direct onder de hero-sectie.
+
 ## Lokaal bekijken en deployen
 
 - Lokaal bekijken: het HTML-bestand direct in de browser openen (dubbelklikken); er is geen dev-server nodig.

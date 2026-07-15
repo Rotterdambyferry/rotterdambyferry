@@ -10,7 +10,7 @@
   <meta property="og:title" content="Rotterdam by Ferry — Mijn Rotterdam 💚">
   <meta property="og:description" content="Skyline, food, bruine kroegen en kidsproof plekken in Rotterdam. Van Zuid tot Noord, gewoon door een Rotterdammer.">
   <meta property="og:url" content="https://rotterdambyferry.nl/">
-  <meta property="og:image" content="https://rotterdambyferry.nl/assets/img/rif010.jpg">
+  <meta property="og:image" content="https://rotterdambyferry.nl/assets/img/hero-skyline-euromast.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://rotterdambyferry.nl/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,31 +31,67 @@
   </div>
 </header>
 
-<section class="hero">
-  <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
-  <p>Bruine kroegen, lunchspots, skyline en kidsproof tips &mdash; van Zuid tot Noord.</p>
+<section class="hero" id="hero" style="background-image: url('assets/img/hero-skyline-euromast.jpg')">
+  <div class="inner">
+    <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
+    <p>Skyline, food, kroegen &amp; kidsproof 010. Van Zuid tot Noord, gewoon door een Rotterdammer.</p>
+  </div>
 </section>
+<script>
+  // Hero-foto's: bij het eerste bezoek altijd de skyline (staat ook al in de
+  // HTML hierboven, voor bezoekers zonder JavaScript). Bij een volgend bezoek
+  // kiest dit script willekeurig een andere foto dan de vorige keer.
+  // Nieuwe foto toevoegen? Zet het bestand in assets/img en voeg hieronder
+  // één regel toe aan de lijst.
+  (function () {
+    var heroFotos = [
+      "hero-skyline-euromast.jpg",
+      "hero-hotel-new-york.jpg",
+      "hero-willemsbrug.jpg"
+    ];
+    var standaardFoto = "hero-skyline-euromast.jpg";
+    try {
+      var laatst = localStorage.getItem("heroFoto");
+      var keuze = standaardFoto;
+      if (laatst) {
+        var kandidaten = heroFotos.filter(function (f) { return f !== laatst; });
+        if (kandidaten.length > 0) {
+          keuze = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+          document.getElementById("hero").style.backgroundImage =
+            "url('assets/img/" + keuze + "')";
+        }
+      }
+      localStorage.setItem("heroFoto", keuze);
+    } catch (e) { /* localStorage niet beschikbaar: dan gewoon de standaardfoto */ }
+  })();
+</script>
 
 <section class="filters" aria-label="Filter verhalen">
-  <div class="groep">
-    <span class="label">Categorie</span>
-    <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="restaurant" aria-pressed="false">Restaurant</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="lunchplek" aria-pressed="false">Lunchplek</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="bruine-kroeg" aria-pressed="false">Bruine kroeg</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="kidsproof" aria-pressed="false">Kidsproof</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="delicatessen" aria-pressed="false">Delicatessen</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="foodhal" aria-pressed="false">Foodhal</button>
-    <button class="filterknop" data-filter="categorie" data-waarde="borrelplek" aria-pressed="false">Borrelplek</button>
-  </div>
-  <div class="groep">
-    <span class="label">Gebied</span>
-    <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
-    <button class="filterknop" data-filter="gebied" data-waarde="centrum" aria-pressed="false">Centrum</button>
-    <button class="filterknop" data-filter="gebied" data-waarde="noord" aria-pressed="false">Noord</button>
-    <button class="filterknop" data-filter="gebied" data-waarde="oost" aria-pressed="false">Oost</button>
-    <button class="filterknop" data-filter="gebied" data-waarde="zuid" aria-pressed="false">Zuid</button>
-    <button class="filterknop" data-filter="gebied" data-waarde="west" aria-pressed="false">West</button>
+  <div class="inner">
+    <div class="groep">
+      <span class="label">Categorie</span>
+      <div class="chips">
+        <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="restaurant" aria-pressed="false">Restaurant</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="lunchplek" aria-pressed="false">Lunchplek</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="bruine-kroeg" aria-pressed="false">Bruine kroeg</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="kidsproof" aria-pressed="false">Kidsproof</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="delicatessen" aria-pressed="false">Delicatessen</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="foodhal" aria-pressed="false">Foodhal</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="borrelplek" aria-pressed="false">Borrelplek</button>
+      </div>
+    </div>
+    <div class="groep">
+      <span class="label">Gebied</span>
+      <div class="chips">
+        <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="centrum" aria-pressed="false">Centrum</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="noord" aria-pressed="false">Noord</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="oost" aria-pressed="false">Oost</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="zuid" aria-pressed="false">Zuid</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="west" aria-pressed="false">West</button>
+      </div>
+    </div>
   </div>
 </section>
 
