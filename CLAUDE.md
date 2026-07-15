@@ -57,7 +57,7 @@ De homepage heeft een hero met een roterende achtergrondfoto. Zonder JavaScript 
 Een foto toevoegen aan de rotatie:
 
 1. Zet het bestand in `assets/img/`, bijgesneden naar 16:9, ± 1600px breed, 300–400 KB, naam `hero-*.jpg`.
-2. Voeg in `index.html` één regel met de bestandsnaam toe aan de array `heroFotos` in het script direct onder de hero-sectie.
+2. Voeg in `index.html` één regel toe aan de array `heroFotos` in het script direct onder de hero-sectie: `{ bestand: "hero-naam.jpg", label: "Korte omschrijving van de foto" }`. Het label wisselt mee als aria-label van de hero (voor screenreaders).
 
 ## Lokaal bekijken en deployen
 

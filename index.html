@@ -31,7 +31,7 @@
   </div>
 </header>
 
-<section class="hero" id="hero" style="background-image: url('assets/img/hero-skyline-euromast.jpg')">
+<section class="hero" id="hero" aria-label="Skyline van Rotterdam vanaf de Euromast" style="background-image: url('assets/img/hero-skyline-euromast.jpg')">
   <div class="inner">
     <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
     <p>Skyline, food, kroegen &amp; kidsproof 010. Van Zuid tot Noord, gewoon door een Rotterdammer.</p>
@@ -42,23 +42,26 @@
   // HTML hierboven, voor bezoekers zonder JavaScript). Bij een volgend bezoek
   // kiest dit script willekeurig een andere foto dan de vorige keer.
   // Nieuwe foto toevoegen? Zet het bestand in assets/img en voeg hieronder
-  // één regel toe aan de lijst.
+  // één regel toe aan de lijst (bestandsnaam + korte omschrijving voor
+  // screenreaders; die omschrijving wisselt mee als aria-label van de hero).
   (function () {
     var heroFotos = [
-      "hero-skyline-euromast.jpg",
-      "hero-hotel-new-york.jpg",
-      "hero-willemsbrug.jpg"
+      { bestand: "hero-skyline-euromast.jpg", label: "Skyline van Rotterdam vanaf de Euromast" },
+      { bestand: "hero-hotel-new-york.jpg", label: "Hotel New York aan de Kop van Zuid" },
+      { bestand: "hero-willemsbrug.jpg", label: "De Willemsbrug bij avond" }
     ];
     var standaardFoto = "hero-skyline-euromast.jpg";
     try {
       var laatst = localStorage.getItem("heroFoto");
       var keuze = standaardFoto;
       if (laatst) {
-        var kandidaten = heroFotos.filter(function (f) { return f !== laatst; });
+        var kandidaten = heroFotos.filter(function (f) { return f.bestand !== laatst; });
         if (kandidaten.length > 0) {
-          keuze = kandidaten[Math.floor(Math.random() * kandidaten.length)];
-          document.getElementById("hero").style.backgroundImage =
-            "url('assets/img/" + keuze + "')";
+          var gekozen = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+          keuze = gekozen.bestand;
+          var hero = document.getElementById("hero");
+          hero.style.backgroundImage = "url('assets/img/" + gekozen.bestand + "')";
+          hero.setAttribute("aria-label", gekozen.label);
         }
       }
       localStorage.setItem("heroFoto", keuze);
@@ -99,7 +102,7 @@
 
   <article class="kaart" data-categorie="foodhal borrelplek" data-gebied="noord">
     <a class="thumb" href="posts/station-bergweg.html" aria-hidden="true" tabindex="-1">
-      <img src="assets/img/station-bergweg-kaart.jpg" alt="">
+      <img src="assets/img/station-bergweg-kaart.jpg" alt="Terras van foodhal Station Bergweg in het voormalige treinstation aan de Hofbogen, Rotterdam-Noord">
     </a>
     <div class="tags">
       <span class="tag">Foodhal</span>
@@ -113,7 +116,7 @@
 
   <article class="kaart" data-categorie="lunchplek delicatessen" data-gebied="centrum">
     <a class="thumb" href="posts/little-italy.html" aria-hidden="true" tabindex="-1">
-      <img src="assets/img/little-italy-kaart.jpg" alt="">
+      <img src="assets/img/little-italy-kaart.jpg" alt="Gevel van Italiaanse lunchzaak Little Italy aan de Lombardkade in Rotterdam">
     </a>
     <div class="tags">
       <span class="tag">Lunchplek</span>
@@ -127,7 +130,7 @@
 
   <article class="kaart" data-categorie="kidsproof" data-gebied="centrum">
     <a class="thumb" href="posts/rif010.html" aria-hidden="true" tabindex="-1">
-      <img src="assets/img/rif010-kaart.jpg" alt="">
+      <img src="assets/img/rif010-kaart.jpg" alt="Surfers op de urban surfpool Rif010 achter de Markthal in Rotterdam">
     </a>
     <div class="tags">
       <span class="tag">Kidsproof</span>
@@ -140,7 +143,7 @@
 
   <article class="kaart" data-categorie="restaurant" data-gebied="centrum">
     <a class="thumb" href="posts/due-tonino.html" aria-hidden="true" tabindex="-1">
-      <img src="assets/img/due-tonino-kaart.jpg" alt="">
+      <img src="assets/img/due-tonino-kaart.jpg" alt="Terras van Italiaans restaurant Due Tonino aan de Goudsesingel in Rotterdam">
     </a>
     <div class="tags">
       <span class="tag">Restaurant</span>
