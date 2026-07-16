@@ -44,7 +44,7 @@ Let op bij `data-categorie` en `data-gebied`: gebruik kleine letters en
 een streepje in plaats van een spatie. De keuzes die de filters kennen:
 
 - Categorie: `restaurant`, `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`,
-  `foodhal`, `borrelplek`, `dagje-uit`, `haven`
+  `foodhal`, `borrelplek`, `dagje-uit`
   (meerdere mag, met een spatie ertussen: `"lunchplek delicatessen"`)
 - Gebied: `centrum`, `noord`, `oost`, `zuid`, `west`, `maasvlakte`
 
