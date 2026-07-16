@@ -44,9 +44,9 @@ Let op bij `data-categorie` en `data-gebied`: gebruik kleine letters en
 een streepje in plaats van een spatie. De keuzes die de filters kennen:
 
 - Categorie: `restaurant`, `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`,
-  `foodhal`, `borrelplek`
+  `foodhal`, `borrelplek`, `dagje-uit`, `haven`
   (meerdere mag, met een spatie ertussen: `"lunchplek delicatessen"`)
-- Gebied: `centrum`, `noord`, `oost`, `zuid`, `west`
+- Gebied: `centrum`, `noord`, `oost`, `zuid`, `west`, `maasvlakte`
 
 Twijfel je welk gebied het is? In CLAUDE.md staat onder "Wijkindeling"
 precies welke wijk bij welk gebied hoort (Delfshaven is bijvoorbeeld
