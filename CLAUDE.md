@@ -13,7 +13,9 @@ De eigenaar (Ferry) is geen programmeur: leg stappen uit in gewone taal, doe kle
 - `index.html` — homepage met postkaarten en werkende filters (categorie + gebied). Het filterscript staat onderaan inline in dit bestand.
 - `posts/*.html` — één los HTML-bestand per blogpost; `posts/_template.html` is het kopieersjabloon met [BLOKHAKEN]-placeholders.
 - `over.html` — over-pagina.
-- `assets/style.css` — de volledige huisstijl (er is geen andere CSS).
+- `kaart.html` — filterbare kaart van Rotterdam (Leaflet.js + CARTO dark tiles via CDN); de plekken komen uit `places.json`, de filterchips werken zoals op de homepage.
+- `places.json` — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post. Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
+- `assets/style.css` — de volledige huisstijl (er is geen andere CSS; ook de kaartpagina-stijlen staan hierin).
 - `assets/img/` — verkleinde foto's die mee gepubliceerd worden.
 - `sitemap.xml`, `robots.txt`, `CNAME` (custom domein) — voor GitHub Pages/SEO.
 - `NIEUWE-POST.md` — Ferry's eigen stappenplan voor een nieuwe post; houd CLAUDE.md en dit bestand consistent bij wijzigingen aan de postworkflow.
@@ -35,7 +37,7 @@ Elke post is een kopie van `posts/_template.html`:
 2. `<main class="artikel">`: terug-link, tags (`.tag` = categorie, `.tag.gebied` = gebied), `<h1>`, `.meta` ("Door Ferry · maand jaar"), optioneel `<figure class="foto">`, eerste alinea als `.intro`, gewone `<p>`-alinea's, en afsluitend blok `.praktisch` met adres/tips. Bij een food- of restaurantplek sluit het praktisch-blok altijd af met een link naar de website van de zaak (`target="_blank" rel="noopener"`).
 3. Deelknoppen: elke nieuwe post krijgt onderaan (na `.praktisch`) het `.delen`-blok uit het template — "Iemand die dit moet weten?" met een WhatsApp-deelknop ("Deel het via WhatsApp") en een "Kopieer de link"-knop. In de fallback-`href` van de WhatsApp-knop de URL-gecodeerde postlink invullen (`https%3A%2F%2Frotterdambyferry.nl%2Fposts%2FBESTAND.html`). Het gedrag zit in `assets/deel.js` (mobiel → WhatsApp-app via wa.me, desktop → WhatsApp Web; leest de canonical-URL), geladen vlak voor `</body>` met `<script src="../assets/deel.js" defer></script>` — beide zitten al in het template.
 4. Kaart op de homepage: `<article class="kaart">`-blok in `index.html` onder `<main class="grid" id="verhalen">`, met `data-categorie` en `data-gebied` in kleine letters met streepjes (meerdere waarden gescheiden door spatie). Geldige waarden — categorie: `restaurant`, `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`, `foodhal`, `borrelplek`, `dagje-uit`; gebied: `centrum`, `noord`, `oost`, `zuid`, `west`, `maasvlakte` (bepaal het gebied met de wijkindeling hieronder). De filters werken puur op deze data-attributen; verborgen kaarten krijgen het `hidden`-attribuut (niet `display` via inline style).
-5. Nieuwe post ook toevoegen aan `sitemap.xml`.
+5. Nieuwe post ook toevoegen aan `sitemap.xml` én als plek aan `places.json` (naam, lat/lon, categorie, gebied, wijk, link naar de post) zodat hij op de kaartpagina verschijnt.
 6. "Binnenkort"-kaarten hebben `class="kaart binnenkort"` en een `<span class="status">`; bij publicatie die status en de klasse `binnenkort` verwijderen en links toevoegen.
 
 ### Wijkindeling → hoofdgebied
@@ -67,6 +69,6 @@ Een foto toevoegen aan de rotatie:
 - Let op (Windows): `git push` via PowerShell draaien, niet via de Bash-tool — credentials werken daar niet betrouwbaar.
 - Verwijder nooit het `CNAME`-bestand; dat koppelt het custom domein.
 
-## Toekomstplannen (structuur op voorbereiden, nog niet bouwen)
+## Kaartpagina
 
-Een filterbare kaart van Rotterdam met alle plekken, filterbaar op dezelfde categorieën en gebieden als de homepage — daarom zijn `data-categorie`/`data-gebied` de bron van waarheid voor classificatie.
+De filterbare kaart (`kaart.html`, gebouwd juli 2026) gebruikt dezelfde categorieën en gebieden als de homepage — de `data-categorie`/`data-gebied`-waarden op de homepagekaarten blijven de bron van waarheid voor classificatie, en `places.json` volgt die waarden. Bij een nieuwe categorie of gebied: chips op zowel `index.html` als `kaart.html` bijwerken.

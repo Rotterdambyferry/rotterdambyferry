@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>De kaart van mijn Rotterdam | Rotterdam by Ferry</title>
+  <meta name="description" content="Alle plekken van Rotterdam by Ferry op één kaart: restaurants, lunchplekken, kroegen en meer. Filter op categorie en gebied, van Zuid tot Noord.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Rotterdam by Ferry">
+  <meta property="og:title" content="De kaart van mijn Rotterdam">
+  <meta property="og:description" content="Alle plekken van Rotterdam by Ferry op één kaart: restaurants, lunchplekken, kroegen en meer. Filter op categorie en gebied, van Zuid tot Noord.">
+  <meta property="og:url" content="https://rotterdambyferry.nl/kaart.html">
+  <meta property="og:image" content="https://rotterdambyferry.nl/assets/img/hero-skyline-euromast.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://rotterdambyferry.nl/kaart.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="wordmark" href="index.html">Rotterdam by Ferry <span class="hart">&#10084;</span></a>
+    <nav>
+      <a href="index.html">Verhalen</a>
+      <a href="kaart.html">Kaart</a>
+      <a href="over.html">Over Ferry</a>
+      <a href="https://www.instagram.com/rotterdambyferry/">Instagram</a>
+    </nav>
+  </div>
+</header>
+
+<div class="kaart-kop">
+  <h1>De kaart van mijn Rotterdam <span class="groen">&#128154;</span></h1>
+  <p>Alle plekken uit de verhalen op &eacute;&eacute;n kaart. Filter op wat je zoekt, klik op een pin en lees het verhaal erbij.</p>
+</div>
+
+<section class="filters" aria-label="Filter plekken">
+  <div class="inner">
+    <div class="groep">
+      <span class="label">Categorie</span>
+      <div class="chips">
+        <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="restaurant" aria-pressed="false">Restaurant</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="lunchplek" aria-pressed="false">Lunchplek</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="bruine-kroeg" aria-pressed="false">Bruine kroeg</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="kidsproof" aria-pressed="false">Kidsproof</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="delicatessen" aria-pressed="false">Delicatessen</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="foodhal" aria-pressed="false">Foodhal</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="borrelplek" aria-pressed="false">Borrelplek</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
+      </div>
+    </div>
+    <div class="groep">
+      <span class="label">Gebied</span>
+      <div class="chips">
+        <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="centrum" aria-pressed="false">Centrum</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="noord" aria-pressed="false">Noord</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="oost" aria-pressed="false">Oost</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="zuid" aria-pressed="false">Zuid</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="west" aria-pressed="false">West</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="maasvlakte" aria-pressed="false">Maasvlakte</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="kaart-sectie">
+  <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen"></div>
+  <p class="leeg" hidden>Nog geen plekken in deze combinatie &mdash; die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/">@rotterdambyferry</a> voor het laatste nieuws.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>Rotterdam by Ferry &mdash; van Zuid tot Noord, gewoon door een Rotterdammer</span>
+    <a href="https://www.instagram.com/rotterdambyferry/">@rotterdambyferry</a>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  // De kaart: donkere CARTO-ondergrond met groene pins in de huisstijl.
+  // De plekken komen uit places.json; de filterchips werken hetzelfde als
+  // op de homepage (één actieve categorie + één actief gebied).
+  (function () {
+    var LABELS = {
+      restaurant: "Restaurant", lunchplek: "Lunchplek", "bruine-kroeg": "Bruine kroeg",
+      kidsproof: "Kidsproof", delicatessen: "Delicatessen", foodhal: "Foodhal",
+      borrelplek: "Borrelplek", "dagje-uit": "Dagje uit",
+      centrum: "Centrum", noord: "Noord", oost: "Oost", zuid: "Zuid",
+      west: "West", maasvlakte: "Maasvlakte"
+    };
+
+    var map = L.map("plattegrond", { scrollWheelZoom: false }).setView([51.92, 4.47], 12);
+    map.on("focus click", function () { map.scrollWheelZoom.enable(); });
+    map.on("blur", function () { map.scrollWheelZoom.disable(); });
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 19
+    }).addTo(map);
+
+    var actief = { categorie: "alles", gebied: "alles" };
+    var plekken = []; // { data, marker }
+    var leeg = document.querySelector(".leeg");
+
+    function popupHtml(p) {
+      var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
+      tags += " &middot; " + (LABELS[p.gebied] || p.gebied);
+      var html = '<p class="popup-naam">' + p.naam + "</p>" +
+                 '<p class="popup-tags">' + tags + "</p>" +
+                 '<p class="popup-wijk">' + p.wijk + "</p>";
+      if (p.post) {
+        html += '<a class="popup-link" href="' + p.post + '">Lees het verhaal &rarr;</a>';
+      }
+      return html;
+    }
+
+    function toonPlekken() {
+      map.invalidateSize(); // voor het geval de pagina net geladen of geroteerd is
+      var zichtbaar = [];
+      plekken.forEach(function (plek) {
+        var p = plek.data;
+        var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
+        var gebOk = actief.gebied === "alles" || p.gebied === actief.gebied;
+        if (catOk && gebOk) {
+          plek.marker.addTo(map);
+          zichtbaar.push(plek.marker);
+        } else {
+          map.removeLayer(plek.marker);
+        }
+      });
+      leeg.hidden = zichtbaar.length > 0;
+      if (zichtbaar.length > 0) {
+        var groep = L.featureGroup(zichtbaar);
+        map.fitBounds(groep.getBounds().pad(0.2), { maxZoom: 15 });
+      }
+    }
+
+    fetch("places.json")
+      .then(function (r) {
+        if (!r.ok) throw new Error("places.json niet gevonden");
+        return r.json();
+      })
+      .then(function (data) {
+        data.forEach(function (p) {
+          var marker = L.circleMarker([p.lat, p.lon], {
+            radius: 9,
+            color: "#FAF9F5",
+            weight: 2,
+            fillColor: "#1D7A46",
+            fillOpacity: 1
+          });
+          marker.bindPopup(popupHtml(p));
+          plekken.push({ data: p, marker: marker });
+        });
+        toonPlekken();
+        // Nogmaals passend maken zodra alles (fonts, layout) geladen is
+        window.addEventListener("load", toonPlekken);
+      })
+      .catch(function () {
+        leeg.hidden = false;
+        leeg.innerHTML = "De plekken konden niet geladen worden. Probeer het later nog eens.";
+      });
+
+    document.querySelectorAll(".filterknop").forEach(function (knop) {
+      knop.addEventListener("click", function () {
+        var soort = knop.dataset.filter;
+        actief[soort] = knop.dataset.waarde;
+        document.querySelectorAll(".filterknop").forEach(function (k) {
+          if (k.dataset.filter === soort) {
+            k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+          }
+        });
+        toonPlekken();
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

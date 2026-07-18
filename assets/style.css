@@ -414,3 +414,69 @@ a:focus-visible, button:focus-visible {
   .kaart { transition: transform 0.15s ease; }
   .kaart:hover { transform: translateY(-3px); }
 }
+
+/* ---------- Kaartpagina (kaart.html) ---------- */
+.kaart-kop {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+.kaart-kop h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); }
+.kaart-kop p {
+  color: var(--staal);
+  margin: 0 0 0.5rem;
+  max-width: 60ch;
+}
+.kaart-sectie {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+#plattegrond {
+  height: 62vh;
+  min-height: 380px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+}
+.kaart-sectie .leeg { margin-top: 1rem; }
+/* Leaflet-popup in huisstijl: harde randen, geen afronding of schaduw */
+.leaflet-popup-content-wrapper {
+  background: var(--papier);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+.leaflet-popup-tip {
+  background: var(--ink);
+  box-shadow: none;
+}
+.leaflet-popup-content { margin: 0.8rem 1rem; line-height: 1.45; }
+.popup-naam {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+.popup-tags {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--staal);
+  margin: 0 0 0.35rem;
+}
+.popup-wijk {
+  font-size: 0.9rem;
+  color: var(--staal);
+  margin: 0 0 0.45rem;
+}
+.popup-link {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--groen);
+  text-decoration: none;
+}
+.popup-link:hover { text-decoration: underline; }
