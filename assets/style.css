@@ -439,6 +439,19 @@ a:focus-visible, button:focus-visible {
   background: var(--ink);
 }
 .kaart-sectie .leeg { margin-top: 1rem; }
+/* Clustericoon: grotere versie van de losse pin, met het aantal erin */
+.cluster-pin {
+  background: var(--groen);
+  border: 2px solid #FAF9F5;
+  border-radius: 50%;
+  color: #FAF9F5;
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 /* Leaflet-popup in huisstijl: harde randen, geen afronding of schaduw */
 .leaflet-popup-content-wrapper {
   background: var(--papier);

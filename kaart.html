@@ -22,6 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha256-YSWCMtmNZNwqex4CEw1nQhvFub2lmU7vcCKP+XVwwXA=" crossorigin="">
   <link rel="stylesheet" href="assets/style.css">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQS8RQWBE9"></script>
@@ -95,6 +97,7 @@
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin=""></script>
 <script>
   // De kaart: donkere CARTO-ondergrond met groene pins in de huisstijl.
   // De plekken komen uit places.json; de filterchips werken hetzelfde als
@@ -117,6 +120,35 @@
       subdomains: "abcd",
       maxZoom: 19
     }).addTo(map);
+
+    // Overlappende pins samenvoegen tot één groene stip met een getal.
+    // Kleine radius: alleen clusteren als pins elkaar echt raken, niet
+    // als plekken een paar straten uit elkaar liggen. Klikken zoomt in
+    // tot de pins loskomen (en spiderfyt pas als inzoomen niet meer kan).
+    var cluster = L.markerClusterGroup({
+      maxClusterRadius: 25,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: false, // eigen klikgedrag hieronder, zonder animatie
+      animate: false,
+      iconCreateFunction: function (c) {
+        return L.divIcon({
+          html: c.getChildCount(),
+          className: "cluster-pin",
+          iconSize: [34, 34]
+        });
+      }
+    });
+    // Klik op een cluster: direct inzoomen tot de pins loskomen; helpt
+    // inzoomen niet meer (pins vrijwel op dezelfde plek), dan spiderfy
+    cluster.on("clusterclick", function (e) {
+      var b = e.layer.getBounds().pad(0.2);
+      if (map.getBoundsZoom(b) > map.getZoom()) {
+        map.fitBounds(b, { maxZoom: 17, animate: false });
+      } else {
+        e.layer.spiderfy();
+      }
+    });
+    map.addLayer(cluster);
 
     var actief = { categorie: "alles", gebied: "alles" };
     var plekken = []; // { data, marker }
@@ -154,18 +186,18 @@
         var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
         var gebOk = actief.gebied === "alles" || p.gebied === actief.gebied;
         if (catOk && gebOk) {
-          plek.marker.addTo(map);
           zichtbaar.push(plek.marker);
-        } else {
-          map.removeLayer(plek.marker);
         }
       });
+      // De clustergroep helemaal opnieuw vullen, zodat gefilterde pins
+      // ook uit de cluster-telling verdwijnen
+      cluster.clearLayers();
+      cluster.addLayers(zichtbaar);
       leeg.hidden = zichtbaar.length > 0;
       if (zichtbaar.length > 0) {
-        var groep = L.featureGroup(zichtbaar);
         // animate: false — anders kan een direct volgende invalidateSize
         // (load-event/ResizeObserver) de zoom-animatie afbreken
-        map.fitBounds(groep.getBounds().pad(0.2), { maxZoom: 14, animate: false });
+        map.fitBounds(cluster.getBounds().pad(0.2), { maxZoom: 14, animate: false });
       }
     }
 
