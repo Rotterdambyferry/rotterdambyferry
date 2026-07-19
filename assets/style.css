@@ -13,6 +13,9 @@
 
 * { box-sizing: border-box; }
 
+/* Bij springen naar een anker niet onder de sticky header belanden */
+html { scroll-padding-top: 5rem; }
+
 body {
   margin: 0;
   background: var(--papier);
@@ -38,8 +41,15 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- Header ---------- */
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1200; /* boven de Leaflet-knoppen op de kaartpagina (z-index 1000) */
   border-bottom: 3px solid var(--ink);
   background: var(--papier);
+}
+/* Subtiele schaduw zodra er gescrold is (klasse gezet door assets/header.js) */
+.site-header.is-gescrold {
+  box-shadow: 0 4px 10px rgba(21, 25, 27, 0.12);
 }
 .site-header .inner {
   max-width: var(--breedte);
@@ -70,6 +80,27 @@ a:focus-visible, button:focus-visible {
   margin-left: 1.25rem;
 }
 .site-header nav a:hover { color: var(--groen); }
+/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt */
+@media (max-width: 640px) {
+  .site-header .inner {
+    padding: 0.55rem 1rem;
+    row-gap: 0.1rem;
+  }
+  .wordmark {
+    font-size: 1.02rem;
+    line-height: 1.35;
+  }
+  .site-header nav {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  .site-header nav a {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-left: 0.85rem;
+  }
+  .site-header nav a:first-child { margin-left: 0; }
+}
 
 /* ---------- Hero met achtergrondfoto ---------- */
 .hero {
