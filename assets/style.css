@@ -468,6 +468,13 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   margin-left: auto;
 }
+/* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
+   leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.
+   Op de homepage en kaartpagina is de content zelf 1080px, daar klopt het al. */
+body:has(.artikel) .footer-delen,
+body:has(.artikel) .site-footer .inner {
+  max-width: var(--leesbreedte);
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .kaart { transition: transform 0.15s ease; }
