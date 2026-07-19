@@ -531,6 +531,26 @@ body:has(.artikel) .site-footer .inner {
   box-shadow: none;
 }
 .leaflet-popup-content { margin: 0; line-height: 1.45; }
+/* Sluitkruisje: eigen ronde knop met donkere achtergrond — het kale kruisje
+   van Leaflet zelf is bovenop een lichte of drukke popup-foto bijna onzichtbaar */
+.leaflet-container a.leaflet-popup-close-button {
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 20px;
+  line-height: 32px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.leaflet-container a.leaflet-popup-close-button:focus,
+.leaflet-container a.leaflet-popup-close-button:active {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
 .popup-tekst { padding: 0.8rem 1rem; }
 .popup-foto {
   display: block;
@@ -589,6 +609,10 @@ body:has(.artikel) .site-footer .inner {
    op touchscreens blijft een hover-state anders "hangen" na een tik */
 @media (hover: hover) and (pointer: fine) {
   .leaflet-container a.popup-knop:hover { background: var(--groen); color: var(--papier); }
+  .leaflet-container a.leaflet-popup-close-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+  }
 }
 /* Korte visuele feedback tijdens de tik zelf, verdwijnt bij loslaten */
 .leaflet-container a.popup-knop:active { background: var(--groen); color: var(--papier); }
