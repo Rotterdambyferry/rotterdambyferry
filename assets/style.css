@@ -506,4 +506,10 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   margin-top: 0.15rem;
 }
-.leaflet-container a.popup-knop:hover { background: var(--groen); color: var(--papier); }
+/* Hover alleen op apparaten die echt kunnen hoveren (muis/trackpad) —
+   op touchscreens blijft een hover-state anders "hangen" na een tik */
+@media (hover: hover) and (pointer: fine) {
+  .leaflet-container a.popup-knop:hover { background: var(--groen); color: var(--papier); }
+}
+/* Korte visuele feedback tijdens de tik zelf, verdwijnt bij loslaten */
+.leaflet-container a.popup-knop:active { background: var(--groen); color: var(--papier); }
