@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotterdam by Ferry — Mijn Rotterdam 💚</title>
+  <meta name="description" content="Skyline, food, bruine kroegen en kidsproof plekken in Rotterdam. Van Zuid tot Noord, gewoon door een Rotterdammer.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Rotterdam by Ferry">
+  <meta property="og:title" content="Rotterdam by Ferry — Mijn Rotterdam 💚">
+  <meta property="og:description" content="Skyline, food, bruine kroegen en kidsproof plekken in Rotterdam. Van Zuid tot Noord, gewoon door een Rotterdammer.">
+  <meta property="og:url" content="https://rotterdambyferry.nl/">
+  <meta property="og:image" content="https://rotterdambyferry.nl/assets/img/hero-skyline-euromast.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://rotterdambyferry.nl/">
+  <link rel="icon" href="assets/img/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/img/favicon-192x192.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQS8RQWBE9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZQS8RQWBE9');
+  </script>
+</head>
+<body>
+
+<!-- INCLUDE:header -->
+
+<section class="hero" id="hero" aria-label="Skyline van Rotterdam vanaf de Euromast" style="background-image: url('assets/img/hero-skyline-euromast.jpg')">
+  <div class="inner">
+    <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
+    <p>Skyline, food, kroegen &amp; kidsproof 010. Van Zuid tot Noord, gewoon door een Rotterdammer.</p>
+  </div>
+</section>
+<script>
+  // Hero-foto's: bij het eerste bezoek altijd de skyline (staat ook al in de
+  // HTML hierboven, voor bezoekers zonder JavaScript). Bij een volgend bezoek
+  // kiest dit script willekeurig een andere foto dan de vorige keer.
+  // Nieuwe foto toevoegen? Zet het bestand in assets/img en voeg hieronder
+  // één regel toe aan de lijst (bestandsnaam + korte omschrijving voor
+  // screenreaders; die omschrijving wisselt mee als aria-label van de hero).
+  (function () {
+    var heroFotos = [
+      { bestand: "hero-skyline-euromast.jpg", label: "Skyline van Rotterdam vanaf de Euromast" },
+      { bestand: "hero-hotel-new-york.jpg", label: "Hotel New York aan de Kop van Zuid" },
+      { bestand: "hero-willemsbrug.jpg", label: "De Willemsbrug bij avond" },
+      { bestand: "hero-erasmusbrug-winter.jpg", label: "De Erasmusbrug onder een dreigende winterlucht" },
+      { bestand: "hero-centraal-station.jpg", label: "Rotterdam Centraal en de Delftse Poort op een zonnige dag" },
+      { bestand: "hero-laurenskerk.jpg", label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" }
+    ];
+    var standaardFoto = "hero-skyline-euromast.jpg";
+    try {
+      var laatst = localStorage.getItem("heroFoto");
+      var keuze = standaardFoto;
+      if (laatst) {
+        var kandidaten = heroFotos.filter(function (f) { return f.bestand !== laatst; });
+        if (kandidaten.length > 0) {
+          var gekozen = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+          keuze = gekozen.bestand;
+          var hero = document.getElementById("hero");
+          hero.style.backgroundImage = "url('assets/img/" + gekozen.bestand + "')";
+          hero.setAttribute("aria-label", gekozen.label);
+        }
+      }
+      localStorage.setItem("heroFoto", keuze);
+    } catch (e) { /* localStorage niet beschikbaar: dan gewoon de standaardfoto */ }
+  })();
+</script>
+
+<section class="filters" aria-label="Filter verhalen">
+  <div class="inner">
+    <div class="groep">
+      <span class="label">Categorie</span>
+      <div class="chips">
+        <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="restaurant" aria-pressed="false">Restaurant</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="lunchplek" aria-pressed="false">Lunchplek</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="bruine-kroeg" aria-pressed="false">Bruine kroeg</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="kidsproof" aria-pressed="false">Kidsproof</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="delicatessen" aria-pressed="false">Delicatessen</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="foodhal" aria-pressed="false">Foodhal</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="borrelplek" aria-pressed="false">Borrelplek</button>
+        <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
+      </div>
+    </div>
+    <div class="groep">
+      <span class="label">Gebied</span>
+      <div class="chips">
+        <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="centrum" aria-pressed="false">Centrum</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="noord" aria-pressed="false">Noord</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="oost" aria-pressed="false">Oost</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="zuid" aria-pressed="false">Zuid</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="west" aria-pressed="false">West</button>
+        <button class="filterknop" data-filter="gebied" data-waarde="maasvlakte" aria-pressed="false">Maasvlakte</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="grid" id="verhalen">
+
+  <article class="kaart" data-categorie="borrelplek" data-gebied="centrum">
+    <a class="thumb" href="posts/dak-rotterdam.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/dak-rotterdam-kaart.jpg" alt="Bezoekers bbq'en tussen de rook op het pop-up dakpark DÂK, met de Rotterdamse skyline op de achtergrond">
+    </a>
+    <div class="tags">
+      <span class="tag">Borrelplek</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <h2><a href="posts/dak-rotterdam.html">DÂK Rotterdam: twee zomers zonder, maar geen vaarwel</a></h2>
+    <p>Het populaire pop-up dakpark met eigen bbq's en skylineuitzicht slaat voor het tweede jaar op rij een zomer over. Archieffoto's van tien jaar DÂK, met de belofte: tot 2027.</p>
+    <a class="lees" href="posts/dak-rotterdam.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <article class="kaart" data-categorie="dagje-uit" data-gebied="maasvlakte">
+    <a class="thumb" href="posts/balkon-van-europa.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/balkon-van-europa-kaart.jpg" alt="Terras van snackbar Smickel Inn op de Maasvlakte met uitzicht op een passerend containerschip">
+    </a>
+    <div class="tags">
+      <span class="tag">Dagje uit</span>
+      <span class="tag gebied">Maasvlakte</span>
+    </div>
+    <h2><a href="posts/balkon-van-europa.html">Het Balkon van Europa: waar Rotterdam ophoudt en de Noordzee begint</a></h2>
+    <p>Helemaal achteraan op de Maasvlakte staat een oude snackbar waar de grootste zeeschepen vlak langs het terras de haven uit varen. Geen toeristenval, gewoon rauw Rotterdam.</p>
+    <a class="lees" href="posts/balkon-van-europa.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <article class="kaart" data-categorie="foodhal borrelplek" data-gebied="noord">
+    <a class="thumb" href="posts/station-bergweg.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/station-bergweg-kaart.jpg" alt="Terras van foodhal Station Bergweg in het voormalige treinstation aan de Hofbogen, Rotterdam-Noord">
+    </a>
+    <div class="tags">
+      <span class="tag">Foodhal</span>
+      <span class="tag">Borrelplek</span>
+      <span class="tag gebied">Noord</span>
+    </div>
+    <h2><a href="posts/station-bergweg.html">Station Bergweg: borrelen waar vroeger de trein stopte</a></h2>
+    <p>Het oude stationsgebouw op de Hofbogen is nu een foodhal met negen keukens, drie bars en een apart restaurant. En bijna niemand kent het terras erboven, precies waar vroeger de trein stopte.</p>
+    <a class="lees" href="posts/station-bergweg.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <article class="kaart" data-categorie="lunchplek delicatessen" data-gebied="centrum">
+    <a class="thumb" href="posts/little-italy.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/little-italy-kaart.jpg" alt="Gevel van Italiaanse lunchzaak Little Italy aan de Lombardkade in Rotterdam">
+    </a>
+    <div class="tags">
+      <span class="tag">Lunchplek</span>
+      <span class="tag">Delicatessen</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <h2><a href="posts/little-italy.html">Little Italy &mdash; puur Itali&euml; tussen de parkeergarage en de Meent</a></h2>
+    <p>Van buiten loop je er zo voorbij. Van binnen: verse broodjes, plaatpizza en het ultieme vakantiegevoel. Rotterdammers weten het al lang &mdash; de rij begint om 11.45 uur.</p>
+    <a class="lees" href="posts/little-italy.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <article class="kaart" data-categorie="kidsproof" data-gebied="centrum">
+    <a class="thumb" href="posts/rif010.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/rif010-kaart.jpg" alt="Surfers op de urban surfpool Rif010 achter de Markthal in Rotterdam">
+    </a>
+    <div class="tags">
+      <span class="tag">Kidsproof</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <h2><a href="posts/rif010.html">Surfen achter de Markthal &mdash; RiF010</a></h2>
+    <p>De eerste surfpool ter wereld midden in een stad. En de beste plek om &rsquo;m te bekijken, met een bubble tea uit de Markthal erbij.</p>
+    <a class="lees" href="posts/rif010.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <article class="kaart" data-categorie="restaurant" data-gebied="centrum">
+    <a class="thumb" href="posts/due-tonino.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/due-tonino-kaart.jpg" alt="Terras van Italiaans restaurant Due Tonino aan de Goudsesingel in Rotterdam">
+    </a>
+    <div class="tags">
+      <span class="tag">Restaurant</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <h2><a href="posts/due-tonino.html">Due Tonino &mdash; mijn nummer &eacute;&eacute;n restauranttip in Rotterdam</a></h2>
+    <p>Al ruim dertig jaar een &eacute;chte Italiaan aan de Goudsesingel, met een gastheer die vroeger bij het Scapino Ballet danste. Van zwarte risotto tot ossobuco &mdash; nog nooit teleurgesteld.</p>
+    <a class="lees" href="posts/due-tonino.html">Lees het verhaal &rarr;</a>
+  </article>
+
+  <p class="leeg" hidden>Nog geen verhalen in deze combinatie &mdash; die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/">@rotterdambyferry</a> voor het laatste nieuws.</p>
+
+</main>
+
+<!-- INCLUDE:footer -->
+
+<script>
+  // Eenvoudige filters: één actieve categorie + één actief gebied
+  const actief = { categorie: "alles", gebied: "alles" };
+  const knoppen = document.querySelectorAll(".filterknop");
+  const kaarten = document.querySelectorAll(".kaart");
+  const leeg = document.querySelector(".leeg");
+
+  knoppen.forEach(function (knop) {
+    knop.addEventListener("click", function () {
+      const soort = knop.dataset.filter;
+      actief[soort] = knop.dataset.waarde;
+      knoppen.forEach(function (k) {
+        if (k.dataset.filter === soort) {
+          k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+        }
+      });
+      let zichtbaar = 0;
+      kaarten.forEach(function (kaart) {
+        const catOk = actief.categorie === "alles" || (kaart.dataset.categorie || "").split(" ").includes(actief.categorie);
+        const gebOk = actief.gebied === "alles" || (kaart.dataset.gebied || "").split(" ").includes(actief.gebied);
+        const toon = catOk && gebOk;
+        kaart.hidden = !toon;
+        if (toon) zichtbaar++;
+      });
+      leeg.hidden = zichtbaar > 0;
+    });
+  });
+</script>
+
+<script src="assets/header.js" defer></script>
+
+</body>
+</html>

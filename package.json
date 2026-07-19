@@ -1,0 +1,8 @@
+{
+  "name": "rotterdambyferry",
+  "private": true,
+  "description": "Statische site rotterdambyferry.nl — bouw de root-HTML op uit /src met: npm run build",
+  "scripts": {
+    "build": "node build.js"
+  }
+}

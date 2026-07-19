@@ -4,9 +4,13 @@ Een nieuwe post kost drie stappen: (1) post schrijven, (2) kaart op de
 homepage zetten, (3) publiceren. Een foto erbij? Zie het kopje "Foto's"
 onderaan.
 
+> **Goed om te weten:** je werkt altijd in de map `src`. De html-bestanden
+> daarbuiten (in de hoofdmap en in `posts`) worden automatisch opgebouwd —
+> daar hoef (en mag) je niets in te veranderen.
+
 ## Stap 1 — De post zelf
 
-1. Ga naar de map `posts` en kopieer het bestand `_template.html`.
+1. Ga naar de map `src\posts` en kopieer het bestand `_template.html`.
 2. Geef de kopie een korte naam zonder spaties of hoofdletters,
    bijvoorbeeld `rif010.html` of `bruine-kroegen-delfshaven.html`.
 3. Open het bestand en vervang alles wat tussen [BLOKHAKEN] staat door
@@ -18,7 +22,7 @@ onderaan.
 
 ## Stap 2 — Kaart op de homepage
 
-Open `index.html` en zoek de regel `<main class="grid" id="verhalen">`.
+Open `src\index.html` en zoek de regel `<main class="grid" id="verhalen">`.
 Plak daaronder dit blokje en vul het in:
 
 ```html
@@ -75,8 +79,10 @@ Open Claude Code in deze map en zeg simpelweg:
 > "Ik heb een nieuwe post geschreven, controleer 'm even en publiceer."
 
 Claude controleert dan of alles klopt en zet het online. (Voor wie het
-zelf wil: `git add -A`, dan `git commit -m "Nieuwe post: titel"`, dan
-`git push`. Na een minuutje staat het live.)
+zelf wil: eerst `npm run build` — dat plakt de header en footer in je
+nieuwe post en zet hem klaar in de map `posts` — dan `git add -A`, dan
+`git commit -m "Nieuwe post: titel"`, dan `git push`. Na een minuutje
+staat het live.)
 
 ## Foto's
 
@@ -98,7 +104,8 @@ homepage een kleine versie. Zo werkt het:
 
 ## Tips
 
-- Bekijk je post eerst lokaal: dubbelklik op het html-bestand, dan
-  opent hij in je browser.
+- Bekijk je post eerst lokaal: draai `npm run build` (of vraag Claude),
+  en dubbelklik dan op het html-bestand in de map `posts` (dus niet die
+  in `src` — daar ontbreken de header en footer nog).
 - Een nieuwe categorie of gebied toevoegen aan de filters? Vraag het
-  aan Claude Code, dat is een kleine aanpassing in `index.html`.
+  aan Claude Code, dat is een kleine aanpassing in `src\index.html`.
