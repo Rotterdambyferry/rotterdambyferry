@@ -103,8 +103,9 @@ homepage een kleine versie. Zo werkt het:
 
 ## Tips
 
-- Bekijk je post eerst lokaal: draai `npm run build` (of vraag Claude),
-  en dubbelklik dan op het html-bestand in de map `posts` (dus niet die
-  in `src` — daar ontbreken de header en footer nog).
+- Bekijk je post eerst lokaal: dubbelklik op `start-preview.bat` in de
+  projectmap. Die bouwt de site, start een mini-webservertje en opent je
+  browser vanzelf op de homepage — klik daar je nieuwe post aan. Klaar
+  met kijken? Sluit gewoon het zwarte venster.
 - Een nieuwe categorie of gebied toevoegen aan de filters? Vraag het
   aan Claude Code, dat is een kleine aanpassing in `src\index.html`.

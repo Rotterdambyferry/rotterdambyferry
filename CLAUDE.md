@@ -79,7 +79,7 @@ Een foto toevoegen aan de rotatie:
 
 ## Lokaal bekijken en deployen
 
-- Lokaal bekijken: eerst `npm run build` draaien (als er iets in `src/` of `partials/` is aangepast), daarna het HTML-bestand in de repo-root direct in de browser openen (dubbelklikken); er is geen dev-server nodig.
+- Lokaal bekijken: dubbelklik op `start-preview.bat` — die draait eerst de build, start `preview-server.js` (mini Node-server, poort 8000) en opent de browser op http://localhost:8000/. Stoppen = het terminalvenster sluiten. Let op: sinds de home-links naar `/` wijzen (juli 2026) werkt doorklikken naar de homepage niet meer bij direct dubbelklikken op een HTML-bestand; via de preview-server werkt alles wél zoals op de echte site.
 - Deployen = pushen naar `main` (vergeet niet eerst te builden zodat de root-HTML actueel is): GitHub Pages (repo `Rotterdambyferry/rotterdambyferry`, "Deploy from a branch") publiceert automatisch, live na ± een minuut op rotterdambyferry.nl.
 - Let op (Windows): `git push` via PowerShell draaien, niet via de Bash-tool — credentials werken daar niet betrouwbaar.
 - Verwijder nooit het `CNAME`-bestand; dat koppelt het custom domein.
