@@ -371,25 +371,7 @@ a:focus-visible, button:focus-visible {
   text-transform: uppercase;
   margin-bottom: 0.4rem;
 }
-/* ---------- Deelknoppen ---------- */
-.delen {
-  border-top: 3px solid var(--ink);
-  margin-top: 2.5rem;
-  padding-top: 1.2rem;
-}
-.delen .kop {
-  font-family: "Archivo", sans-serif;
-  font-weight: 800;
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 0.8rem;
-}
-.delen .knoppen {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
+/* ---------- Deelknoppen (staan in de footer, zie partials/footer.html) ---------- */
 .deelknop {
   display: inline-flex;
   align-items: center;
@@ -440,6 +422,52 @@ a:focus-visible, button:focus-visible {
   font-size: 0.9rem;
 }
 .site-footer a { color: var(--papier); }
+
+/* Deelknoppen + terug-link bovenin de footer */
+.footer-delen {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 1.6rem;
+  border-bottom: 1px solid var(--staal);
+}
+.footer-delen .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.footer-delen .knoppen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.site-footer .deelknop {
+  border-color: var(--papier);
+  color: var(--papier);
+}
+.site-footer .deelknop.whatsapp {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.site-footer .deelknop.whatsapp:hover {
+  background: transparent;
+  border-color: var(--papier);
+}
+.site-footer .deelknop.kopieer:hover {
+  border-color: var(--groen);
+  color: var(--papier);
+}
+.footer-terug {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-left: auto;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .kaart { transition: transform 0.15s ease; }

@@ -1,4 +1,5 @@
-// Deelknoppen onderaan elke blogpost: WhatsApp delen + link kopiëren.
+// Deelknoppen in de footer (op elke pagina): WhatsApp delen + link kopiëren.
+// De knoppen zelf staan in partials/footer.html.
 (function () {
   // De canonical-link bevat het echte webadres van de post; handig als
   // de pagina lokaal (vanaf de eigen computer) wordt bekeken.
