@@ -125,13 +125,25 @@
     function popupHtml(p) {
       var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
       tags += " &middot; " + (LABELS[p.gebied] || p.gebied);
-      var html = '<p class="popup-naam">' + p.naam + "</p>" +
-                 '<p class="popup-tags">' + tags + "</p>" +
-                 '<p class="popup-wijk">' + p.wijk + "</p>";
-      if (p.post) {
-        html += '<a class="popup-link" href="' + p.post + '">Lees het verhaal &rarr;</a>';
+      var tekst = '<p class="popup-naam">' + p.naam + "</p>" +
+                  '<p class="popup-tags">' + tags + "</p>" +
+                  '<p class="popup-wijk">' + p.wijk + "</p>";
+      if (p.teaser) {
+        tekst += '<p class="popup-teaser">' + p.teaser + "</p>";
       }
-      return html;
+      // Met foto: foto bovenin, knop onderaan. Zonder foto (oudere entries):
+      // de gewone tekstweergave met een simpele link.
+      if (p.image) {
+        if (p.post) {
+          tekst += '<a class="popup-knop" href="' + p.post + '">Lees het verhaal &rarr;</a>';
+        }
+        return '<img class="popup-foto" src="' + p.image + '" alt="' + p.naam + '">' +
+               '<div class="popup-tekst">' + tekst + "</div>";
+      }
+      if (p.post) {
+        tekst += '<a class="popup-link" href="' + p.post + '">Lees het verhaal &rarr;</a>';
+      }
+      return '<div class="popup-tekst">' + tekst + "</div>";
     }
 
     function toonPlekken() {
@@ -151,7 +163,9 @@
       leeg.hidden = zichtbaar.length > 0;
       if (zichtbaar.length > 0) {
         var groep = L.featureGroup(zichtbaar);
-        map.fitBounds(groep.getBounds().pad(0.2), { maxZoom: 15 });
+        // animate: false — anders kan een direct volgende invalidateSize
+        // (load-event/ResizeObserver) de zoom-animatie afbreken
+        map.fitBounds(groep.getBounds().pad(0.2), { maxZoom: 14, animate: false });
       }
     }
 
@@ -169,12 +183,24 @@
             fillColor: "#1D7A46",
             fillOpacity: 1
           });
-          marker.bindPopup(popupHtml(p));
+          marker.bindPopup(popupHtml(p), { maxWidth: 300, minWidth: p.image ? 300 : 200 });
           plekken.push({ data: p, marker: marker });
         });
         toonPlekken();
         // Nogmaals passend maken zodra alles (fonts, layout) geladen is
         window.addEventListener("load", toonPlekken);
+        // En opnieuw passend maken als het kaartvak van afmeting verandert
+        // (bijv. telefoon draaien, of het vak kreeg pas laat zijn echte maat)
+        if (window.ResizeObserver) {
+          var kaartDiv = document.getElementById("plattegrond");
+          var vorigeBreedte = kaartDiv.offsetWidth;
+          new ResizeObserver(function () {
+            if (kaartDiv.offsetWidth !== vorigeBreedte) {
+              vorigeBreedte = kaartDiv.offsetWidth;
+              toonPlekken();
+            }
+          }).observe(kaartDiv);
+        }
       })
       .catch(function () {
         leeg.hidden = false;

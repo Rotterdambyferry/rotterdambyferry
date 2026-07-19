@@ -451,7 +451,15 @@ a:focus-visible, button:focus-visible {
   background: var(--ink);
   box-shadow: none;
 }
-.leaflet-popup-content { margin: 0.8rem 1rem; line-height: 1.45; }
+.leaflet-popup-content { margin: 0; line-height: 1.45; }
+.popup-tekst { padding: 0.8rem 1rem; }
+.popup-foto {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-bottom: 2px solid var(--ink);
+}
 .popup-naam {
   font-family: "Archivo", sans-serif;
   font-weight: 800;
@@ -472,11 +480,30 @@ a:focus-visible, button:focus-visible {
   color: var(--staal);
   margin: 0 0 0.45rem;
 }
-.popup-link {
+.popup-teaser {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--staal);
+  margin: 0 0 0.6rem;
+}
+/* .leaflet-container erbij: anders wint Leaflets eigen linkkleur (blauw) */
+.leaflet-container a.popup-link {
   font-family: "Archivo", sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--groen);
   text-decoration: none;
 }
-.popup-link:hover { text-decoration: underline; }
+.leaflet-container a.popup-link:hover { text-decoration: underline; }
+.leaflet-container a.popup-knop {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--papier);
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  margin-top: 0.15rem;
+}
+.leaflet-container a.popup-knop:hover { background: var(--groen); color: var(--papier); }

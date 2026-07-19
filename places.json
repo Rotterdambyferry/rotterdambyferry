@@ -6,7 +6,9 @@
     "categorie": ["lunchplek", "delicatessen"],
     "gebied": "centrum",
     "wijk": "Stadsdriehoek",
-    "post": "posts/little-italy.html"
+    "post": "posts/little-italy.html",
+    "image": "assets/img/little-italy.jpg",
+    "teaser": "Supermarkt, broodjeszaak én delicatessenzaak: allemaal een beetje."
   },
   {
     "naam": "RiF010",
@@ -15,7 +17,9 @@
     "categorie": ["kidsproof"],
     "gebied": "centrum",
     "wijk": "Stadsdriehoek",
-    "post": "posts/rif010.html"
+    "post": "posts/rif010.html",
+    "image": "assets/img/rif010.jpg",
+    "teaser": "Surfen in het centrum? Ga maar eens kijken achter de Markthal."
   },
   {
     "naam": "Due Tonino",
@@ -24,7 +28,9 @@
     "categorie": ["restaurant"],
     "gebied": "centrum",
     "wijk": "Goudsesingel",
-    "post": "posts/due-tonino.html"
+    "post": "posts/due-tonino.html",
+    "image": "assets/img/due-tonino.jpg",
+    "teaser": "Mijn nummer één restauranttip: een échte Italiaan aan de Goudsesingel."
   },
   {
     "naam": "Station Bergweg",
@@ -33,7 +39,9 @@
     "categorie": ["foodhal", "borrelplek"],
     "gebied": "noord",
     "wijk": "Bergpolder",
-    "post": "posts/station-bergweg.html"
+    "post": "posts/station-bergweg.html",
+    "image": "assets/img/bergweg_foodhal_blog.jpg",
+    "teaser": "Het oude station op de Hofbogen is nu een foodhal met negen keukens."
   },
   {
     "naam": "Smickel Inn — Balkon van Europa",
@@ -42,7 +50,9 @@
     "categorie": ["dagje-uit"],
     "gebied": "maasvlakte",
     "wijk": "Maasvlakte",
-    "post": "posts/balkon-van-europa.html"
+    "post": "posts/balkon-van-europa.html",
+    "image": "assets/img/balkon-van-europa-terras.jpg",
+    "teaser": "Waar het land ophoudt en de zeeschepen vlak langs het terras varen."
   },
   {
     "naam": "DÂK Rotterdam",
@@ -51,6 +61,8 @@
     "categorie": ["borrelplek"],
     "gebied": "centrum",
     "wijk": "Cool (Westblaak)",
-    "post": "posts/dak-rotterdam.html"
+    "post": "posts/dak-rotterdam.html",
+    "image": "assets/img/dak-rotterdam-vuurtje.jpg",
+    "teaser": "Bbq'en op een dak in de stad: ieder jaar weer iets magisch."
   }
 ]

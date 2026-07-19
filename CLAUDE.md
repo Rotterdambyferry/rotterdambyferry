@@ -14,7 +14,7 @@ De eigenaar (Ferry) is geen programmeur: leg stappen uit in gewone taal, doe kle
 - `posts/*.html` — één los HTML-bestand per blogpost; `posts/_template.html` is het kopieersjabloon met [BLOKHAKEN]-placeholders.
 - `over.html` — over-pagina.
 - `kaart.html` — filterbare kaart van Rotterdam (Leaflet.js + CARTO dark tiles via CDN); de plekken komen uit `places.json`, de filterchips werken zoals op de homepage.
-- `places.json` — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post. Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
+- `places.json` — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post, plus optioneel `image` (pad naar de bestaande hero-foto van de post, voor in de popup) en `teaser` (één zin van max ± 80 tekens uit het begin van het verhaal). Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
 - `assets/style.css` — de volledige huisstijl (er is geen andere CSS; ook de kaartpagina-stijlen staan hierin).
 - `assets/img/` — verkleinde foto's die mee gepubliceerd worden.
 - `sitemap.xml`, `robots.txt`, `CNAME` (custom domein) — voor GitHub Pages/SEO.
