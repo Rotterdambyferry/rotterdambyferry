@@ -31,6 +31,7 @@ De eigenaar (Ferry) is geen programmeur: leg stappen uit in gewone taal, doe kle
 Sinds juli 2026 staan header en footer één keer in `partials/` in plaats van gekopieerd in elke pagina. Bewust géén Jekyll (geen Ruby-afhankelijkheid, geen permalink-risico voor de Google-indexering): de gepubliceerde bestanden in de repo-root blijven gewone, complete HTML die GitHub Pages ongewijzigd serveert.
 
 - Werkwijze: bewerk `src/...`, draai daarna `npm run build` (of `node build.js`) in de projectmap. Het script vervangt elke `<!-- INCLUDE:naam -->`-marker door `partials/naam.html` (met daarin `{{root}}` → padvoorvoegsel en `{{deel-url}}` → URL-gecodeerd webadres van de pagina) en schrijft het resultaat naar dezelfde padnamen in de repo-root.
+- Sinds augustus 2026 plakt de build óók de volledige `assets/style.css` inline in elke pagina (de `<link rel="stylesheet">` in `src/` wordt vervangen door een `<style>`-blok): geen render-blocking CSS-download meer. Gevolg: **ook na een wijziging in `style.css` moet je `npm run build` draaien**, anders staat de oude stijl nog in de gepubliceerde HTML. `assets/style.css` blijft de enige bron.
 - Bewerk de root-HTML nooit direct: de volgende build overschrijft die wijzigingen. Wijzigingen aan header of footer doe je in `partials/`.
 - Node.js (v24 LTS) is in juli 2026 op deze machine geïnstalleerd voor deze buildstap; het script gebruikt alleen de ingebouwde `fs`/`path`-modules, er zijn geen npm-packages.
 - Controle na een refactor aan de build zelf: na `npm run build` moet `git status` geen onverwachte wijzigingen aan de root-HTML tonen.
@@ -40,7 +41,7 @@ Sinds juli 2026 staan header en footer één keer in `partials/` in plaats van g
 Alle kleuren staan als CSS-variabelen in `assets/style.css`:
 
 - `--papier: #FAF9F5` (licht beton, achtergrond), `--ink: #15191B` (havenstaal-zwart), `--staal: #5C666B` (grijs voor bijtekst), `--groen: #1D7A46` (Rotterdams groen, accent/links), `--groen-licht: #E7F2EB`, `--lijn: #E3E1D9`.
-- Fonts via Google Fonts: **Archivo** (600–900) voor koppen, labels, knoppen en meta; **Source Serif 4** voor lopende tekst.
+- Fonts (sinds augustus 2026 zelf gehost in `assets/fonts/`, niet meer via Google Fonts — scheelt render-blocking externe domeinen): **Archivo** (variabel, 600–900) voor koppen, labels, knoppen en meta; **Source Serif 4** (variabel, 400–600 + cursief) voor lopende tekst. De `@font-face`-regels staan bovenin `style.css` met absolute paden (`/assets/fonts/...`).
 - Kenmerkend: harde 2–3px zwarte randen (geen schaduw/afronding behalve de pill-filterknoppen), uppercase labels met letter-spacing (`.tag`), donkere footer.
 - Layoutbreedtes: `--breedte: 1080px` (site), `--leesbreedte: 680px` (artikel).
 

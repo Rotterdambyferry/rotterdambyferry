@@ -17,6 +17,13 @@ const path = require("path");
 const bronmap = path.join(__dirname, "src");
 const partialsmap = path.join(__dirname, "partials");
 
+// De volledige huisstijl wordt in elke pagina geplakt (in plaats van een
+// los te downloaden css-bestand): dat scheelt een blokkerende download
+// vóór de eerste weergave. assets/style.css blijft de enige bron — na een
+// wijziging daarin dus wel opnieuw builden.
+const stijl = fs.readFileSync(path.join(__dirname, "assets", "style.css"), "utf8").trimEnd();
+const stijlLink = /<link rel="stylesheet" href="(?:\.\.\/)*assets\/style\.css">/;
+
 // Lees alle partials één keer in; haal witruimte aan het einde weg zodat de
 // marker (die op zijn eigen regel staat) netjes vervangen wordt.
 const partials = {};
@@ -55,7 +62,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const paginaUrl = SITE + (relatiefUrl === "index.html" ? "" : relatiefUrl);
 
   const inhoud = fs.readFileSync(bronbestand, "utf8");
-  const resultaat = inhoud.replace(/<!-- INCLUDE:([a-z-]+) -->/g, (marker, naam) => {
+  let resultaat = inhoud.replace(/<!-- INCLUDE:([a-z-]+) -->/g, (marker, naam) => {
     if (!(naam in partials)) {
       throw new Error(`Onbekende partial "${naam}" in ${relatief} — bestaat partials/${naam}.html wel?`);
     }
@@ -63,6 +70,9 @@ for (const bronbestand of verzamelHtml(bronmap)) {
       .replace(/\{\{root\}\}/g, root)
       .replace(/\{\{deel-url\}\}/g, encodeURIComponent(paginaUrl));
   });
+
+  // Vervang de stylesheet-link door de volledige stijl, inline in de pagina.
+  resultaat = resultaat.replace(stijlLink, "<style>\n" + stijl + "\n  </style>");
 
   const doel = path.join(__dirname, relatief);
   fs.mkdirSync(path.dirname(doel), { recursive: true });

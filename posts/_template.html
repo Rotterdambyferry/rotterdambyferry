@@ -10,10 +10,679 @@
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/img/favicon-192x192.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+/* Rotterdam by Ferry — huisstijl
+   Palet: licht beton, havenstaal-zwart, Rotterdams groen */
+
+/* ---------- Fonts (zelf gehost, sinds aug 2026 niet meer via Google Fonts:
+   scheelt twee externe domeinen in het kritieke laadpad). Variabele fonts:
+   één bestand per familie dekt alle gebruikte gewichten. De paden beginnen
+   met / omdat deze CSS bij de build in elke pagina wordt geplakt (ook in
+   posts/) en dan altijd vanaf de siteroot moet verwijzen. ---------- */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 600 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(/assets/fonts/archivo-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(/assets/fonts/source-serif-4-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/source-serif-4-italic-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --papier: #FAF9F5;
+  --ink: #15191B;
+  --staal: #5C666B;
+  --groen: #1D7A46;
+  --groen-licht: #E7F2EB;
+  --lijn: #E3E1D9;
+  --breedte: 1080px;
+  --leesbreedte: 680px;
+}
+
+* { box-sizing: border-box; }
+
+/* Bij springen naar een anker niet onder de sticky header belanden */
+html { scroll-padding-top: 5rem; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+h1, h2, h3, .display {
+  font-family: "Archivo", "Arial Black", sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+}
+
+a { color: var(--groen); }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--groen);
+  outline-offset: 2px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1200; /* boven de Leaflet-knoppen op de kaartpagina (z-index 1000) */
+  border-bottom: 3px solid var(--ink);
+  background: var(--papier);
+}
+/* Subtiele schaduw zodra er gescrold is (klasse gezet door assets/header.js) */
+.site-header.is-gescrold {
+  box-shadow: 0 4px 10px rgba(21, 25, 27, 0.12);
+}
+.site-header .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.wordmark {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+.wordmark .hart { color: var(--groen); }
+.site-header nav a {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--ink);
+  margin-left: 1.25rem;
+}
+.site-header nav a:hover { color: var(--groen); }
+/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt */
+@media (max-width: 640px) {
+  .site-header .inner {
+    padding: 0.55rem 1rem;
+    row-gap: 0.1rem;
+  }
+  .wordmark {
+    font-size: 1.02rem;
+    line-height: 1.35;
+  }
+  .site-header nav {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  .site-header nav a {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-left: 0.85rem;
+  }
+  .site-header nav a:first-child { margin-left: 0; }
+}
+
+/* ---------- Hero met achtergrondfoto ---------- */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(300px, 42vw, 440px);
+  background-color: var(--ink);
+  overflow: hidden;
+}
+/* De foto is een echt <img> (geen CSS-achtergrond) zodat de browser via
+   srcset op mobiel de kleine variant kan laden. Hij vult de hele hero. */
+.hero-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(21, 25, 27, 0.78) 0%,
+    rgba(21, 25, 27, 0.35) 45%,
+    rgba(21, 25, 27, 0) 75%);
+}
+.hero .inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--breedte);
+  margin: 0 auto;
+  width: 100%;
+  padding: 5rem 1.25rem 1.9rem;
+}
+.hero h1 {
+  font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 0.75rem;
+}
+.hero p {
+  max-width: 52ch;
+  font-size: clamp(1.15rem, 2vw, 1.3rem);
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+}
+
+/* ---------- Havenlabels (categorie & gebied) ---------- */
+.tag {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+}
+.tag.gebied {
+  border-color: var(--groen);
+  color: var(--groen);
+  background: var(--groen-licht);
+}
+
+/* ---------- Filters ---------- */
+.filters {
+  border-top: 1px solid var(--lijn);
+  border-bottom: 1px solid var(--lijn);
+  padding: 1.4rem 0 1.5rem;
+  margin-bottom: 2rem;
+  background: var(--papier);
+}
+.filters .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+.filters .groep {
+  margin-bottom: 1rem;
+}
+.filters .groep:last-child { margin-bottom: 0; }
+.filters .label {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--staal);
+  margin-bottom: 0.5rem;
+}
+.filters .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+/* Op mobiel niet wrappen maar horizontaal scrollen, met een fade rechts */
+@media (max-width: 640px) {
+  .filters .groep { position: relative; }
+  .filters .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: 2.5rem;
+  }
+  .filters .chips::-webkit-scrollbar { display: none; }
+  .filterknop {
+    flex-shrink: 0;
+    /* Groter tikdoel op touchscreens (PageSpeed-advies): minimaal 44px
+       hoog. Zelfde pilvorm, alleen wat meer lucht. */
+    min-height: 44px;
+    padding: 0.35rem 1rem;
+  }
+  .filters .groep::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -1.25rem;
+    bottom: 0;
+    width: 3rem;
+    background: linear-gradient(to right, rgba(250, 249, 245, 0), var(--papier));
+    pointer-events: none;
+  }
+}
+.filterknop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 999px;
+}
+.filterknop[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--papier);
+}
+.filterknop:hover { border-color: var(--groen); color: var(--groen); }
+.filterknop[aria-pressed="true"]:hover { color: var(--papier); }
+
+/* ---------- Postkaarten ---------- */
+.grid {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.kaart[hidden] { display: none; }
+.kaart {
+  border: 2px solid var(--ink);
+  background: #fff;
+  padding: 1.4rem 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.kaart .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.kaart h2 { font-size: 1.45rem; margin: 0; }
+.kaart h2 a { color: var(--ink); text-decoration: none; }
+.kaart h2 a:hover { color: var(--groen); }
+.kaart p { margin: 0; color: var(--staal); font-size: 1rem; }
+.kaart .lees {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-top: auto;
+}
+.kaart .thumb {
+  display: block;
+  margin: -1.4rem -1.4rem 0;
+  border-bottom: 2px solid var(--ink);
+}
+.kaart .thumb img {
+  display: block;
+  width: 100%;
+  /* height: auto is nodig omdat de img-tags een vast width/height-attribuut
+     hebben (tegen layoutverspringing): zonder deze regel zou dat attribuut
+     de hoogte bepalen en wint het van de aspect-ratio hieronder. */
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.kaart.binnenkort { border-style: dashed; background: transparent; }
+.kaart.binnenkort .status {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
+.leeg {
+  grid-column: 1 / -1;
+  color: var(--staal);
+  font-style: italic;
+}
+
+/* ---------- Artikel ---------- */
+.artikel {
+  max-width: var(--leesbreedte);
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+.artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.artikel h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  max-width: 20ch;
+}
+.artikel .intro { font-size: 1.25rem; }
+.artikel .meta {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.85rem;
+  color: var(--staal);
+  margin-bottom: 2rem;
+}
+.artikel p { margin: 0 0 1.3em; }
+.artikel .foto {
+  margin: 0 0 2rem;
+}
+.artikel .foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+}
+.artikel .foto figcaption {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+  margin-top: 0.5rem;
+}
+/* ---------- Post-foto & post-video (volle artikelbreedte, met onderschrift) ---------- */
+.post-foto,
+.post-video {
+  margin: 2rem 0;
+}
+.post-foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+}
+.post-video .video-frame {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+}
+.post-video iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.post-foto figcaption,
+.post-video figcaption {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--staal);
+  padding: 0.55rem 0 0.9rem;
+  border-bottom: 1px solid var(--lijn);
+}
+.praktisch {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+  font-size: 1rem;
+}
+.praktisch .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+/* ---------- Deelknoppen (staan in de footer, zie partials/footer.html) ---------- */
+.deelknop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+.deelknop svg { flex-shrink: 0; }
+.deelknop.whatsapp {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.deelknop.whatsapp:hover { background: var(--ink); border-color: var(--ink); }
+.deelknop.kopieer:hover { border-color: var(--groen); color: var(--groen); }
+
+.terug {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--papier);
+}
+.site-footer .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+}
+.site-footer a { color: var(--papier); }
+
+/* Deelknoppen + terug-link bovenin de footer */
+.footer-delen {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 1.6rem;
+  border-bottom: 1px solid var(--staal);
+}
+.footer-delen .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.footer-delen .knoppen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.site-footer .deelknop {
+  border-color: var(--papier);
+  color: var(--papier);
+}
+.site-footer .deelknop.whatsapp {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.site-footer .deelknop.whatsapp:hover {
+  background: transparent;
+  border-color: var(--papier);
+}
+.site-footer .deelknop.kopieer:hover {
+  border-color: var(--groen);
+  color: var(--papier);
+}
+.footer-terug {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-left: auto;
+}
+/* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
+   leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.
+   Op de homepage en kaartpagina is de content zelf 1080px, daar klopt het al. */
+body:has(.artikel) .footer-delen,
+body:has(.artikel) .site-footer .inner {
+  max-width: var(--leesbreedte);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kaart { transition: transform 0.15s ease; }
+  .kaart:hover { transform: translateY(-3px); }
+}
+
+/* ---------- Kaartpagina (kaart.html) ---------- */
+.kaart-kop {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+.kaart-kop h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); }
+.kaart-kop p {
+  color: var(--staal);
+  margin: 0 0 0.5rem;
+  max-width: 60ch;
+}
+.kaart-sectie {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+#plattegrond {
+  height: 62vh;
+  min-height: 380px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+}
+.kaart-sectie .leeg { margin-top: 1rem; }
+/* Clustericoon: grotere versie van de losse pin, met het aantal erin */
+.cluster-pin {
+  background: var(--groen);
+  border: 2px solid #FAF9F5;
+  border-radius: 50%;
+  color: #FAF9F5;
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Leaflet-popup in huisstijl: harde randen, geen afronding of schaduw */
+.leaflet-popup-content-wrapper {
+  background: var(--papier);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+.leaflet-popup-tip {
+  background: var(--ink);
+  box-shadow: none;
+}
+.leaflet-popup-content { margin: 0; line-height: 1.45; }
+/* Sluitkruisje: eigen ronde knop met donkere achtergrond — het kale kruisje
+   van Leaflet zelf is bovenop een lichte of drukke popup-foto bijna onzichtbaar */
+.leaflet-container a.leaflet-popup-close-button {
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 20px;
+  line-height: 32px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.leaflet-container a.leaflet-popup-close-button:focus,
+.leaflet-container a.leaflet-popup-close-button:active {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+.popup-tekst { padding: 0.8rem 1rem; }
+.popup-foto {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-bottom: 2px solid var(--ink);
+}
+.popup-naam {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+.popup-tags {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--staal);
+  margin: 0 0 0.35rem;
+}
+.popup-wijk {
+  font-size: 0.9rem;
+  color: var(--staal);
+  margin: 0 0 0.45rem;
+}
+.popup-teaser {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--staal);
+  margin: 0 0 0.6rem;
+}
+/* .leaflet-container erbij: anders wint Leaflets eigen linkkleur (blauw) */
+.leaflet-container a.popup-link {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--groen);
+  text-decoration: none;
+}
+.leaflet-container a.popup-link:hover { text-decoration: underline; }
+.leaflet-container a.popup-knop {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--papier);
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  margin-top: 0.15rem;
+}
+/* Hover alleen op apparaten die echt kunnen hoveren (muis/trackpad) —
+   op touchscreens blijft een hover-state anders "hangen" na een tik */
+@media (hover: hover) and (pointer: fine) {
+  .leaflet-container a.popup-knop:hover { background: var(--groen); color: var(--papier); }
+  .leaflet-container a.leaflet-popup-close-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+  }
+}
+/* Korte visuele feedback tijdens de tik zelf, verdwijnt bij loslaten */
+.leaflet-container a.popup-knop:active { background: var(--groen); color: var(--papier); }
+  </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQS8RQWBE9"></script>
   <script>

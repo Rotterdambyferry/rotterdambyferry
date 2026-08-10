@@ -18,9 +18,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/img/favicon-192x192.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin="">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha256-YSWCMtmNZNwqex4CEw1nQhvFub2lmU7vcCKP+XVwwXA=" crossorigin="">
@@ -81,13 +78,16 @@
 
 <!-- INCLUDE:footer -->
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin=""></script>
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script defer src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin=""></script>
 <script>
   // De kaart: donkere CARTO-ondergrond met groene pins in de huisstijl.
   // De plekken komen uit places.json; de filterchips werken hetzelfde als
   // op de homepage (één actieve categorie + één actief gebied).
-  (function () {
+  // De Leaflet-scripts hierboven laden met defer (blokkeren het opbouwen
+  // van de pagina niet); daarom wacht dit script op DOMContentLoaded —
+  // op dat moment zijn defer-scripts gegarandeerd uitgevoerd.
+  document.addEventListener("DOMContentLoaded", function () {
     var LABELS = {
       restaurant: "Restaurant", lunchplek: "Lunchplek", "bruine-kroeg": "Bruine kroeg",
       kidsproof: "Kidsproof", delicatessen: "Delicatessen", foodhal: "Foodhal",
@@ -236,7 +236,7 @@
         toonPlekken();
       });
     });
-  })();
+  });
 </script>
 
 <script src="assets/header.js" defer></script>
