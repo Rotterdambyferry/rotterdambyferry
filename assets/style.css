@@ -281,6 +281,10 @@ a:focus-visible, button:focus-visible {
 .kaart .thumb img {
   display: block;
   width: 100%;
+  /* height: auto is nodig omdat de img-tags een vast width/height-attribuut
+     hebben (tegen layoutverspringing): zonder deze regel zou dat attribuut
+     de hoogte bepalen en wint het van de aspect-ratio hieronder. */
+  height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
 }
@@ -325,6 +329,7 @@ a:focus-visible, button:focus-visible {
   display: block;
   width: 100%;
   height: auto;
+  object-fit: cover;
   border: 2px solid var(--ink);
 }
 .artikel .foto figcaption {
@@ -342,6 +347,7 @@ a:focus-visible, button:focus-visible {
   display: block;
   width: 100%;
   height: auto;
+  object-fit: cover;
   border: 2px solid var(--ink);
 }
 .post-video .video-frame {
