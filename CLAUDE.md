@@ -19,7 +19,7 @@ De eigenaar (Ferry) is geen programmeur: leg stappen uit in gewone taal, doe kle
 - `posts/*.html` — één los HTML-bestand per blogpost; `src/posts/_template.html` is het kopieersjabloon met [BLOKHAKEN]-placeholders.
 - `over.html` — over-pagina.
 - `kaart.html` — filterbare kaart van Rotterdam (Leaflet.js + Leaflet.markercluster + CARTO dark tiles via CDN); de plekken komen uit `places.json`, de filterchips werken zoals op de homepage. Overlappende pins clusteren tot een groene stip met aantal (klik = direct inzoomen, zonder animatie — geanimeerde zoom werd eerder afgebroken door invalidateSize).
-- `places.json` — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post, plus optioneel `image` (pad naar de bestaande hero-foto van de post, voor in de popup) en `teaser` (één zin van max ± 80 tekens uit het begin van het verhaal). Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
+- `places.json` — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post, plus optioneel `image` (pad naar de `-mobiel`-variant van de hero-foto van de post, voor in de kleine popup) en `teaser` (één zin van max ± 80 tekens uit het begin van het verhaal). Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
 - `assets/style.css` — de volledige huisstijl (er is geen andere CSS; ook de kaartpagina-stijlen staan hierin).
 - `assets/header.js` — zet bij scrollen de klasse `is-gescrold` op de sticky header (subtiele schaduw); wordt op elke pagina geladen vlak voor `</body>` en zit al in het postsjabloon. De header zelf is sticky via `position: sticky` in `style.css` (z-index 1200, boven de Leaflet-knoppen; op mobiel een compacte variant in de media query).
 - `assets/img/` — verkleinde foto's die mee gepubliceerd worden.
@@ -66,16 +66,16 @@ Bij elke nieuwe post het gebied bepalen aan de hand van de wijk waar de plek lig
 - **West**: Delfshaven, Spangen, Bospolder-Tussendijken, Middelland, Nieuwe Westen, Oud-Mathenesse, Schiemond.
 - **Maasvlakte**: het havengebied helemaal in het westen (Maasvlakte 1 en 2, Europoort) — geen woonwijk, wel een eigen gebied op de site.
 
-Foto's: originelen heten `*-origineel.jpg` en blijven lokaal (staan in `.gitignore`). In `assets/img/` komen twee verkleinde versies: `naam.jpg` (groot, in het artikel) en `naam-kaart.jpg` (16:10-thumbnail voor de homepagekaart). Er is geen Python op deze machine (Node.js wél, maar zonder image-packages) — verklein foto's met een PowerShell/.NET-oplossing (System.Drawing) of vraag anders.
+Foto's: originelen heten `*-origineel.jpg` en blijven lokaal (staan in `.gitignore`). In `assets/img/` komen drie verkleinde versies: `naam.jpg` (groot, in het artikel), `naam-kaart.jpg` (16:10-thumbnail voor de homepagekaart) en `naam-mobiel.jpg` (800px breed, voor telefoons — maak die met `.\maak-mobiele-fotos.ps1` in de projectmap; dat script slaat bestaande varianten over en kan dus altijd opnieuw draaien). Elke `<img>` in een artikel krijgt `srcset` (mobiel 800w + groot) en `sizes="(max-width: 720px) 100vw, 640px"`; de eerste foto (boven de vouw, meestal de LCP) krijgt `loading="eager" fetchpriority="high"`, alle foto's daaronder `loading="lazy"` — het patroon staat voorgebakken in `src/posts/_template.html`. Er is geen Python op deze machine (Node.js wél, maar zonder image-packages) — verklein foto's met een PowerShell/.NET-oplossing (System.Drawing) of vraag anders.
 
 ## Hero-foto's op de homepage
 
-De homepage heeft een hero met een roterende achtergrondfoto. Zonder JavaScript (en bij het allereerste bezoek) toont hij altijd `hero-skyline-euromast.jpg` (die staat hard in de HTML en is ook de og:image); bij herhaalbezoek kiest een klein inline script in `index.html` willekeurig een andere foto dan de vorige (onthouden via localStorage-sleutel `heroFoto`).
+De homepage heeft een hero met een roterende foto. Sinds augustus 2026 is dat een echt `<img class="hero-foto">` (absoluut gepositioneerd, `object-fit: cover`) in plaats van een CSS-achtergrond, zodat de browser via `srcset` op telefoons de kleine `-mobiel`-variant laadt; als LCP-afbeelding heeft hij `loading="eager"` en `fetchpriority="high"`. Zonder JavaScript (en bij het allereerste bezoek) toont hij altijd `hero-skyline-euromast.jpg` (die staat hard in de HTML en is ook de og:image); bij herhaalbezoek kiest een klein inline script in `index.html` willekeurig een andere foto dan de vorige (onthouden via localStorage-sleutel `heroFoto`; het script zet eerst `srcset`, dan `src`, dan `alt`).
 
 Een foto toevoegen aan de rotatie:
 
-1. Zet het bestand in `assets/img/`, bijgesneden naar 16:9, ± 1600px breed, 300–400 KB, naam `hero-*.jpg`.
-2. Voeg in `src/index.html` één regel toe aan de array `heroFotos` in het script direct onder de hero-sectie: `{ bestand: "hero-naam.jpg", label: "Korte omschrijving van de foto" }`. Het label wisselt mee als aria-label van de hero (voor screenreaders).
+1. Zet het bestand in `assets/img/`, bijgesneden naar 16:9, ± 1600px breed, 300–400 KB, naam `hero-*.jpg`, en draai `.\maak-mobiele-fotos.ps1` voor de `-mobiel`-variant.
+2. Voeg in `src/index.html` één regel toe aan de array `heroFotos` in het script direct onder de hero-sectie: `{ bestand: "hero-naam.jpg", breedte: 1600, label: "Korte omschrijving van de foto" }` (breedte = pixelbreedte van het grote bestand, voor de srcset). Het label wisselt mee als alt-tekst van de hero-foto (voor screenreaders).
 
 ## Lokaal bekijken en deployen
 

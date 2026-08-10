@@ -27,7 +27,7 @@ Plak daaronder dit blokje en vul het in:
 ```html
 <article class="kaart" data-categorie="CATEGORIE" data-gebied="GEBIED">
   <a class="thumb" href="posts/BESTANDSNAAM.html" aria-hidden="true" tabindex="-1">
-    <img src="assets/img/BESTANDSNAAM-kaart.jpg" alt="">
+    <img src="assets/img/BESTANDSNAAM-kaart.jpg" alt="" width="800" height="500" loading="lazy">
   </a>
   <div class="tags">
     <span class="tag">Categorie</span>
@@ -94,9 +94,14 @@ homepage een kleine versie. Zo werkt het:
    `naam.jpg` (groot, voor het artikel) en `naam-kaart.jpg`
    (klein, voor de homepagekaart). Originelen worden niet mee
    gepubliceerd — die blijven alleen op je eigen computer.
-3. In je post: haal in het foto-blok uit het template de
-   commentaarregels weg en vul de bestandsnaam en alt-tekst in
-   (de alt-tekst beschrijft in één zin wat er op de foto staat —
+3. Draai daarna in PowerShell (in de projectmap):
+   `.\maak-mobiele-fotos.ps1` — dat maakt van elke grote foto ook een
+   lichte `naam-mobiel.jpg` van 800 pixels breed. Telefoons laden die
+   kleine versie, zodat de site op mobiel snel blijft. (Vraag je Claude
+   Code om de foto's te verkleinen, dan gebeurt dit automatisch mee.)
+4. In je post: haal in het foto-blok uit het template de
+   commentaarregels weg en vul de bestandsnaam, afmetingen en alt-tekst
+   in (de alt-tekst beschrijft in één zin wat er op de foto staat —
    voor bezoekers die slecht zien en voor Google).
 4. Op de homepagekaart: gebruik het blokje met `class="thumb"` uit
    stap 2 hierboven.

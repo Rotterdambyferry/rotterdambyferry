@@ -7,7 +7,7 @@
     "gebied": "centrum",
     "wijk": "Stadsdriehoek",
     "post": "posts/little-italy.html",
-    "image": "assets/img/little-italy.jpg",
+    "image": "assets/img/little-italy-mobiel.jpg",
     "teaser": "Supermarkt, broodjeszaak én delicatessenzaak: allemaal een beetje."
   },
   {
@@ -18,7 +18,7 @@
     "gebied": "centrum",
     "wijk": "Stadsdriehoek",
     "post": "posts/rif010.html",
-    "image": "assets/img/rif010.jpg",
+    "image": "assets/img/rif010-mobiel.jpg",
     "teaser": "Surfen in het centrum? Ga maar eens kijken achter de Markthal."
   },
   {
@@ -29,7 +29,7 @@
     "gebied": "centrum",
     "wijk": "Goudsesingel",
     "post": "posts/due-tonino.html",
-    "image": "assets/img/due-tonino.jpg",
+    "image": "assets/img/due-tonino-mobiel.jpg",
     "teaser": "Mijn nummer één restauranttip: een échte Italiaan aan de Goudsesingel."
   },
   {
@@ -40,7 +40,7 @@
     "gebied": "noord",
     "wijk": "Bergpolder",
     "post": "posts/station-bergweg.html",
-    "image": "assets/img/bergweg_foodhal_blog.jpg",
+    "image": "assets/img/bergweg_foodhal_blog-mobiel.jpg",
     "teaser": "Het oude station op de Hofbogen is nu een foodhal met negen keukens."
   },
   {
@@ -51,7 +51,7 @@
     "gebied": "maasvlakte",
     "wijk": "Maasvlakte",
     "post": "posts/balkon-van-europa.html",
-    "image": "assets/img/balkon-van-europa-terras.jpg",
+    "image": "assets/img/balkon-van-europa-terras-mobiel.jpg",
     "teaser": "Waar het land ophoudt en de zeeschepen vlak langs het terras varen."
   },
   {
@@ -62,7 +62,7 @@
     "gebied": "centrum",
     "wijk": "Cool (Westblaak)",
     "post": "posts/dak-rotterdam.html",
-    "image": "assets/img/dak-rotterdam-vuurtje.jpg",
+    "image": "assets/img/dak-rotterdam-vuurtje-mobiel.jpg",
     "teaser": "Bbq'en op een dak in de stad: ieder jaar weer iets magisch."
   }
 ]

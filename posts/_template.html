@@ -51,10 +51,18 @@
   <!-- FOTO BOVENAAN (optioneel). Wil je een foto? Haal dan de regels
        <!-- en -/-> rond het blok hieronder weg en vul de BLOKHAKEN in.
        De foto zelf zet je in de map assets/img. Vraag Claude Code om
-       'm eerst te verkleinen, dan laadt de pagina snel. -->
+       'm eerst te verkleinen, dan laadt de pagina snel. Draai daarna
+       .\maak-mobiele-fotos.ps1 in PowerShell: die maakt de kleine
+       -mobiel-variant die in de srcset hieronder staat (telefoons laden
+       dan de lichte versie). [BREEDTE] en [HOOGTE] zijn de afmetingen
+       van de grote foto in pixels.
+       Let op: deze eerste foto staat bovenaan in beeld en heeft daarom
+       loading="eager" en fetchpriority="high". Zet je verderop in het
+       artikel nog meer foto's? Gebruik daar hetzelfde img-blok, maar
+       dan met loading="lazy" en ZONDER fetchpriority. -->
   <!--
   <figure class="foto">
-    <img src="../assets/img/[BESTANDSNAAM].jpg" alt="[WAT ER OP DE FOTO TE ZIEN IS, 1 ZIN]">
+    <img src="../assets/img/[BESTANDSNAAM].jpg" srcset="../assets/img/[BESTANDSNAAM]-mobiel.jpg 800w, ../assets/img/[BESTANDSNAAM].jpg [BREEDTE]w" sizes="(max-width: 720px) 100vw, 640px" alt="[WAT ER OP DE FOTO TE ZIEN IS, 1 ZIN]" width="[BREEDTE]" height="[HOOGTE]" loading="eager" fetchpriority="high">
   </figure>
   -->
 

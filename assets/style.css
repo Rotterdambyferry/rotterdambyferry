@@ -109,8 +109,17 @@ a:focus-visible, button:focus-visible {
   align-items: flex-end;
   min-height: clamp(300px, 42vw, 440px);
   background-color: var(--ink);
-  background-size: cover;
-  background-position: center;
+  overflow: hidden;
+}
+/* De foto is een echt <img> (geen CSS-achtergrond) zodat de browser via
+   srcset op mobiel de kleine variant kan laden. Hij vult de hele hero. */
+.hero-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .hero::after {
   content: "";
