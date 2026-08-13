@@ -142,9 +142,9 @@
     function popupHtml(p) {
       var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
       tags += " &middot; " + (LABELS[p.gebied] || p.gebied);
+      if (p.wijk) { tags += " (" + p.wijk + ")"; }
       var tekst = '<p class="popup-naam">' + p.naam + "</p>" +
-                  '<p class="popup-tags">' + tags + "</p>" +
-                  '<p class="popup-wijk">' + p.wijk + "</p>";
+                  '<p class="popup-tags">' + tags + "</p>";
       if (p.teaser) {
         tekst += '<p class="popup-teaser">' + p.teaser + "</p>";
       }

@@ -409,6 +409,16 @@ a:focus-visible, button:focus-visible {
   object-fit: cover;
   border: 2px solid var(--ink);
 }
+/* Staande foto's op desktop begrenzen tot driekwart van de schermhoogte:
+   de breedte schaalt mee, er wordt niets uitgerekt of bijgesneden. */
+@media (min-width: 721px) {
+  .post-foto img {
+    max-height: 75vh;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
 .post-video .video-frame {
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -647,11 +657,6 @@ body:has(.artikel) .site-footer .inner {
   text-transform: uppercase;
   color: var(--staal);
   margin: 0 0 0.35rem;
-}
-.popup-wijk {
-  font-size: 0.9rem;
-  color: var(--staal);
-  margin: 0 0 0.45rem;
 }
 .popup-teaser {
   font-size: 0.9rem;
