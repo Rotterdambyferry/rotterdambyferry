@@ -55,6 +55,17 @@
     "teaser": "Waar het land ophoudt en de zeeschepen vlak langs het terras varen."
   },
   {
+    "naam": "De Vijgeboom",
+    "lat": 51.9172,
+    "lon": 4.4741,
+    "categorie": ["bruine-kroeg"],
+    "gebied": "centrum",
+    "wijk": "Cool",
+    "post": "posts/vijgeboom.html",
+    "image": "assets/img/vijgeboom-mobiel.jpg",
+    "teaser": "Al vanaf mijn jeugd onze vaste bruine kroeg op de Oude Binnenweg."
+  },
+  {
     "naam": "DÂK Rotterdam",
     "lat": 51.9162,
     "lon": 4.4775,
