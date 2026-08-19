@@ -95,7 +95,8 @@ Een foto toevoegen aan de rotatie:
 ## Lokaal bekijken en deployen
 
 - Lokaal bekijken: dubbelklik op `start-preview.bat` — die draait eerst de build, start `preview-server.js` (mini Node-server, poort 8000) en opent de browser op http://localhost:8000/. Stoppen = het terminalvenster sluiten. Let op: sinds de home-links naar `/` wijzen (juli 2026) werkt doorklikken naar de homepage niet meer bij direct dubbelklikken op een HTML-bestand; via de preview-server werkt alles wél zoals op de echte site.
-- Deployen = pushen naar `main` (vergeet niet eerst te builden zodat de root-HTML actueel is): GitHub Pages (repo `Rotterdambyferry/rotterdambyferry`, "Deploy from a branch") publiceert automatisch, live na ± een minuut op rotterdambyferry.nl.
+- Deployen = pushen naar `main` (vergeet niet eerst lokaal te builden zodat je eigen preview klopt — de publicatie zelf bouwt sowieso opnieuw, zie hieronder).
+- Sinds augustus 2026 publiceert een GitHub Actions-workflow (`.github/workflows/publiceer.yml`) de site, in plaats van dat GitHub Pages rechtstreeks de branch serveert. Die workflow draait `node build.js`, verzamelt daarna alleen de bestanden die echt bij de site horen (dus niet `src/`, niet `CLAUDE.md` e.d.) en zet dat resultaat online. Dit gebeurt: bij elke push naar `main` (zoals voorheen), elke ochtend automatisch (zodat een voorbereide post met een verstreken publicatiedatum vanzelf verschijnt, zie "Voorbereide posts publiceren op datum"), en handmatig via de knop "Run workflow" op het tabblad Actions van de repo op GitHub. Voortgang bekijken: tabblad "Actions" op GitHub. Live na ± een minuut op rotterdambyferry.nl.
 - Let op (Windows): `git push` via PowerShell draaien, niet via de Bash-tool — credentials werken daar niet betrouwbaar.
 - Verwijder nooit het `CNAME`-bestand; dat koppelt het custom domein.
 

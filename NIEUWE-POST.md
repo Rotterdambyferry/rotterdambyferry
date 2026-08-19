@@ -95,6 +95,11 @@ nieuwe post en zet hem klaar in de map `posts` — dan `git add -A`, dan
 `git commit -m "Nieuwe post: titel"`, dan `git push`. Na een minuutje
 staat het live.)
 
+Heb je bij stap 1 een publicatiedatum ingevuld, dan hoef je op die dag
+zelf niets te doen: elke ochtend controleert de site vanzelf of er een
+post is waarvan de datum is aangebroken, en zet die dan automatisch
+online.
+
 ## Foto's
 
 Elke post kan een grote foto bovenaan hebben, en de kaart op de

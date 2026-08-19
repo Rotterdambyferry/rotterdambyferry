@@ -1,0 +1,71 @@
+name: Bouw en publiceer
+
+# Draait de buildstap (node build.js) en zet het resultaat op GitHub Pages.
+# Dat gebeurt in drie gevallen:
+#  - bij elke push naar main (zoals nu al gebeurt via "Deploy from a branch");
+#  - elke ochtend automatisch, zodat een voorbereide post met een
+#    publicatiedatum vanzelf verschijnt zonder dat iemand hoeft te pushen
+#    (zie "Voorbereide posts publiceren op datum" in CLAUDE.md);
+#  - handmatig via de knop "Run workflow" hierboven op GitHub.
+#
+# Alleen de bestanden die echt bij de site horen worden gepubliceerd (zie de
+# stap "Publiceerbare bestanden verzamelen"): de map src/ met eventuele nog
+# niet gepubliceerde posts blijft dus buiten bereik.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 06:00 UTC = 07:00 of 08:00 Nederlandse tijd, afhankelijk van zomer-/
+    # wintertijd. Het exacte tijdstip maakt niet uit, dit is gewoon "'s ochtends".
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Voorkomt dat twee publicaties tegelijk lopen; een wachtende run hoeft niet
+# geannuleerd te worden, want elke run publiceert toch de complete, actuele
+# site opnieuw.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  bouw-en-publiceer:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicatie.outputs.page_url }}
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@v4
+
+      - name: Node.js instellen
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Site bouwen
+        run: node build.js
+
+      - name: Publiceerbare bestanden verzamelen
+        run: |
+          mkdir _site
+          cp index.html over.html kaart.html sitemap.xml robots.txt places.json google943d5d50987785df.html _site/
+          [ -f CNAME ] && cp CNAME _site/
+          cp -r posts assets _site/
+
+      - name: Pages instellen
+        uses: actions/configure-pages@v5
+
+      - name: Artifact uploaden
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publiceren
+        id: publicatie
+        uses: actions/deploy-pages@v4
