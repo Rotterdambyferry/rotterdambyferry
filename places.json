@@ -55,6 +55,17 @@
     "teaser": "Waar het land ophoudt en de zeeschepen vlak langs het terras varen."
   },
   {
+    "naam": "Pleinbios",
+    "lat": 51.9024,
+    "lon": 4.4887,
+    "categorie": ["dagje-uit"],
+    "gebied": "centrum",
+    "wijk": "Kop van Zuid",
+    "post": "posts/pleinbios.html",
+    "image": "assets/img/pleinbios-mobiel.jpg",
+    "teaser": "Openluchtbioscoop naast Hotel New York, met uitzicht op de Erasmusbrug."
+  },
+  {
     "naam": "De Vijgeboom",
     "lat": 51.9172,
     "lon": 4.4741,
