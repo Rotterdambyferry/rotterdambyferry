@@ -1,0 +1,90 @@
+[
+  {
+    "naam": "Little Italy",
+    "lat": 51.9236,
+    "lon": 4.4846,
+    "categorie": ["lunchplek", "delicatessen"],
+    "gebied": "centrum",
+    "wijk": "Stadsdriehoek",
+    "post": "posts/little-italy.html",
+    "image": "assets/img/little-italy-mobiel.jpg",
+    "teaser": "Supermarkt, broodjeszaak én delicatessenzaak: allemaal een beetje."
+  },
+  {
+    "naam": "RiF010",
+    "lat": 51.9201,
+    "lon": 4.4844,
+    "categorie": ["kidsproof"],
+    "gebied": "centrum",
+    "wijk": "Stadsdriehoek",
+    "post": "posts/rif010.html",
+    "image": "assets/img/rif010-mobiel.jpg",
+    "teaser": "Surfen in het centrum? Ga maar eens kijken achter de Markthal."
+  },
+  {
+    "naam": "Due Tonino",
+    "lat": 51.9244,
+    "lon": 4.4915,
+    "categorie": ["restaurant"],
+    "gebied": "centrum",
+    "wijk": "Goudsesingel",
+    "post": "posts/due-tonino.html",
+    "image": "assets/img/due-tonino-mobiel.jpg",
+    "teaser": "Mijn nummer één restauranttip: een échte Italiaan aan de Goudsesingel."
+  },
+  {
+    "naam": "Station Bergweg",
+    "lat": 51.9321,
+    "lon": 4.4709,
+    "categorie": ["foodhal", "borrelplek"],
+    "gebied": "noord",
+    "wijk": "Bergpolder",
+    "post": "posts/station-bergweg.html",
+    "image": "assets/img/bergweg_foodhal_blog-mobiel.jpg",
+    "teaser": "Het oude station op de Hofbogen is nu een foodhal met negen keukens."
+  },
+  {
+    "naam": "Smickel Inn — Balkon van Europa",
+    "lat": 51.9822,
+    "lon": 4.0462,
+    "categorie": ["dagje-uit"],
+    "gebied": "maasvlakte",
+    "wijk": "Maasvlakte",
+    "post": "posts/balkon-van-europa.html",
+    "image": "assets/img/balkon-van-europa-terras-mobiel.jpg",
+    "teaser": "Waar het land ophoudt en de zeeschepen vlak langs het terras varen."
+  },
+  {
+    "naam": "Pleinbios",
+    "lat": 51.9024,
+    "lon": 4.4887,
+    "categorie": ["dagje-uit"],
+    "gebied": "centrum",
+    "wijk": "Kop van Zuid",
+    "post": "posts/pleinbios.html",
+    "image": "assets/img/pleinbios-mobiel.jpg",
+    "teaser": "Openluchtbioscoop naast Hotel New York, met uitzicht op de Erasmusbrug."
+  },
+  {
+    "naam": "De Vijgeboom",
+    "lat": 51.9172,
+    "lon": 4.4741,
+    "categorie": ["bruine-kroeg"],
+    "gebied": "centrum",
+    "wijk": "Cool",
+    "post": "posts/vijgeboom.html",
+    "image": "assets/img/vijgeboom-mobiel.jpg",
+    "teaser": "Al vanaf mijn jeugd onze vaste bruine kroeg op de Oude Binnenweg."
+  },
+  {
+    "naam": "DÂK Rotterdam",
+    "lat": 51.9162,
+    "lon": 4.4775,
+    "categorie": ["borrelplek"],
+    "gebied": "centrum",
+    "wijk": "Cool (Westblaak)",
+    "post": "posts/dak-rotterdam.html",
+    "image": "assets/img/dak-rotterdam-vuurtje-mobiel.jpg",
+    "teaser": "Bbq'en op een dak in de stad: ieder jaar weer iets magisch."
+  }
+]

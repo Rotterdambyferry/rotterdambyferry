@@ -18,6 +18,14 @@ onderaan.
    `<p>` begint en eindigt op `</p>`.
 4. Deelknoppen (WhatsApp + link kopiëren) hoef je niets meer aan te
    doen: die staan automatisch in de footer van elke pagina.
+5. Moet de post pas later verschijnen (bijvoorbeeld een post die je nu
+   alvast helemaal afmaakt voor over twee weken)? Haal dan bovenin het
+   bestand de comment-tekens weg bij de regel met `publicatiedatum` en
+   vul de datum in, bijvoorbeeld `2026-09-05`. Zolang die datum nog niet
+   is aangebroken, bouwt de site deze post nergens mee: geen pagina,
+   geen kaart op de homepage, geen pin op de kaartpagina. Je kunt de
+   volgende stappen dus gewoon nu al afronden en later gewoon vergeten —
+   op de publicatiedag verschijnt alles vanzelf.
 
 ## Stap 2 — Kaart op de homepage
 
@@ -66,10 +74,14 @@ titel-link en "Lees het verhaal"-regel toe zoals hierboven.
 ### De plek op de kaartpagina
 
 De site heeft ook een kaart van Rotterdam (`kaart.html`) met een pin
-voor elke plek. Die pins staan in het bestand `places.json`. Vraag
+voor elke plek. Die pins staan in het bestand `src/places.json` (net
+als `src/index.html` en `src/sitemap.xml` is dit een bronbestand — de
+gepubliceerde versie in de hoofdmap wordt door de build gemaakt). Vraag
 Claude Code gewoon: "Zet deze plek ook op de kaart" — de coördinaten
 worden dan opgezocht en toegevoegd. (Publiceer je via stap 3 hieronder,
-dan gebeurt dit automatisch mee.)
+dan gebeurt dit automatisch mee. Heb je bij deze post een
+publicatiedatum in de toekomst gezet, dan verschijnt de pin pas als die
+datum is aangebroken.)
 
 ## Stap 3 — Publiceren
 

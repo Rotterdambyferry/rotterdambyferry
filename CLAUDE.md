@@ -10,20 +10,20 @@ De eigenaar (Ferry) is geen programmeur: leg stappen uit in gewone taal, doe kle
 
 ## Structuur
 
-**Let op:** de HTML-bestanden in de repo-root en in `posts/` worden gegenereerd uit `src/` — bewerk altijd de versie in `src/` en draai daarna `npm run build` (zie "Buildstap" hieronder). De overige bestanden (CSS, JS, JSON, afbeeldingen) bewerk je gewoon direct.
+**Let op:** de HTML-bestanden in de repo-root en in `posts/` worden gegenereerd uit `src/` — bewerk altijd de versie in `src/` en draai daarna `npm run build` (zie "Buildstap" hieronder). Sinds augustus 2026 geldt dat sinds ook voor `sitemap.xml` en `places.json`: die bewerk je in `src/sitemap.xml` en `src/places.json`, de build genereert de (mogelijk gefilterde, zie "Voorbereide posts publiceren op datum") versies in de repo-root. De overige bestanden (CSS, JS, afbeeldingen) bewerk je gewoon direct.
 
-- `src/` — de bewerkbare bronbestanden van alle pagina's, met dezelfde mappenstructuur als de root (`src/index.html`, `src/posts/*.html`, enz.). In plaats van een uitgeschreven header/footer staat er `<!-- INCLUDE:header -->` en `<!-- INCLUDE:footer -->`.
+- `src/` — de bewerkbare bronbestanden van alle pagina's, met dezelfde mappenstructuur als de root (`src/index.html`, `src/posts/*.html`, enz.), plus `src/sitemap.xml` en `src/places.json`. In plaats van een uitgeschreven header/footer staat er `<!-- INCLUDE:header -->` en `<!-- INCLUDE:footer -->`.
 - `partials/header.html` en `partials/footer.html` — de gedeelde header en footer. In een partial wordt `{{root}}` door de build vervangen door het juiste padvoorvoegsel (`""` voor root-pagina's, `"../"` voor posts) en `{{deel-url}}` door het URL-gecodeerde webadres van de pagina zelf. De footer bevat sinds juli 2026 ook de deelknoppen (WhatsApp + link kopiëren, gedrag in `assets/deel.js` dat via de footer-partial geladen wordt) en een "← Alle verhalen"-link; losse pagina's hebben dus geen eigen deelblok of deel.js-script meer.
 - `build.js` + `package.json` — de buildstap: `npm run build` (of `node build.js`).
 - `index.html` — homepage met postkaarten en werkende filters (categorie + gebied). Het filterscript staat onderaan inline in dit bestand (in `src/index.html` dus).
 - `posts/*.html` — één los HTML-bestand per blogpost; `src/posts/_template.html` is het kopieersjabloon met [BLOKHAKEN]-placeholders.
 - `over.html` — over-pagina.
 - `kaart.html` — filterbare kaart van Rotterdam (Leaflet.js + Leaflet.markercluster + CARTO dark tiles via CDN); de plekken komen uit `places.json`, de filterchips werken zoals op de homepage. Overlappende pins clusteren tot een groene stip met aantal (klik = direct inzoomen, zonder animatie — geanimeerde zoom werd eerder afgebroken door invalidateSize).
-- `places.json` — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post, plus optioneel `image` (pad naar de `-mobiel`-variant van de hero-foto van de post, voor in de kleine popup) en `teaser` (één zin van max ± 80 tekens uit het begin van het verhaal). Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
+- `places.json` (bron: `src/places.json`) — alle plekken voor de kaartpagina, per plek: naam, lat/lon, categorie (array van slugs), gebied, wijk en link naar de post, plus optioneel `image` (pad naar de `-mobiel`-variant van de hero-foto van de post, voor in de kleine popup) en `teaser` (één zin van max ± 80 tekens uit het begin van het verhaal). Bij elke nieuwe post hier ook een plek toevoegen (coördinaten opzoeken via OpenStreetMap/Nominatim).
 - `assets/style.css` — de volledige huisstijl (er is geen andere CSS; ook de kaartpagina-stijlen staan hierin).
 - `assets/header.js` — zet bij scrollen de klasse `is-gescrold` op de sticky header (subtiele schaduw); wordt op elke pagina geladen vlak voor `</body>` en zit al in het postsjabloon. De header zelf is sticky via `position: sticky` in `style.css` (z-index 1200, boven de Leaflet-knoppen; op mobiel een compacte variant in de media query).
 - `assets/img/` — verkleinde foto's die mee gepubliceerd worden.
-- `sitemap.xml`, `robots.txt`, `CNAME` (custom domein) — voor GitHub Pages/SEO.
+- `sitemap.xml` (bron: `src/sitemap.xml`), `robots.txt`, `CNAME` (custom domein) — voor GitHub Pages/SEO.
 - `NIEUWE-POST.md` — Ferry's eigen stappenplan voor een nieuwe post; houd CLAUDE.md en dit bestand consistent bij wijzigingen aan de postworkflow.
 
 ## Buildstap (gedeelde header/footer)
@@ -35,6 +35,20 @@ Sinds juli 2026 staan header en footer één keer in `partials/` in plaats van g
 - Bewerk de root-HTML nooit direct: de volgende build overschrijft die wijzigingen. Wijzigingen aan header of footer doe je in `partials/`.
 - Node.js (v24 LTS) is in juli 2026 op deze machine geïnstalleerd voor deze buildstap; het script gebruikt alleen de ingebouwde `fs`/`path`-modules, er zijn geen npm-packages.
 - Controle na een refactor aan de build zelf: na `npm run build` moet `git status` geen onverwachte wijzigingen aan de root-HTML tonen.
+
+## Voorbereide posts publiceren op datum
+
+Sinds augustus 2026 kan een post in `src/posts/` alvast helemaal af zijn, maar pas op een gekozen dag verschijnen. Dat gaat via één regel in de `<head>`:
+
+```html
+<meta name="publicatiedatum" content="2026-09-05">
+```
+
+- Geen `publicatiedatum`-regel: de post wordt gewoon meteen gebouwd, zoals altijd.
+- Datum in de toekomst (vergeleken met vandaag, Nederlandse tijd): `npm run build` slaat deze post over. Hij bestaat dus wel in de repo, maar krijgt geen pagina in `posts/`, geen kaart op de homepage, geen regel in `sitemap.xml` en geen pin in `places.json` — alsof hij niet bestaat. In de terminal verschijnt in plaats van `✓` een `○`-regel met de datum.
+- Datum is vandaag of in het verleden: de post wordt vanaf dat moment gewoon meegebouwd, zonder dat er iets hoeft te gebeuren — de eerstvolgende build (zie de GitHub Actions-workflow hieronder) neemt 'm vanzelf mee.
+- Zet je alvast de homepagekaart, de sitemap-regel en de `places.json`-pin klaar (stap 4/5 hieronder), dan filtert de build die automatisch mee tot de publicatiedatum is aangebroken — je hoeft dus niet te wachten met die stappen.
+- Zelf een voorbereide post lokaal willen bekijken? `node build.js --alles` bouwt ook posts met een toekomstige datum (alleen voor de preview op deze computer; commit/push dit resultaat niet).
 
 ## Huisstijl (exact behouden)
 
@@ -49,7 +63,7 @@ Alle kleuren staan als CSS-variabelen in `assets/style.css`:
 
 Elke post is een kopie van `src/posts/_template.html` (nieuwe posts dus in `src/posts/` maken en daarna `npm run build` draaien):
 
-1. `<head>`: titel, meta description, en (zie `posts/rif010.html` als voorbeeld) og-tags + canonical met absolute URL `https://rotterdambyferry.nl/posts/BESTAND.html`. Het template bevat de og-tags nog niet — voeg ze toe zoals in bestaande posts.
+1. `<head>`: titel, meta description, en (zie `posts/rif010.html` als voorbeeld) og-tags + canonical met absolute URL `https://rotterdambyferry.nl/posts/BESTAND.html`. Het template bevat de og-tags nog niet — voeg ze toe zoals in bestaande posts. Moet de post pas op een latere datum verschijnen? Voeg dan `<meta name="publicatiedatum" content="JJJJ-MM-DD">` toe (zie "Voorbereide posts publiceren op datum" hierboven).
 2. `<main class="artikel">`: terug-link, tags (`.tag` = categorie, `.tag.gebied` = gebied), `<h1>`, `.meta` ("Door Ferry · maand jaar"), optioneel `<figure class="foto">`, eerste alinea als `.intro`, gewone `<p>`-alinea's, en afsluitend blok `.praktisch` met adres/tips. Bij een food- of restaurantplek sluit het praktisch-blok altijd af met een link naar de website van de zaak (`target="_blank" rel="noopener"`).
 3. Deelknoppen: die staan centraal in de footer-partial (WhatsApp + "Kopieer de link" met "Link gekopieerd ✓"-bevestiging, plus "← Alle verhalen") en verschijnen dus vanzelf onder elke post — in de post zelf hoeft er niets voor te gebeuren. Het gedrag zit in `assets/deel.js` (mobiel → WhatsApp-app via wa.me, desktop → WhatsApp Web; leest de canonical-URL — daarom is de canonical in de `<head>` belangrijk), geladen via de footer-partial. De no-JS-fallback-href van de WhatsApp-knop vult de build zelf in via `{{deel-url}}`.
 4. Kaart op de homepage: `<article class="kaart">`-blok in `src/index.html` onder `<main class="grid" id="verhalen">`, met `data-categorie` en `data-gebied` in kleine letters met streepjes (meerdere waarden gescheiden door spatie). Geldige waarden — categorie: `restaurant`, `lunchplek`, `bruine-kroeg`, `kidsproof`, `delicatessen`, `foodhal`, `borrelplek`, `dagje-uit`; gebied: `centrum`, `noord`, `oost`, `zuid`, `west`, `maasvlakte` (bepaal het gebied met de wijkindeling hieronder). De filters werken puur op deze data-attributen; verborgen kaarten krijgen het `hidden`-attribuut (niet `display` via inline style).
