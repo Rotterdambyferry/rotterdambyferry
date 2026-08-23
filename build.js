@@ -170,6 +170,95 @@ ${items}    </div>
   </section>\n`;
 }
 
+// Leest de echte pixelafmetingen van een JPEG-bestand, puur door de
+// SOF-marker in de header op te zoeken (geen npm-package nodig). Geeft
+// null terug als het bestand ontbreekt of niet als JPEG te lezen is.
+function jpegAfmetingen(bestand) {
+  try {
+    const buf = fs.readFileSync(bestand);
+    if (buf.length < 4 || buf[0] !== 0xff || buf[1] !== 0xd8) return null;
+    let i = 2;
+    while (i + 9 < buf.length) {
+      if (buf[i] !== 0xff) { i++; continue; }
+      const marker = buf[i + 1];
+      if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+        i += 2;
+        continue;
+      }
+      const lengte = buf.readUInt16BE(i + 2);
+      const isSof = marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+      if (isSof) {
+        return { hoogte: buf.readUInt16BE(i + 5), breedte: buf.readUInt16BE(i + 7) };
+      }
+      i += 2 + lengte;
+    }
+  } catch {
+    // bestand ontbreekt of is geen leesbare JPEG
+  }
+  return null;
+}
+
+const standaardOgAfbeelding = SITE + "assets/img/hero-skyline-euromast.jpg";
+
+// Zet de HTML-entities om die in deze repo weleens in een <title> gebruikt
+// worden (de meeste posts typen speciale tekens al gewoon letterlijk, maar
+// niet allemaal) naar het echte teken, zodat og:title/twitter:title er
+// hetzelfde uitzien als de rest van de pagina in plaats van met &mdash;
+// erin. Puur cosmetisch: entities decoderen ook prima in een meta-attribuut.
+const entiteiten = {
+  mdash: "—", ndash: "–", eacute: "é", egrave: "è", ecirc: "ê",
+  euml: "ë", uuml: "ü", ouml: "ö", iuml: "ï", agrave: "à", ccedil: "ç",
+  rsquo: "’", lsquo: "‘", ldquo: "“", rdquo: "”",
+  hellip: "…", amp: "&", nbsp: " ",
+};
+function ontleedEntiteiten(tekst) {
+  return tekst.replace(/&([a-z]+);/g, (heel, naam) => entiteiten[naam] ?? heel);
+}
+
+// Bouwt het og/twitter/canonical-blok voor één pagina, op basis van de
+// <title> en <meta name="description"> die toch al met de hand op elke
+// pagina staan — daar hoeft dus niets nieuws voor bijgehouden te worden.
+function metaBlok({ inhoud, paginaUrl, ogType }) {
+  const titelMatch = inhoud.match(/<title>([\s\S]*?)<\/title>/);
+  const titel = ontleedEntiteiten(titelMatch ? titelMatch[1] : "");
+  const ogTitel = titel.replace(/ \| Rotterdam by Ferry$/, "");
+
+  const beschrijvingMatch = inhoud.match(/<meta name="description" content="([^"]*)">/);
+  const beschrijving = ontleedEntiteiten(beschrijvingMatch ? beschrijvingMatch[1] : "");
+
+  // Bij een post: de eerste artikelfoto proberen als og:image (zowel de
+  // bovenste hero-foto met class="foto" als een post-foto verderop in
+  // oudere posts die daarmee beginnen), maar alleen als die ook echt groot
+  // genoeg is (Facebook/LinkedIn adviseren minimaal 1200x630) — anders
+  // terugvallen op de site-brede standaardfoto.
+  let ogAfbeelding = standaardOgAfbeelding;
+  const fotoMatch = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\ssrc="([^"]+)"/);
+  if (fotoMatch) {
+    const relatiefPad = fotoMatch[1].replace(/^(\.\.\/)+/, "");
+    const afmeting = jpegAfmetingen(path.join(__dirname, relatiefPad));
+    if (afmeting && afmeting.breedte >= 1200 && afmeting.hoogte >= 630) {
+      ogAfbeelding = SITE + relatiefPad.replace(/\\/g, "/");
+    }
+  }
+
+  return `  <meta property="og:type" content="${ogType}">
+  <meta property="og:site_name" content="Rotterdam by Ferry">
+  <meta property="og:title" content="${ogTitel}">
+  <meta property="og:description" content="${beschrijving}">
+  <meta property="og:url" content="${paginaUrl}">
+  <meta property="og:image" content="${ogAfbeelding}">
+  <meta property="og:locale" content="nl_NL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${ogTitel}">
+  <meta name="twitter:description" content="${beschrijving}">
+  <meta name="twitter:image" content="${ogAfbeelding}">
+  <link rel="canonical" href="${paginaUrl}">`;
+}
+
+// Herkent het (eventueel al aanwezige) og/twitter/canonical-blok in een
+// pagina, zodat het vervangen kan worden in plaats van verdubbeld.
+const bestaandMetaBlok = /  <meta property="og:type"[\s\S]*?<link rel="canonical" href="[^"]*">/;
+
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
 // pagina's, behalve het kopieersjabloon (dat robots.txt ook al weert).
 const sitemapPaginas = [];
@@ -201,7 +290,20 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const paginaUrl = SITE + (relatiefUrl === "index.html" ? "" : relatiefUrl);
 
   const inhoud = fs.readFileSync(bronbestand, "utf8");
-  let resultaat = inhoud.replace(/<!-- INCLUDE:([a-z-]+) -->/g, (marker, naam) => {
+
+  // og/twitter/canonical genereren uit de eigen <title>/meta description en
+  // vervangen (of, bij _template.html, voor het eerst invoegen na de
+  // meta-description-regel).
+  const nieuwMetaBlok = metaBlok({
+    inhoud,
+    paginaUrl,
+    ogType: delen[0] === "posts" ? "article" : "website",
+  });
+  let resultaat = bestaandMetaBlok.test(inhoud)
+    ? inhoud.replace(bestaandMetaBlok, nieuwMetaBlok)
+    : inhoud.replace(/(<meta name="description" content="[^"]*">\n)/, `$1${nieuwMetaBlok}\n`);
+
+  resultaat = resultaat.replace(/<!-- INCLUDE:([a-z-]+) -->/g, (marker, naam) => {
     if (!(naam in partials)) {
       throw new Error(`Onbekende partial "${naam}" in ${relatief} — bestaat partials/${naam}.html wel?`);
     }
