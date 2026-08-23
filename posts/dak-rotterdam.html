@@ -455,6 +455,54 @@ a:focus-visible, button:focus-visible {
   text-transform: uppercase;
   margin-bottom: 0.4rem;
 }
+
+/* ---------- "Misschien vind je dit ook leuk" (onderaan elke post, door build.js gegenereerd) ---------- */
+.verwant {
+  border-top: 3px solid var(--ink);
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+}
+.verwant .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.verwant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.2rem;
+}
+.verwant-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+.verwant-item .thumb {
+  display: block;
+  border: 2px solid var(--ink);
+}
+.verwant-item .thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.verwant-item .titel {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.verwant-item:hover .titel { color: var(--groen); }
+.verwant-item .teaser {
+  color: var(--staal);
+  font-size: 0.9rem;
+}
+
 /* ---------- Deelknoppen (staan in de footer, zie partials/footer.html) ---------- */
 .deelknop {
   display: inline-flex;
@@ -783,6 +831,27 @@ body:has(.artikel) .site-footer .inner {
     <p class="kop">Praktisch</p>
     <p>DÂK Rotterdam is er dit jaar niet, maar de organisatie belooft nadrukkelijk terug te komen. Hou de site en social media in de gaten voor het laatste nieuws: <a href="https://www.dak-rotterdam.nl/" target="_blank" rel="noopener">dak-rotterdam.nl</a> en <a href="https://www.instagram.com/dakrotterdam/" target="_blank" rel="noopener">Instagram</a>.</p>
   </div>
+
+  <section class="verwant">
+    <p class="kop">Misschien vind je dit ook leuk</p>
+    <div class="verwant-grid">
+      <a class="verwant-item" href="../posts/pleinbios.html">
+        <span class="thumb"><img src="../assets/img/pleinbios-mobiel.jpg" alt="" loading="lazy"></span>
+        <span class="titel">Pleinbios</span>
+        <span class="teaser">Openluchtbioscoop naast Hotel New York, met uitzicht op de Erasmusbrug.</span>
+      </a>
+      <a class="verwant-item" href="../posts/vijgeboom.html">
+        <span class="thumb"><img src="../assets/img/vijgeboom-mobiel.jpg" alt="" loading="lazy"></span>
+        <span class="titel">De Vijgeboom</span>
+        <span class="teaser">Al vanaf mijn jeugd onze vaste bruine kroeg op de Oude Binnenweg.</span>
+      </a>
+      <a class="verwant-item" href="../posts/little-italy.html">
+        <span class="thumb"><img src="../assets/img/little-italy-mobiel.jpg" alt="" loading="lazy"></span>
+        <span class="titel">Little Italy</span>
+        <span class="teaser">Supermarkt, broodjeszaak én delicatessenzaak: allemaal een beetje.</span>
+      </a>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">

@@ -103,19 +103,71 @@ function hoortBijVerborgenPost(stuk) {
 }
 
 // Datum van de laatste git-commit die dit bronbestand raakte (voor
-// <lastmod> in de sitemap) — valt terug op vandaag als het bestand nog niet
-// gecommit is, of als git om wat voor reden dan ook niet beschikbaar is.
+// <lastmod> in de sitemap en om "meest recent" te bepalen bij gerelateerde
+// posts) — valt terug op vandaag als het bestand nog niet gecommit is, of
+// als git om wat voor reden dan ook niet beschikbaar is. Gememoized omdat
+// hetzelfde bestand voor meerdere posts als kandidaat langskomt.
+const laatsteWijzigingCache = new Map();
 function laatsteWijziging(bronbestand) {
+  if (laatsteWijzigingCache.has(bronbestand)) return laatsteWijzigingCache.get(bronbestand);
+  let datum;
   try {
-    const datum = execFileSync(
-      "git",
-      ["log", "-1", "--date=format:%Y-%m-%d", "--format=%cd", "--", bronbestand],
-      { cwd: __dirname, encoding: "utf8" }
-    ).trim();
-    return datum || vandaag;
+    datum =
+      execFileSync(
+        "git",
+        ["log", "-1", "--date=format:%Y-%m-%d", "--format=%cd", "--", bronbestand],
+        { cwd: __dirname, encoding: "utf8" }
+      ).trim() || vandaag;
   } catch {
-    return vandaag;
+    datum = vandaag;
   }
+  laatsteWijzigingCache.set(bronbestand, datum);
+  return datum;
+}
+
+// Plekken uit places.json, voor de "Misschien vind je dit ook leuk"-sectie
+// onderaan elke post. Alleen al gepubliceerde plekken meetellen (dezelfde
+// verborgen-postscheck als hierboven), op postpad ("posts/naam.html") omdat
+// dat exact overeenkomt met het al berekende relatiefUrl van elke post.
+const livePlekken = JSON.parse(fs.readFileSync(path.join(bronmap, "places.json"), "utf8")).filter(
+  (plek) => !hoortBijVerborgenPost(plek.post)
+);
+const plekPerPost = new Map(livePlekken.map((plek) => [plek.post, plek]));
+
+// Bouwt het HTML-blok met 2-3 gerelateerde posts voor de post op
+// `relatiefUrl`, of "" als er geen eigen plek of geen kandidaten zijn.
+function verwanteHtml(relatiefUrl, root) {
+  const eigenPlek = plekPerPost.get(relatiefUrl);
+  if (!eigenPlek) return "";
+
+  const kandidaten = livePlekken
+    .filter((plek) => plek.post !== relatiefUrl)
+    .map((plek) => {
+      const gedeeldeGebied = plek.gebied === eigenPlek.gebied ? 2 : 0;
+      const gedeeldeCategorie = plek.categorie.some((c) => eigenPlek.categorie.includes(c)) ? 1 : 0;
+      return { plek, score: gedeeldeGebied + gedeeldeCategorie, datum: laatsteWijziging(path.join(bronmap, plek.post)) };
+    })
+    .sort((a, b) => b.score - a.score || (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0))
+    .slice(0, 3);
+  if (kandidaten.length === 0) return "";
+
+  const items = kandidaten
+    .map(({ plek }) => {
+      const thumb = plek.image
+        ? `\n        <span class="thumb"><img src="${root}${plek.image}" alt="" loading="lazy"></span>`
+        : "";
+      return `      <a class="verwant-item" href="${root}${plek.post}">${thumb}
+        <span class="titel">${plek.naam}</span>
+        <span class="teaser">${plek.teaser}</span>
+      </a>\n`;
+    })
+    .join("");
+
+  return `\n  <section class="verwant">
+    <p class="kop">Misschien vind je dit ook leuk</p>
+    <div class="verwant-grid">
+${items}    </div>
+  </section>\n`;
 }
 
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
@@ -166,6 +218,14 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     resultaat = resultaat.replace(/<article class="kaart"[\s\S]*?<\/article>\n*/g, (blok) =>
       hoortBijVerborgenPost(blok) ? "" : blok
     );
+  }
+
+  // Op elke post: "Misschien vind je dit ook leuk" vlak voor </main> plakken.
+  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+    const verwant = verwanteHtml(relatiefUrl, root);
+    if (verwant) {
+      resultaat = resultaat.replace(/<\/main>/, verwant + "</main>");
+    }
   }
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });
