@@ -25,6 +25,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { execFileSync } = require("child_process");
 
 const bronmap = path.join(__dirname, "src");
 const partialsmap = path.join(__dirname, "partials");
@@ -101,6 +102,26 @@ function hoortBijVerborgenPost(stuk) {
   return false;
 }
 
+// Datum van de laatste git-commit die dit bronbestand raakte (voor
+// <lastmod> in de sitemap) — valt terug op vandaag als het bestand nog niet
+// gecommit is, of als git om wat voor reden dan ook niet beschikbaar is.
+function laatsteWijziging(bronbestand) {
+  try {
+    const datum = execFileSync(
+      "git",
+      ["log", "-1", "--date=format:%Y-%m-%d", "--format=%cd", "--", bronbestand],
+      { cwd: __dirname, encoding: "utf8" }
+    ).trim();
+    return datum || vandaag;
+  } catch {
+    return vandaag;
+  }
+}
+
+// Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
+// pagina's, behalve het kopieersjabloon (dat robots.txt ook al weert).
+const sitemapPaginas = [];
+
 let aantal = 0;
 for (const bronbestand of verzamelHtml(bronmap)) {
   const relatief = path.relative(bronmap, bronbestand);
@@ -151,14 +172,27 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   fs.writeFileSync(doel, resultaat);
   console.log(`✓ ${relatief}`);
   aantal++;
+
+  if (relatief !== path.join("posts", "_template.html")) {
+    sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  }
 }
 
-// sitemap.xml: regels van nog niet gepubliceerde posts eruit filteren.
+// sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht
+// gebouwd zijn (voorbereide posts met een toekomstige datum zijn dus al
+// vanzelf geen onderdeel van sitemapPaginas). Geen handmatig bij te houden
+// bestand meer.
 {
-  const bron = fs.readFileSync(path.join(bronmap, "sitemap.xml"), "utf8");
-  const resultaat = bron.replace(/  <url>[\s\S]*?<\/url>\n/g, (blok) =>
-    hoortBijVerborgenPost(blok) ? "" : blok
-  );
+  const urls = sitemapPaginas
+    .map(
+      ({ url, bronbestand }) =>
+        `  <url>\n    <loc>${url}</loc>\n    <lastmod>${laatsteWijziging(bronbestand)}</lastmod>\n  </url>\n`
+    )
+    .join("");
+  const resultaat =
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls +
+    `</urlset>\n`;
   fs.writeFileSync(path.join(__dirname, "sitemap.xml"), resultaat);
   console.log(`✓ sitemap.xml`);
   aantal++;

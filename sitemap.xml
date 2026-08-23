@@ -2,46 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://rotterdambyferry.nl/</loc>
-    <lastmod>2026-07-13</lastmod>
+    <lastmod>2026-08-19</lastmod>
+  </url>
+  <url>
+    <loc>https://rotterdambyferry.nl/kaart.html</loc>
+    <lastmod>2026-08-13</lastmod>
   </url>
   <url>
     <loc>https://rotterdambyferry.nl/over.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://rotterdambyferry.nl/posts/little-italy.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://rotterdambyferry.nl/posts/rif010.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://rotterdambyferry.nl/posts/due-tonino.html</loc>
-    <lastmod>2026-07-14</lastmod>
-  </url>
-  <url>
-    <loc>https://rotterdambyferry.nl/posts/station-bergweg.html</loc>
-    <lastmod>2026-07-15</lastmod>
+    <lastmod>2026-08-10</lastmod>
   </url>
   <url>
     <loc>https://rotterdambyferry.nl/posts/balkon-van-europa.html</loc>
-    <lastmod>2026-07-16</lastmod>
+    <lastmod>2026-08-10</lastmod>
   </url>
   <url>
     <loc>https://rotterdambyferry.nl/posts/dak-rotterdam.html</loc>
-    <lastmod>2026-07-18</lastmod>
+    <lastmod>2026-08-10</lastmod>
   </url>
   <url>
-    <loc>https://rotterdambyferry.nl/posts/vijgeboom.html</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://rotterdambyferry.nl/posts/due-tonino.html</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://rotterdambyferry.nl/posts/little-italy.html</loc>
+    <lastmod>2026-08-10</lastmod>
   </url>
   <url>
     <loc>https://rotterdambyferry.nl/posts/pleinbios.html</loc>
     <lastmod>2026-08-19</lastmod>
   </url>
   <url>
-    <loc>https://rotterdambyferry.nl/kaart.html</loc>
-    <lastmod>2026-07-18</lastmod>
+    <loc>https://rotterdambyferry.nl/posts/rif010.html</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://rotterdambyferry.nl/posts/station-bergweg.html</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://rotterdambyferry.nl/posts/vijgeboom.html</loc>
+    <lastmod>2026-08-13</lastmod>
   </url>
 </urlset>

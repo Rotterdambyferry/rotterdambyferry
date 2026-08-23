@@ -42,6 +42,8 @@ jobs:
     steps:
       - name: Code ophalen
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # volledige git-geschiedenis nodig voor <lastmod> in sitemap.xml
 
       - name: Node.js instellen
         uses: actions/setup-node@v4

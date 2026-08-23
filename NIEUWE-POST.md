@@ -75,13 +75,16 @@ titel-link en "Lees het verhaal"-regel toe zoals hierboven.
 
 De site heeft ook een kaart van Rotterdam (`kaart.html`) met een pin
 voor elke plek. Die pins staan in het bestand `src/places.json` (net
-als `src/index.html` en `src/sitemap.xml` is dit een bronbestand — de
-gepubliceerde versie in de hoofdmap wordt door de build gemaakt). Vraag
-Claude Code gewoon: "Zet deze plek ook op de kaart" — de coördinaten
-worden dan opgezocht en toegevoegd. (Publiceer je via stap 3 hieronder,
-dan gebeurt dit automatisch mee. Heb je bij deze post een
-publicatiedatum in de toekomst gezet, dan verschijnt de pin pas als die
-datum is aangebroken.)
+als `src/index.html` is dit een bronbestand — de gepubliceerde versie
+in de hoofdmap wordt door de build gemaakt). Vraag Claude Code gewoon:
+"Zet deze plek ook op de kaart" — de coördinaten worden dan opgezocht
+en toegevoegd. (Publiceer je via stap 3 hieronder, dan gebeurt dit
+automatisch mee. Heb je bij deze post een publicatiedatum in de
+toekomst gezet, dan verschijnt de pin pas als die datum is
+aangebroken.)
+
+`sitemap.xml` hoef je nergens handmatig bij te werken — die bouwt
+`build.js` telkens zelf op uit de pagina's die er (dan) echt zijn.
 
 ## Stap 3 — Publiceren
 
