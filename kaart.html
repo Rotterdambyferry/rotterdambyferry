@@ -923,7 +923,7 @@ body:has(.artikel) .site-footer .inner {
         if (p.post) {
           tekst += '<a class="popup-knop" href="' + p.post + '">Lees het verhaal &rarr;</a>';
         }
-        return '<img class="popup-foto" src="' + p.image + '" alt="' + p.naam + '">' +
+        return '<img class="popup-foto" src="' + p.image + '" alt="' + (p.alt || p.naam) + '">' +
                '<div class="popup-tekst">' + tekst + "</div>";
       }
       if (p.post) {

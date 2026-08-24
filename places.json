@@ -8,6 +8,7 @@
     "wijk": "Stadsdriehoek",
     "post": "posts/little-italy.html",
     "image": "assets/img/little-italy-mobiel.jpg",
+    "alt": "Het hoekpandje van Little Italy met Italiaans uithangbord, terwijl klanten buiten op de stoep in de rij staan.",
     "teaser": "Supermarkt, broodjeszaak én delicatessenzaak: allemaal een beetje."
   },
   {
@@ -19,6 +20,7 @@
     "wijk": "Stadsdriehoek",
     "post": "posts/rif010.html",
     "image": "assets/img/rif010-mobiel.jpg",
+    "alt": "Toeschouwers kijken vanaf de kade naar surfers in het groene water van RiF010, met de Rotterdamse hoogbouw op de achtergrond.",
     "teaser": "Surfen in het centrum? Ga maar eens kijken achter de Markthal."
   },
   {
@@ -30,6 +32,7 @@
     "wijk": "Goudsesingel",
     "post": "posts/due-tonino.html",
     "image": "assets/img/due-tonino-mobiel.jpg",
+    "alt": "De gevel van Due Tonino in de avond, met neonletters in de kleuren van de Italiaanse vlag en gasten aan tafel achter het raam.",
     "teaser": "Mijn nummer één restauranttip: een échte Italiaan aan de Goudsesingel."
   },
   {
@@ -41,6 +44,7 @@
     "wijk": "Bergpolder",
     "post": "posts/station-bergweg.html",
     "image": "assets/img/bergweg_foodhal_blog-mobiel.jpg",
+    "alt": "De foodhal van Station Bergweg met de oude vertrekborden en stationsklokken aan het plafond",
     "teaser": "Het oude station op de Hofbogen is nu een foodhal met negen keukens."
   },
   {
@@ -52,6 +56,7 @@
     "wijk": "Maasvlakte",
     "post": "posts/balkon-van-europa.html",
     "image": "assets/img/balkon-van-europa-terras-mobiel.jpg",
+    "alt": "Het terras van Smickel Inn op de Maasvlakte met houten picknicktafels en uitzicht op een passerend containerschip.",
     "teaser": "Waar het land ophoudt en de zeeschepen vlak langs het terras varen."
   },
   {
@@ -63,6 +68,7 @@
     "wijk": "Kop van Zuid",
     "post": "posts/pleinbios.html",
     "image": "assets/img/pleinbios-mobiel.jpg",
+    "alt": "Het publiek van Pleinbios in het blauwe uur op de Wilhelminapier, met het verlichte Holland Amerika Lijn-gebouw van Hotel New York op de achtergrond.",
     "teaser": "Openluchtbioscoop naast Hotel New York, met uitzicht op de Erasmusbrug."
   },
   {
@@ -74,6 +80,7 @@
     "wijk": "Cool",
     "post": "posts/vijgeboom.html",
     "image": "assets/img/vijgeboom-mobiel.jpg",
+    "alt": "De verlichte gevel van De Vijgeboom aan de Oude Binnenweg in de avond, met retro schilderingen boven de groene luifel en een vol terras.",
     "teaser": "Al vanaf mijn jeugd onze vaste bruine kroeg op de Oude Binnenweg."
   },
   {
@@ -85,6 +92,7 @@
     "wijk": "Cool (Westblaak)",
     "post": "posts/dak-rotterdam.html",
     "image": "assets/img/dak-rotterdam-vuurtje-mobiel.jpg",
+    "alt": "Een man staat in de rook bij een brandende bbq op het dak, terwijl bezoekers eromheen kletsen met een drankje in de hand",
     "teaser": "Bbq'en op een dak in de stad: ieder jaar weer iets magisch."
   }
 ]

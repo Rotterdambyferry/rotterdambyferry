@@ -159,7 +159,7 @@ function eersteWijziging(bronbestand) {
 const livePlekken = JSON.parse(fs.readFileSync(path.join(bronmap, "places.json"), "utf8")).filter(
   (plek) => !hoortBijVerborgenPost(plek.post)
 );
-const plekPerPost = new Map(livePlekken.map((plek) => [plek.post, plek]));
+const plekPerPost = new Map(livePlekken.filter((plek) => plek.post).map((plek) => [plek.post, plek]));
 
 // Bouwt het HTML-blok met 2-3 gerelateerde posts voor de post op
 // `relatiefUrl`, of "" als er geen eigen plek of geen kandidaten zijn.
@@ -168,7 +168,7 @@ function verwanteHtml(relatiefUrl, root) {
   if (!eigenPlek) return "";
 
   const kandidaten = livePlekken
-    .filter((plek) => plek.post !== relatiefUrl)
+    .filter((plek) => plek.post && plek.post !== relatiefUrl)
     .map((plek) => {
       const gedeeldeGebied = plek.gebied === eigenPlek.gebied ? 2 : 0;
       const gedeeldeCategorie = plek.categorie.some((c) => eigenPlek.categorie.includes(c)) ? 1 : 0;
@@ -237,9 +237,25 @@ const entiteiten = {
   euml: "ë", uuml: "ü", ouml: "ö", iuml: "ï", agrave: "à", ccedil: "ç",
   rsquo: "’", lsquo: "‘", ldquo: "“", rdquo: "”",
   hellip: "…", amp: "&", nbsp: " ",
+  quot: '"',
 };
 function ontleedEntiteiten(tekst) {
   return tekst.replace(/&([a-z]+);/g, (heel, naam) => entiteiten[naam] ?? heel);
+}
+
+// Alt-tekst voor de kaart-popup (kaart.html) hergebruiken uit de eigen
+// hero-foto van de post zelf — dat is precies dezelfde foto als het
+// image-veld in places.json (de -mobiel-variant), dus hier hoeft niets
+// extra's voor bijgehouden te worden. Geeft null als de post niet bestaat
+// of geen foto met alt-tekst heeft; kaart.html valt dan terug op de naam.
+function popupAltTekst(postPad) {
+  try {
+    const inhoud = fs.readFileSync(path.join(bronmap, postPad), "utf8");
+    const match = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\salt="([^"]+)"/);
+    return match ? ontleedEntiteiten(match[1]) : null;
+  } catch {
+    return null;
+  }
 }
 
 // Bouwt het og/twitter/canonical-blok voor één pagina, op basis van de
@@ -499,11 +515,24 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 // places.json: pins van nog niet gepubliceerde posts eruit filteren. Werkt
 // op de platte tekst (net als sitemap.xml hierboven) in plaats van via
 // JSON.parse + stringify, zodat de handgeschreven opmaak (bijvoorbeeld
-// "categorie": ["a", "b"] op één regel) intact blijft.
+// "categorie": ["a", "b"] op één regel) intact blijft. Heeft een plek een
+// eigen post mét foto, dan wordt de alt-tekst van die foto als extra "alt"-
+// veld toegevoegd (voor de kaart-popup) — hier hoeft niets voor bijgehouden
+// te worden in src/places.json zelf.
 {
   const bron = fs.readFileSync(path.join(bronmap, "places.json"), "utf8");
   const blokken = bron.match(/ {2}\{[\s\S]*?\n {2}\}/g) || [];
-  const overgebleven = blokken.filter((blok) => !hoortBijVerborgenPost(blok));
+  const overgebleven = blokken
+    .filter((blok) => !hoortBijVerborgenPost(blok))
+    .map((blok) => {
+      const postMatch = blok.match(/"post": "([^"]+)"/);
+      if (!postMatch || !/"image": "[^"]*"/.test(blok)) return blok;
+      const alt = popupAltTekst(postMatch[1]);
+      if (!alt) return blok;
+      // places.json staat (in tegenstelling tot de HTML-bronbestanden) met
+      // CRLF-regeleinden in de repo — \r?\n dus, niet zomaar \n.
+      return blok.replace(/("image": "[^"]*",\r?\n)/, `$1    "alt": ${JSON.stringify(alt)},\r\n`);
+    });
   const resultaat = "[\n" + overgebleven.join(",\n") + "\n]\n";
   JSON.parse(resultaat); // bouwfout meteen laten crashen i.p.v. kapotte JSON publiceren
   fs.writeFileSync(path.join(__dirname, "places.json"), resultaat);
