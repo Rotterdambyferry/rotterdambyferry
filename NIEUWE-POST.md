@@ -134,3 +134,9 @@ homepage een kleine versie. Zo werkt het:
   met kijken? Sluit gewoon het zwarte venster.
 - Een nieuwe categorie of gebied toevoegen aan de filters? Vraag het
   aan Claude Code, dat is een kleine aanpassing in `src\index.html`.
+- Noemt je nieuwe post een straat of plek waar al een andere post over
+  gaat (bijvoorbeeld nog een kroeg op de Oude Binnenweg, of een plek
+  vlak bij een eerdere post)? Link die vermelding dan in de lopende
+  tekst naar die post — goed voor de bezoeker én voor Google. Alleen
+  doen als het al vanzelf in de zin past; geen extra zin verzinnen om
+  een link erin te proppen.

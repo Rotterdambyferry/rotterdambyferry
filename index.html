@@ -372,6 +372,15 @@ a:focus-visible, button:focus-visible {
   margin: 0 auto;
   padding: 3rem 1.25rem 4rem;
 }
+.broodkruimel {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+  margin-bottom: 1rem;
+}
+.broodkruimel a { color: var(--staal); text-decoration: none; }
+.broodkruimel a:hover { color: var(--groen); }
+.broodkruimel [aria-current="page"] { color: var(--ink); }
 .artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
 .artikel h1 {
   font-size: clamp(2rem, 5vw, 3rem);
@@ -1018,6 +1027,14 @@ body:has(.artikel) .site-footer .inner {
       leeg.hidden = zichtbaar > 0;
     });
   });
+
+  // Komt een bezoeker binnen via ?gebied=centrum (bijv. het broodkruimelpad
+  // op een postpagina), dan simuleren we een klik op dat filterknopje zodat
+  // de homepage meteen gefilterd opent. Geen aparte filterlogica nodig.
+  const gebiedUitUrl = new URLSearchParams(location.search).get("gebied");
+  const gebiedKnop =
+    gebiedUitUrl && document.querySelector('.filterknop[data-filter="gebied"][data-waarde="' + gebiedUitUrl + '"]');
+  if (gebiedKnop) gebiedKnop.click();
 </script>
 
 <script src="assets/header.js" defer></script>

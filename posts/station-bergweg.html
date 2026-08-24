@@ -372,6 +372,15 @@ a:focus-visible, button:focus-visible {
   margin: 0 auto;
   padding: 3rem 1.25rem 4rem;
 }
+.broodkruimel {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+  margin-bottom: 1rem;
+}
+.broodkruimel a { color: var(--staal); text-decoration: none; }
+.broodkruimel a:hover { color: var(--groen); }
+.broodkruimel [aria-current="page"] { color: var(--ink); }
 .artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
 .artikel h1 {
   font-size: clamp(2rem, 5vw, 3rem);
@@ -804,6 +813,32 @@ body:has(.artikel) .site-footer .inner {
     }
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://rotterdambyferry.nl/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Noord",
+        "item": "https://rotterdambyferry.nl/?gebied=noord"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Station Bergweg: borrelen waar vroeger de trein stopte",
+        "item": "https://rotterdambyferry.nl/posts/station-bergweg.html"
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -820,6 +855,9 @@ body:has(.artikel) .site-footer .inner {
 </header>
 
 <main class="artikel">
+  <nav class="broodkruimel" aria-label="Kruimelpad">
+    <a href="/">Home</a> <span aria-hidden="true">&rsaquo;</span> <a href="/?gebied=noord">Noord</a> <span aria-hidden="true">&rsaquo;</span> <span aria-current="page">Station Bergweg: borrelen waar vroeger de trein stopte</span>
+  </nav>
   <a class="terug" href="/">&larr; Alle verhalen</a>
 
   <div class="tags">

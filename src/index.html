@@ -258,6 +258,14 @@
       leeg.hidden = zichtbaar > 0;
     });
   });
+
+  // Komt een bezoeker binnen via ?gebied=centrum (bijv. het broodkruimelpad
+  // op een postpagina), dan simuleren we een klik op dat filterknopje zodat
+  // de homepage meteen gefilterd opent. Geen aparte filterlogica nodig.
+  const gebiedUitUrl = new URLSearchParams(location.search).get("gebied");
+  const gebiedKnop =
+    gebiedUitUrl && document.querySelector('.filterknop[data-filter="gebied"][data-waarde="' + gebiedUitUrl + '"]');
+  if (gebiedKnop) gebiedKnop.click();
 </script>
 
 <script src="assets/header.js" defer></script>

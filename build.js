@@ -290,12 +290,28 @@ const bestaandMetaBlok = /  <meta property="og:type"[\s\S]*?<link rel="canonical
 
 const standaardLogo = SITE + "assets/img/favicon-192x192.png";
 
-// Bouwt het JSON-LD-blok (BlogPosting-schema) voor één post, met de
+// "centrum" -> "Centrum". Alle gebieden zijn nu één woord, dus een simpele
+// hoofdletter volstaat (voor het broodkruimelpad en het BreadcrumbList-schema).
+function gebiedLabel(gebied) {
+  return gebied.charAt(0).toUpperCase() + gebied.slice(1);
+}
+
+// Zet een schema-object om naar een <script>-tag, met "<" geëscaped zodat
+// een toevallige "</script>"-achtige tekenreeks de tag niet kan afbreken.
+function jsonLdScript(schema) {
+  const json = JSON.stringify(schema, null, 2).replace(/\n/g, "\n  ").replace(/</g, "\\u003c");
+  return `  <script type="application/ld+json">\n  ${json}\n  </script>`;
+}
+
+// Bouwt het JSON-LD (BlogPosting + BreadcrumbList) voor één post, met de
 // og-waarden die metaBlok() toch al berekent (geen dubbel werk) en de
 // publicatie-/wijzigingsdatum uit git-geschiedenis. Heeft de post een eigen
-// plek in places.json, dan wordt die als contentLocation meegenomen — de
-// schema.org-manier om een artikel aan een locatie te koppelen.
+// plek in places.json, dan wordt die zowel als contentLocation (de
+// schema.org-manier om een artikel aan een locatie te koppelen) als als
+// tussenliggende kruimel in het BreadcrumbList meegenomen.
 function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschrijving, ogAfbeelding }) {
+  const plek = plekPerPost.get(relatiefUrl);
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -313,7 +329,6 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
     },
   };
 
-  const plek = plekPerPost.get(relatiefUrl);
   if (plek) {
     schema.contentLocation = {
       "@type": "Place",
@@ -328,10 +343,36 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
     };
   }
 
-  // "<" escapen zodat een toevallige "</script>"-achtige tekenreeks in de
-  // tekst de script-tag niet kan afbreken.
-  const json = JSON.stringify(schema, null, 2).replace(/\n/g, "\n  ").replace(/</g, "\\u003c");
-  return `  <script type="application/ld+json">\n  ${json}\n  </script>`;
+  const kruimels = [{ "@type": "ListItem", position: 1, name: "Home", item: SITE }];
+  if (plek) {
+    kruimels.push({
+      "@type": "ListItem",
+      position: 2,
+      name: gebiedLabel(plek.gebied),
+      item: `${SITE}?gebied=${plek.gebied}`,
+    });
+  }
+  kruimels.push({ "@type": "ListItem", position: kruimels.length + 1, name: ogTitel, item: paginaUrl });
+  const broodkruimelSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: kruimels };
+
+  return jsonLdScript(schema) + "\n" + jsonLdScript(broodkruimelSchema);
+}
+
+// Bouwt het zichtbare broodkruimelpad boven een artikel: Home, eventueel het
+// gebied (als de post een eigen plek in places.json heeft — anders gewoon
+// overgeslagen), en de huidige paginatitel. Het gebied linkt naar de
+// homepage, alvast gefilterd via ?gebied=... (zie het filterscript in
+// src/index.html).
+function broodkruimelHtml(relatiefUrl, ogTitel) {
+  const plek = plekPerPost.get(relatiefUrl);
+  const kruimels = ['<a href="/">Home</a>'];
+  if (plek) {
+    kruimels.push(`<a href="/?gebied=${plek.gebied}">${gebiedLabel(plek.gebied)}</a>`);
+  }
+  kruimels.push(`<span aria-current="page">${ogTitel}</span>`);
+  return `  <nav class="broodkruimel" aria-label="Kruimelpad">
+    ${kruimels.join(' <span aria-hidden="true">&rsaquo;</span> ')}
+  </nav>\n`;
 }
 
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
@@ -403,6 +444,11 @@ for (const bronbestand of verzamelHtml(bronmap)) {
       ogAfbeelding,
     });
     resultaat = resultaat.replace("</head>", jsonLd + "\n</head>");
+
+    // Broodkruimelpad vlak na de openende <main class="artikel">, boven de
+    // bestaande "← Alle verhalen"-link (die blijft gewoon staan).
+    const broodkruimel = broodkruimelHtml(relatiefUrl, ogTitel);
+    resultaat = resultaat.replace('<main class="artikel">\n', `<main class="artikel">\n${broodkruimel}`);
   }
 
   // Op de homepage: kaartjes van nog niet gepubliceerde posts eruit filteren.
