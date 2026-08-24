@@ -161,6 +161,27 @@ const livePlekken = JSON.parse(fs.readFileSync(path.join(bronmap, "places.json")
 );
 const plekPerPost = new Map(livePlekken.filter((plek) => plek.post).map((plek) => [plek.post, plek]));
 
+// Smalle post-foto's herkennen: op desktop wordt een post-foto begrensd tot
+// 75vh hoogte (zie ".post-foto img" in style.css), waardoor een staande of
+// vierkante foto smaller uitvalt dan de leeskolom (640px, dezelfde breedte
+// als het "sizes"-attribuut van elke foto). Zonder extra opmaak oogt die
+// overgebleven witruimte als een gat. MAX_HOOGTE is een vaste inschatting
+// van 75vh op een gebruikelijk bureaubladscherm (~800px hoog); dat hoeft niet
+// exact te kloppen met elk beeldscherm, het is alleen om vooraf te bepalen
+// welke foto's de "smal"-klasse (met een rustig kadertje) verdienen.
+const MAX_HOOGTE = 600;
+const KOLOM_BREEDTE = 640;
+function markeerSmallePostFotos(inhoud) {
+  return inhoud.replace(/<figure class="post-foto">\s*<img\b[^>]*>/g, (heel) => {
+    const breedteMatch = heel.match(/\bwidth="(\d+)"/);
+    const hoogteMatch = heel.match(/\bheight="(\d+)"/);
+    if (!breedteMatch || !hoogteMatch) return heel;
+    const voorspeldeBreedte = (Number(breedteMatch[1]) / Number(hoogteMatch[1])) * MAX_HOOGTE;
+    if (voorspeldeBreedte >= KOLOM_BREEDTE) return heel;
+    return heel.replace('<figure class="post-foto">', '<figure class="post-foto smal">');
+  });
+}
+
 // Bouwt het HTML-blok met 2-3 gerelateerde posts voor de post op
 // `relatiefUrl`, of "" als er geen eigen plek of geen kandidaten zijn.
 function verwanteHtml(relatiefUrl, root) {
@@ -446,6 +467,11 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 
   // Vervang de stylesheet-link door de volledige stijl, inline in de pagina.
   resultaat = resultaat.replace(stijlLink, "<style>\n" + stijl + "\n  </style>");
+
+  // Post-foto's die smaller uitvallen dan de leeskolom een "smal"-klasse
+  // geven (zie markeerSmallePostFotos hierboven) — geen effect op pagina's
+  // zonder post-foto's.
+  resultaat = markeerSmallePostFotos(resultaat);
 
   // Op elke echte post: BlogPosting-schema (JSON-LD) vlak voor </head>.
   if (delen[0] === "posts" && delen[1] !== "_template.html") {

@@ -406,6 +406,15 @@ a:focus-visible, button:focus-visible {
     max-width: 100%;
     margin: 0 auto;
   }
+  /* Staande/vierkante post-foto's die door de regel hierboven smaller
+     uitvallen dan de leeskolom (klasse door build.js gezet, zie
+     markeerSmallePostFotos): een rustig kadertje eromheen in plaats van
+     kale witruimte. Liggende foto's die de kolom al vullen krijgen deze
+     klasse niet en blijven dus ongewijzigd. */
+  .post-foto.smal {
+    background: var(--lijn);
+    padding: 1.75rem;
+  }
 }
 .post-video .video-frame {
   aspect-ratio: 16 / 9;

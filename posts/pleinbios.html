@@ -431,6 +431,15 @@ a:focus-visible, button:focus-visible {
     max-width: 100%;
     margin: 0 auto;
   }
+  /* Staande/vierkante post-foto's die door de regel hierboven smaller
+     uitvallen dan de leeskolom (klasse door build.js gezet, zie
+     markeerSmallePostFotos): een rustig kadertje eromheen in plaats van
+     kale witruimte. Liggende foto's die de kolom al vullen krijgen deze
+     klasse niet en blijven dus ongewijzigd. */
+  .post-foto.smal {
+    background: var(--lijn);
+    padding: 1.75rem;
+  }
 }
 .post-video .video-frame {
   aspect-ratio: 16 / 9;
@@ -876,14 +885,14 @@ body:has(.artikel) .site-footer .inner {
 
   <p>Het beste is om vooraf al een kaartje te kopen, want veel avonden zijn zo uitverkocht. Bij aankomst haal je je stoeltje en je koptelefoon op en zoek je zelf een plekje op het terrein. Daarna wandel je even naar de bar voor wat lekkers: veel bezoekers (net als wij) kiezen ervoor om samen een fles wijn te delen, een plankje kaas te pakken of nog wat worstjes te scoren.</p>
 
-  <figure class="post-foto">
+  <figure class="post-foto smal">
     <img src="../assets/img/pleinbios-opening.jpg" srcset="../assets/img/pleinbios-opening-mobiel.jpg 800w, ../assets/img/pleinbios-opening.jpg 1050w" sizes="(max-width: 720px) 100vw, 640px" alt="De opening van de Pleinbios-avond: het grote scherm met het Pleinbios-logo, met de verlichte Euromast aan de overkant van de Maas." width="1050" height="1400" loading="lazy">
     <figcaption>De opening van de avond, met de Euromast aan de overkant.</figcaption>
   </figure>
 
   <p>Dan begint de film en gebeurt het magische moment. Het hele terrein wordt doodstil, en overal om je heen zie je alleen nog de blauwe lampjes van de koptelefoons in het donker. Zet je die even af, dan hoor je helemaal niets meer terwijl honderden mensen om je heen naar hetzelfde scherm zitten te staren.</p>
 
-  <figure class="post-foto">
+  <figure class="post-foto smal">
     <img src="../assets/img/pleinbios-koptelefoons.jpg" srcset="../assets/img/pleinbios-koptelefoons-mobiel.jpg 800w, ../assets/img/pleinbios-koptelefoons.jpg 1050w" sizes="(max-width: 720px) 100vw, 640px" alt="Honderden blauw oplichtende koptelefoons in het donker bij Pleinbios, met de Erasmusbrug en de skyline op de achtergrond." width="1050" height="1400" loading="lazy">
     <figcaption>Overal om je heen alleen nog de blauwe lampjes van de koptelefoons.</figcaption>
   </figure>
@@ -896,7 +905,7 @@ body:has(.artikel) .site-footer .inner {
 
   <p>Deze editie begon met een voorfilm van Faces of Rotterdam, die op mooie wijze een gezicht gaf aan alle culturen en nationaliteiten die onze stad rijk is. Daarna de hoofdfilm, Left Handed Girl, over een moeder en haar twee dochters die op een nachtmarkt in Taipei een nieuw bestaan proberen op te bouwen. Een pareltje van een film, gemaakt door Shih-Ching Tsou en mede geschreven door Sean Baker, die je kent van Anora.</p>
 
-  <figure class="post-foto">
+  <figure class="post-foto smal">
     <img src="../assets/img/pleinbios-film.jpg" alt="Still uit de film Left Handed Girl op het Pleinbios-scherm, met Nederlandse ondertiteling en publiek met blauwe koptelefoons op de voorgrond." width="900" height="1600" loading="lazy">
     <figcaption>De hoofdfilm van de avond: Left Handed Girl.</figcaption>
   </figure>

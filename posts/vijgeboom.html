@@ -431,6 +431,15 @@ a:focus-visible, button:focus-visible {
     max-width: 100%;
     margin: 0 auto;
   }
+  /* Staande/vierkante post-foto's die door de regel hierboven smaller
+     uitvallen dan de leeskolom (klasse door build.js gezet, zie
+     markeerSmallePostFotos): een rustig kadertje eromheen in plaats van
+     kale witruimte. Liggende foto's die de kolom al vullen krijgen deze
+     klasse niet en blijven dus ongewijzigd. */
+  .post-foto.smal {
+    background: var(--lijn);
+    padding: 1.75rem;
+  }
 }
 .post-video .video-frame {
   aspect-ratio: 16 / 9;
@@ -883,7 +892,7 @@ body:has(.artikel) .site-footer .inner {
 
   <p>Maar ik had het over De Vijgeboom. Voor mij staat die naam gelijk aan Aad, de bekendste barman van De Vijg met zijn onmiskenbare snor. Aad is er een jaar of zeven geleden mee gestopt en dat was een pijnlijk moment. Twee jaar geleden is de kroeg ook nog van eigenaar veranderd. Dat heeft hier en daar voor een frisse wind gezorgd en wat dingen veranderd, maar de oude sfeer is gelukkig gebleven. Het publiek is nog steeds dezelfde mix als vroeger: stamgasten die er soms al meer dan veertig jaar komen, aangevuld met studenten en toeristen.</p>
 
-  <figure class="post-foto">
+  <figure class="post-foto smal">
     <img src="../assets/img/vijgeboom-bar.jpg" srcset="../assets/img/vijgeboom-bar-mobiel.jpg 800w, ../assets/img/vijgeboom-bar.jpg 1200w" sizes="(max-width: 720px) 100vw, 640px" alt="Barman Aad met snor tapt achter de bar van De Vijgeboom, met de kenmerkende groene lampenkap op de voorgrond." width="1200" height="1600" loading="lazy">
     <figcaption>Aad achter de tap van De Vijgeboom.</figcaption>
   </figure>
