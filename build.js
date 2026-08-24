@@ -125,6 +125,33 @@ function laatsteWijziging(bronbestand) {
   return datum;
 }
 
+// Datum van de vróégste git-commit die dit bronbestand raakte — voor
+// datePublished in de JSON-LD, als de post zelf geen publicatiedatum-meta
+// heeft. Gememoized, zelfde principe als laatsteWijziging hierboven.
+// Let op: --follow (nodig om ook de commit van vóór een hernoem/verplaats-
+// actie te vinden, zoals de verhuizing naar src/) en --reverse samen geven
+// bij git een bekende bug (--follow stopt dan bij de eerste hernoeming) —
+// daarom hier de gewone (nieuw-naar-oud) volgorde en de láátste regel pakken
+// in plaats van --reverse plus de eerste regel.
+const eersteWijzigingCache = new Map();
+function eersteWijziging(bronbestand) {
+  if (eersteWijzigingCache.has(bronbestand)) return eersteWijzigingCache.get(bronbestand);
+  let datum;
+  try {
+    const regels = execFileSync(
+      "git",
+      ["log", "--format=%cd", "--date=format:%Y-%m-%d", "--follow", "--", bronbestand],
+      { cwd: __dirname, encoding: "utf8" }
+    ).trim();
+    const lijst = regels ? regels.split("\n") : [];
+    datum = lijst.length ? lijst[lijst.length - 1] : vandaag;
+  } catch {
+    datum = vandaag;
+  }
+  eersteWijzigingCache.set(bronbestand, datum);
+  return datum;
+}
+
 // Plekken uit places.json, voor de "Misschien vind je dit ook leuk"-sectie
 // onderaan elke post. Alleen al gepubliceerde plekken meetellen (dezelfde
 // verborgen-postscheck als hierboven), op postpad ("posts/naam.html") omdat
@@ -241,7 +268,7 @@ function metaBlok({ inhoud, paginaUrl, ogType }) {
     }
   }
 
-  return `  <meta property="og:type" content="${ogType}">
+  const blok = `  <meta property="og:type" content="${ogType}">
   <meta property="og:site_name" content="Rotterdam by Ferry">
   <meta property="og:title" content="${ogTitel}">
   <meta property="og:description" content="${beschrijving}">
@@ -253,11 +280,59 @@ function metaBlok({ inhoud, paginaUrl, ogType }) {
   <meta name="twitter:description" content="${beschrijving}">
   <meta name="twitter:image" content="${ogAfbeelding}">
   <link rel="canonical" href="${paginaUrl}">`;
+
+  return { blok, ogTitel, beschrijving, ogAfbeelding };
 }
 
 // Herkent het (eventueel al aanwezige) og/twitter/canonical-blok in een
 // pagina, zodat het vervangen kan worden in plaats van verdubbeld.
 const bestaandMetaBlok = /  <meta property="og:type"[\s\S]*?<link rel="canonical" href="[^"]*">/;
+
+const standaardLogo = SITE + "assets/img/favicon-192x192.png";
+
+// Bouwt het JSON-LD-blok (BlogPosting-schema) voor één post, met de
+// og-waarden die metaBlok() toch al berekent (geen dubbel werk) en de
+// publicatie-/wijzigingsdatum uit git-geschiedenis. Heeft de post een eigen
+// plek in places.json, dan wordt die als contentLocation meegenomen — de
+// schema.org-manier om een artikel aan een locatie te koppelen.
+function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschrijving, ogAfbeelding }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    mainEntityOfPage: { "@type": "WebPage", "@id": paginaUrl },
+    headline: ogTitel,
+    description: beschrijving,
+    image: [ogAfbeelding],
+    datePublished: publicatiedatums[naam] || eersteWijziging(bronbestand),
+    dateModified: laatsteWijziging(bronbestand),
+    author: { "@type": "Person", name: "Ferry", url: SITE + "over.html" },
+    publisher: {
+      "@type": "Organization",
+      name: "Rotterdam by Ferry",
+      logo: { "@type": "ImageObject", url: standaardLogo },
+    },
+  };
+
+  const plek = plekPerPost.get(relatiefUrl);
+  if (plek) {
+    schema.contentLocation = {
+      "@type": "Place",
+      name: plek.naam,
+      geo: { "@type": "GeoCoordinates", latitude: plek.lat, longitude: plek.lon },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Rotterdam",
+        addressRegion: plek.wijk,
+        addressCountry: "NL",
+      },
+    };
+  }
+
+  // "<" escapen zodat een toevallige "</script>"-achtige tekenreeks in de
+  // tekst de script-tag niet kan afbreken.
+  const json = JSON.stringify(schema, null, 2).replace(/\n/g, "\n  ").replace(/</g, "\\u003c");
+  return `  <script type="application/ld+json">\n  ${json}\n  </script>`;
+}
 
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
 // pagina's, behalve het kopieersjabloon (dat robots.txt ook al weert).
@@ -294,7 +369,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // og/twitter/canonical genereren uit de eigen <title>/meta description en
   // vervangen (of, bij _template.html, voor het eerst invoegen na de
   // meta-description-regel).
-  const nieuwMetaBlok = metaBlok({
+  const { blok: nieuwMetaBlok, ogTitel, beschrijving, ogAfbeelding } = metaBlok({
     inhoud,
     paginaUrl,
     ogType: delen[0] === "posts" ? "article" : "website",
@@ -314,6 +389,21 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 
   // Vervang de stylesheet-link door de volledige stijl, inline in de pagina.
   resultaat = resultaat.replace(stijlLink, "<style>\n" + stijl + "\n  </style>");
+
+  // Op elke echte post: BlogPosting-schema (JSON-LD) vlak voor </head>.
+  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+    const postNaam = delen[1].slice(0, -".html".length);
+    const jsonLd = jsonLdBlok({
+      bronbestand,
+      naam: postNaam,
+      relatiefUrl,
+      paginaUrl,
+      ogTitel,
+      beschrijving,
+      ogAfbeelding,
+    });
+    resultaat = resultaat.replace("</head>", jsonLd + "\n</head>");
+  }
 
   // Op de homepage: kaartjes van nog niet gepubliceerde posts eruit filteren.
   if (relatief === "index.html" && verborgenPosts.size > 0) {
