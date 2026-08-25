@@ -140,3 +140,10 @@ homepage een kleine versie. Zo werkt het:
   tekst naar die post — goed voor de bezoeker én voor Google. Alleen
   doen als het al vanzelf in de zin past; geen extra zin verzinnen om
   een link erin te proppen.
+- Datzelfde geldt voor een verwijzing naar jezelf: noem je in de tekst
+  ergens dat je ergens vandaan komt of ergens woont, dan mag dat ook
+  linken naar `over.html`. Voorbeeld uit de Simit and Cheese-post: "Als
+  jongen van [Rotterdam Zuid](over.html) moeten er natuurlijk ook food
+  tips komen..." — het gebied "Rotterdam Zuid" linkt daar naar de
+  Over Ferry-pagina. Een gewone tekstlink, geen aparte opmaak nodig:
+  alle links op de site zijn standaard groen.
