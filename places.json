@@ -1,5 +1,17 @@
 [
   {
+    "naam": "Simit and Cheese",
+    "lat": 51.8980534,
+    "lon": 4.5110595,
+    "categorie": ["restaurant", "lunchplek", "kidsproof"],
+    "gebied": "zuid",
+    "wijk": "Afrikaanderwijk",
+    "post": "posts/simit-and-cheese.html",
+    "image": "assets/img/simit-and-cheese-menemen-mobiel.jpg",
+    "alt": "Een dampend pannetje menemen met sucuk naast een verse sesamsimit bij Simit and Cheese.",
+    "teaser": "De menemen met sucuk die naar verluidt de favoriet is van Feyenoordspelers."
+  },
+  {
     "naam": "Little Italy",
     "lat": 51.9236,
     "lon": 4.4846,
