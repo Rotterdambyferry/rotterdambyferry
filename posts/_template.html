@@ -458,6 +458,16 @@ a:focus-visible, button:focus-visible {
   height: 100%;
   border: 0;
 }
+/* Verticale video (bijv. TikTok): geen 16:9-kader, gewoon de eigen hoogte
+   van het embed, gecentreerd en niet breder dan een telefoonscherm. */
+.post-video.verticaal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.post-video.verticaal blockquote.tiktok-embed {
+  margin: 0 auto !important;
+}
 .post-foto figcaption,
 .post-video figcaption {
   font-family: "Archivo", sans-serif;
