@@ -638,6 +638,15 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   margin-left: auto;
 }
+/* Losse regel die naar de Instagram-post van een blogpost linkt, i.p.v. een
+   comments-sectie op de site zelf (zie {{instagram-regel}} in
+   partials/footer.html, alleen aanwezig als de post een instagram_url
+   heeft). Hoort thematisch bij "Iemand die dit moet weten?", geen eigen kop. */
+.footer-instagram {
+  margin: 1rem 0 0;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+}
 /* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
    leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.
    Op de homepage en kaartpagina is de content zelf 1080px, daar klopt het al. */

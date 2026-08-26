@@ -494,13 +494,28 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     ? inhoud.replace(bestaandMetaBlok, nieuwMetaBlok)
     : inhoud.replace(/(<meta name="description" content="[^"]*">\n)/, `$1${nieuwMetaBlok}\n`);
 
+  // Instagram-regel in het deelblok: alleen aanwezig als deze post een eigen
+  // <meta name="instagram_url"> heeft (zie NIEUWE-POST.md/_template.html).
+  // Geen comments-sectie op de site zelf, dus dit kanaliseert reacties naar
+  // de bijbehorende Instagram-post. Ontbreekt de meta, dan wordt de
+  // {{instagram-regel}}-marker in de footer-partial gewoon leeg vervangen —
+  // geen extra regel, geen lege ruimte.
+  const instagramMatch =
+    relatief === path.join("posts", "_template.html")
+      ? null // anders matcht de uitgecommentte voorbeeldregel in het sjabloon ook
+      : inhoud.match(/<meta name="instagram_url" content="([^"]*)">/);
+  const instagramRegel = instagramMatch
+    ? `\n    <p class="footer-instagram">Wat vond jij ervan? Laat het weten in de comments op <a href="${instagramMatch[1]}" target="_blank" rel="noopener">Instagram</a>.</p>`
+    : "";
+
   resultaat = resultaat.replace(/<!-- INCLUDE:([a-z-]+) -->/g, (marker, naam) => {
     if (!(naam in partials)) {
       throw new Error(`Onbekende partial "${naam}" in ${relatief} — bestaat partials/${naam}.html wel?`);
     }
     return partials[naam]
       .replace(/\{\{root\}\}/g, root)
-      .replace(/\{\{deel-url\}\}/g, encodeURIComponent(paginaUrl));
+      .replace(/\{\{deel-url\}\}/g, encodeURIComponent(paginaUrl))
+      .replace(/\{\{instagram-regel\}\}/g, instagramRegel);
   });
 
   // Vervang de stylesheet-link door de volledige stijl, inline in de pagina.

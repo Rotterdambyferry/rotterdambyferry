@@ -18,6 +18,7 @@
   <meta name="twitter:image" content="https://rotterdambyferry.nl/assets/img/hero-skyline-euromast.jpg">
   <link rel="canonical" href="https://rotterdambyferry.nl/posts/simit-and-cheese.html">
   <meta name="publicatiedatum" content="2026-08-25">
+  <meta name="instagram_url" content="https://www.instagram.com/p/DcehTX7jsCs/">
   <link rel="icon" href="../assets/img/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
@@ -636,6 +637,15 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   margin-left: auto;
 }
+/* Losse regel die naar de Instagram-post van een blogpost linkt, i.p.v. een
+   comments-sectie op de site zelf (zie {{instagram-regel}} in
+   partials/footer.html, alleen aanwezig als de post een instagram_url
+   heeft). Hoort thematisch bij "Iemand die dit moet weten?", geen eigen kop. */
+.footer-instagram {
+  margin: 1rem 0 0;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+}
 /* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
    leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.
    Op de homepage en kaartpagina is de content zelf 1080px, daar klopt het al. */
@@ -802,7 +812,7 @@ body:has(.artikel) .site-footer .inner {
       "https://rotterdambyferry.nl/assets/img/hero-skyline-euromast.jpg"
     ],
     "datePublished": "2026-08-25",
-    "dateModified": "2026-08-25",
+    "dateModified": "2026-08-26",
     "author": {
       "@type": "Person",
       "name": "Ferry",
@@ -979,6 +989,7 @@ body:has(.artikel) .site-footer .inner {
       <button class="deelknop kopieer" type="button">Kopieer de link</button>
       <a class="footer-terug" href="/">&larr; Alle verhalen</a>
     </div>
+    <p class="footer-instagram">Wat vond jij ervan? Laat het weten in de comments op <a href="https://www.instagram.com/p/DcehTX7jsCs/" target="_blank" rel="noopener">Instagram</a>.</p>
   </div>
   <div class="inner">
     <span>Rotterdam by Ferry &mdash; van Zuid tot Noord, gewoon door een Rotterdammer</span>

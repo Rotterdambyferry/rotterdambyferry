@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DÂK Rotterdam: twee zomers zonder, maar geen vaarwel | Rotterdam by Ferry</title>
   <meta name="description" content="Twee zomers op rij geen DÂK Rotterdam: het pop-up dakpark met eigen bbq's en skylineuitzicht slaat over. Archieffoto's van tien jaar zomerherinneringen.">
+  <meta name="instagram_url" content="https://www.instagram.com/p/Da8qO2oDqZr/">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Rotterdam by Ferry">
   <meta property="og:title" content="DÂK Rotterdam: twee zomers zonder, maar geen vaarwel">
@@ -635,6 +636,15 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   margin-left: auto;
 }
+/* Losse regel die naar de Instagram-post van een blogpost linkt, i.p.v. een
+   comments-sectie op de site zelf (zie {{instagram-regel}} in
+   partials/footer.html, alleen aanwezig als de post een instagram_url
+   heeft). Hoort thematisch bij "Iemand die dit moet weten?", geen eigen kop. */
+.footer-instagram {
+  margin: 1rem 0 0;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+}
 /* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
    leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.
    Op de homepage en kaartpagina is de content zelf 1080px, daar klopt het al. */
@@ -974,6 +984,7 @@ body:has(.artikel) .site-footer .inner {
       <button class="deelknop kopieer" type="button">Kopieer de link</button>
       <a class="footer-terug" href="/">&larr; Alle verhalen</a>
     </div>
+    <p class="footer-instagram">Wat vond jij ervan? Laat het weten in de comments op <a href="https://www.instagram.com/p/Da8qO2oDqZr/" target="_blank" rel="noopener">Instagram</a>.</p>
   </div>
   <div class="inner">
     <span>Rotterdam by Ferry &mdash; van Zuid tot Noord, gewoon door een Rotterdammer</span>
