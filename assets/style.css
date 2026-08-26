@@ -536,6 +536,12 @@ a:focus-visible, button:focus-visible {
 }
 .deelknop.whatsapp:hover { background: var(--ink); border-color: var(--ink); }
 .deelknop.kopieer:hover { border-color: var(--groen); color: var(--groen); }
+.deelknop.instagram {
+  background: #E4405F;
+  border-color: #E4405F;
+  color: #fff;
+}
+.deelknop.instagram:hover { background: var(--ink); border-color: var(--ink); }
 
 .terug {
   font-family: "Archivo", sans-serif;
@@ -603,21 +609,26 @@ a:focus-visible, button:focus-visible {
   border-color: var(--groen);
   color: var(--papier);
 }
+/* Instagram-knop: zowel de post-specifieke "Reageer op Instagram" (alleen
+   aanwezig bij een instagram_url, zie {{instagram-knop}} in
+   partials/footer.html en build.js) als de vaste "Volg op Instagram"
+   onderaan elke pagina — bewust exact dezelfde stijl, zodat het overal op
+   de site hetzelfde herkenbare knopje is. */
+.site-footer .deelknop.instagram {
+  background: #E4405F;
+  border-color: #E4405F;
+  color: #fff;
+}
+.site-footer .deelknop.instagram:hover {
+  background: var(--ink);
+  border-color: var(--papier);
+}
 .footer-terug {
   font-family: "Archivo", sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   text-decoration: none;
   margin-left: auto;
-}
-/* Losse regel die naar de Instagram-post van een blogpost linkt, i.p.v. een
-   comments-sectie op de site zelf (zie {{instagram-regel}} in
-   partials/footer.html, alleen aanwezig als de post een instagram_url
-   heeft). Hoort thematisch bij "Iemand die dit moet weten?", geen eigen kop. */
-.footer-instagram {
-  margin: 1rem 0 0;
-  font-family: "Archivo", sans-serif;
-  font-size: 0.9rem;
 }
 /* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
    leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.

@@ -286,6 +286,13 @@ function jpegAfmetingen(bestand) {
 
 const standaardOgAfbeelding = SITE + "assets/img/hero-skyline-euromast.jpg";
 
+// Camera-icoontje voor de Instagram-knoppen (zowel de post-specifieke
+// "Reageer op Instagram" hieronder als de vaste "Volg op Instagram" die al
+// hardcoded in partials/footer.html staat) — hier als constante zodat beide
+// plekken exact hetzelfde icoon gebruiken.
+const instagramSvg =
+  '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 2 7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3.17L15 2H9Zm3 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>';
+
 // Zet de HTML-entities om die in deze repo weleens in een <title> gebruikt
 // worden (de meeste posts typen speciale tekens al gewoon letterlijk, maar
 // niet allemaal) naar het echte teken, zodat og:title/twitter:title er
@@ -494,18 +501,20 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     ? inhoud.replace(bestaandMetaBlok, nieuwMetaBlok)
     : inhoud.replace(/(<meta name="description" content="[^"]*">\n)/, `$1${nieuwMetaBlok}\n`);
 
-  // Instagram-regel in het deelblok: alleen aanwezig als deze post een eigen
-  // <meta name="instagram_url"> heeft (zie NIEUWE-POST.md/_template.html).
-  // Geen comments-sectie op de site zelf, dus dit kanaliseert reacties naar
-  // de bijbehorende Instagram-post. Ontbreekt de meta, dan wordt de
-  // {{instagram-regel}}-marker in de footer-partial gewoon leeg vervangen —
-  // geen extra regel, geen lege ruimte.
+  // Instagram-knop in de knoppenrij van het deelblok: alleen aanwezig als
+  // deze post een eigen <meta name="instagram_url"> heeft (zie
+  // NIEUWE-POST.md/_template.html). Geen comments-sectie op de site zelf,
+  // dus dit kanaliseert reacties naar de bijbehorende Instagram-post.
+  // Ontbreekt de meta, dan wordt de {{instagram-knop}}-marker in de
+  // footer-partial gewoon leeg vervangen — geen extra knop, geen lege ruimte.
+  // Zelfde .deelknop.instagram-stijl en icoon als de vaste "Volg op
+  // Instagram"-knop onderaan de footer.
   const instagramMatch =
     relatief === path.join("posts", "_template.html")
       ? null // anders matcht de uitgecommentte voorbeeldregel in het sjabloon ook
       : inhoud.match(/<meta name="instagram_url" content="([^"]*)">/);
-  const instagramRegel = instagramMatch
-    ? `\n    <p class="footer-instagram">Wat vond jij ervan? Laat het weten in de comments op <a href="${instagramMatch[1]}" target="_blank" rel="noopener">Instagram</a>.</p>`
+  const instagramKnop = instagramMatch
+    ? `\n      <a class="deelknop instagram" href="${instagramMatch[1]}" target="_blank" rel="noopener">${instagramSvg}Reageer op Instagram</a>`
     : "";
 
   resultaat = resultaat.replace(/<!-- INCLUDE:([a-z-]+) -->/g, (marker, naam) => {
@@ -515,7 +524,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     return partials[naam]
       .replace(/\{\{root\}\}/g, root)
       .replace(/\{\{deel-url\}\}/g, encodeURIComponent(paginaUrl))
-      .replace(/\{\{instagram-regel\}\}/g, instagramRegel);
+      .replace(/\{\{instagram-knop\}\}/g, instagramKnop);
   });
 
   // Vervang de stylesheet-link door de volledige stijl, inline in de pagina.
