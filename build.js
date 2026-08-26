@@ -182,6 +182,50 @@ function markeerSmallePostFotos(inhoud) {
   });
 }
 
+// Zoekt binnen `inhoud` de eerste <img> die matcht op `containerRegex` (bijv.
+// de hero-foto of de bovenste artikelfoto) en geeft de src/srcset/sizes-
+// attributen terug zoals ze daar al staan — die paden zijn al relatief aan
+// dezelfde pagina, dus hoeven niet aangepast te worden voor de preload-link
+// die verderop in dezelfde <head> komt. Geeft null als er geen match is.
+function eersteAfbeelding(inhoud, containerRegex) {
+  const match = inhoud.match(containerRegex);
+  if (!match) return null;
+  const attrs = match[1];
+  const src = (attrs.match(/\bsrc="([^"]+)"/) || [])[1];
+  if (!src) return null;
+  const srcset = (attrs.match(/\bsrcset="([^"]+)"/) || [])[1];
+  const sizes = (attrs.match(/\bsizes="([^"]+)"/) || [])[1];
+  return { src, srcset, sizes };
+}
+
+// Bouwt de preload-hints voor de <head>: de twee kritieke lettertypen (op
+// elke pagina, ze worden overal gebruikt voor tekst boven de vouw) en de
+// bovenste/grootste afbeelding van de pagina (LCP-kandidaat: de hero-foto op
+// de homepage, de hoofdfoto bij een post). Zonder preload ontdekt de browser
+// deze bronnen pas nadat hij door het hele inline stijlblok heen is — met
+// preload al meteen bij het parsen van de <head>. Geen afbeelding-preload op
+// pagina's zonder duidelijke hero-foto (over.html, kaart.html).
+function preloadHtml(root, relatief, inhoud) {
+  const regels = [
+    `  <link rel="preload" as="font" type="font/woff2" href="${root}assets/fonts/archivo-latin.woff2" crossorigin>`,
+    `  <link rel="preload" as="font" type="font/woff2" href="${root}assets/fonts/source-serif-4-latin.woff2" crossorigin>`,
+  ];
+
+  let afbeelding = null;
+  if (relatief === "index.html") {
+    afbeelding = eersteAfbeelding(inhoud, /<img class="hero-foto"[^>]*\bid="hero-foto"([^>]*)>/);
+  } else if (relatief.startsWith("posts" + path.sep) && relatief !== path.join("posts", "_template.html")) {
+    afbeelding = eersteAfbeelding(inhoud, /<figure class="foto">\s*<img\b([^>]*)>/);
+  }
+  if (afbeelding) {
+    const srcsetAttr = afbeelding.srcset ? ` imagesrcset="${afbeelding.srcset}"` : "";
+    const sizesAttr = afbeelding.sizes ? ` imagesizes="${afbeelding.sizes}"` : "";
+    regels.push(`  <link rel="preload" as="image" href="${afbeelding.src}"${srcsetAttr}${sizesAttr}>`);
+  }
+
+  return regels.join("\n");
+}
+
 // Bouwt het HTML-blok met 2-3 gerelateerde posts voor de post op
 // `relatiefUrl`, of "" als er geen eigen plek of geen kandidaten zijn.
 function verwanteHtml(relatiefUrl, root) {
@@ -500,6 +544,9 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   let resultaat = bestaandMetaBlok.test(inhoud)
     ? inhoud.replace(bestaandMetaBlok, nieuwMetaBlok)
     : inhoud.replace(/(<meta name="description" content="[^"]*">\n)/, `$1${nieuwMetaBlok}\n`);
+
+  // Preload-hints (fonts + eventueel de hero-/hoofdfoto) vlak voor </head>.
+  resultaat = resultaat.replace("</head>", preloadHtml(root, relatief, inhoud) + "\n</head>");
 
   // Instagram-knop in de knoppenrij van het deelblok: alleen aanwezig als
   // deze post een eigen <meta name="instagram_url"> heeft (zie

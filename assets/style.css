@@ -527,6 +527,11 @@ a:focus-visible, button:focus-visible {
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
+  /* Groter tikdoel op touchscreens (PageSpeed-advies): minimaal 44px hoog.
+     Zonder dit valt een <button> (zoals "Kopieer de link", geen svg-icoon)
+     korter uit dan een <a> met icoon, omdat knop-elementen de site-brede
+     line-height niet op dezelfde manier erven. */
+  min-height: 44px;
 }
 .deelknop svg { flex-shrink: 0; }
 .deelknop.whatsapp {

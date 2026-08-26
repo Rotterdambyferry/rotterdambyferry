@@ -564,6 +564,11 @@ a:focus-visible, button:focus-visible {
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
+  /* Groter tikdoel op touchscreens (PageSpeed-advies): minimaal 44px hoog.
+     Zonder dit valt een <button> (zoals "Kopieer de link", geen svg-icoon)
+     korter uit dan een <a> met icoon, omdat knop-elementen de site-brede
+     line-height niet op dezelfde manier erven. */
+  min-height: 44px;
 }
 .deelknop svg { flex-shrink: 0; }
 .deelknop.whatsapp {
@@ -819,6 +824,8 @@ body:has(.artikel) .site-footer .inner {
     gtag('js', new Date());
     gtag('config', 'G-ZQS8RQWBE9');
   </script>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/archivo-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/source-serif-4-latin.woff2" crossorigin>
 </head>
 <body>
 
