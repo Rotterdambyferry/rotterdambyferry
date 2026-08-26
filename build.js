@@ -218,6 +218,44 @@ ${items}    </div>
   </section>\n`;
 }
 
+// Bouwt het HTML-blok met de 3 meest recente gepubliceerde posts, voor de
+// "Leestips"-sectie op over.html (dezelfde .verwant-component als hierboven,
+// dus geen aparte styling nodig). Sorteert op publicatiedatum (de eigen
+// publicatiedatum-meta, of anders de vroegste git-commit als een post die
+// niet heeft) en respecteert daarmee vanzelf verborgenPosts/livePlekken: een
+// post met een datum in de toekomst staat er nooit tussen. Geeft "" terug
+// als er (nog) geen enkele post is.
+function leestipsHtml(root) {
+  const kandidaten = livePlekken
+    .filter((plek) => plek.post)
+    .map((plek) => {
+      const naam = path.basename(plek.post, ".html");
+      const datum = publicatiedatums[naam] || eersteWijziging(path.join(bronmap, plek.post));
+      return { plek, datum };
+    })
+    .sort((a, b) => (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0))
+    .slice(0, 3);
+  if (kandidaten.length === 0) return "";
+
+  const items = kandidaten
+    .map(({ plek }) => {
+      const thumb = plek.image
+        ? `\n        <span class="thumb"><img src="${root}${plek.image}" alt="" loading="lazy"></span>`
+        : "";
+      return `      <a class="verwant-item" href="${root}${plek.post}">${thumb}
+        <span class="titel">${plek.naam}</span>
+        <span class="teaser">${plek.teaser}</span>
+      </a>\n`;
+    })
+    .join("");
+
+  return `  <section class="verwant">
+    <p class="kop">Leestips</p>
+    <div class="verwant-grid">
+${items}    </div>
+  </section>\n\n`;
+}
+
 // Leest de echte pixelafmetingen van een JPEG-bestand, puur door de
 // SOF-marker in de header op te zoeken (geen npm-package nodig). Geeft
 // null terug als het bestand ontbreekt of niet als JPEG te lezen is.
@@ -506,6 +544,12 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     if (verwant) {
       resultaat = resultaat.replace(/<\/main>/, verwant + "</main>");
     }
+  }
+
+  // Op over.html (of elke andere pagina met de marker): "Leestips" met de
+  // 3 meest recente posts op de aangegeven plek plakken.
+  if (resultaat.includes("<!-- LEESTIPS -->")) {
+    resultaat = resultaat.replace(/[ \t]*<!-- LEESTIPS -->\n\n?/, leestipsHtml(root));
   }
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });

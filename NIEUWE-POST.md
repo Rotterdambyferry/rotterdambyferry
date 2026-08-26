@@ -147,3 +147,8 @@ homepage een kleine versie. Zo werkt het:
   tips komen..." — het gebied "Rotterdam Zuid" linkt daar naar de
   Over Ferry-pagina. Een gewone tekstlink, geen aparte opmaak nodig:
   alle links op de site zijn standaard groen.
+- Zo'n inline link in de lopende tekst (naar een andere post of naar
+  `over.html`) opent altijd in een nieuw tabblad: `target="_blank"
+  rel="noopener"`, zodat de lezer het artikel niet kwijtraakt. Geldt
+  alleen voor dit soort tekstlinks — niet voor de header/footer-links,
+  die blijven gewoon in hetzelfde tabblad.
