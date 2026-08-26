@@ -545,8 +545,16 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     ? inhoud.replace(bestaandMetaBlok, nieuwMetaBlok)
     : inhoud.replace(/(<meta name="description" content="[^"]*">\n)/, `$1${nieuwMetaBlok}\n`);
 
-  // Preload-hints (fonts + eventueel de hero-/hoofdfoto) vlak voor </head>.
-  resultaat = resultaat.replace("</head>", preloadHtml(root, relatief, inhoud) + "\n</head>");
+  // Preload-hints (fonts + eventueel de hero-/hoofdfoto) meteen na de
+  // viewport-meta plakken — dus vóór de andere og/twitter-meta's en vóór de
+  // (verderop pas ingevoegde) volledige inline <style>. Stonden deze vlak
+  // voor </head>, dan ontdekt de browser ze pas nadat hij toch al door de
+  // hele stylesheet heen moest parsen, en verliezen ze hun hele nut (heeft
+  // op 26 augustus 2026 de LCP juist trager gemaakt i.p.v. sneller).
+  resultaat = resultaat.replace(
+    /(<meta name="viewport" content="[^"]*">\r?\n)/,
+    `$1${preloadHtml(root, relatief, inhoud)}\n`
+  );
 
   // Instagram-knop in de knoppenrij van het deelblok: alleen aanwezig als
   // deze post een eigen <meta name="instagram_url"> heeft (zie
