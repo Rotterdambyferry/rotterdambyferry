@@ -22,6 +22,9 @@
 // datum is aangebroken, neemt de eerstvolgende build de post vanzelf mee.
 // Geen publicatiedatum-regel? Dan wordt de post gewoon meteen gebouwd,
 // zoals voorheen.
+//
+// Het kopieersjabloon src/posts/_template.html wordt nooit gebouwd: het is
+// alleen het startpunt voor een nieuwe post en hoort niet op de live site.
 
 const fs = require("fs");
 const path = require("path");
@@ -252,7 +255,7 @@ function preloadHtml(root, relatief, inhoud) {
   let afbeelding = null;
   if (relatief === "index.html") {
     afbeelding = eersteAfbeelding(inhoud, /<img class="hero-foto"[^>]*\bid="hero-foto"([^>]*)>/);
-  } else if (relatief.startsWith("posts" + path.sep) && relatief !== path.join("posts", "_template.html")) {
+  } else if (relatief.startsWith("posts" + path.sep)) {
     afbeelding = eersteAfbeelding(inhoud, /<figure class="(?:foto|post-foto)">\s*<img\b([^>]*)>/);
   }
   if (afbeelding) {
@@ -542,7 +545,7 @@ function broodkruimelHtml(relatiefUrl, ogTitel) {
 }
 
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
-// pagina's, behalve het kopieersjabloon (dat robots.txt ook al weert).
+// pagina's (het kopieersjabloon wordt niet gebouwd, zie hieronder).
 const sitemapPaginas = [];
 
 let aantal = 0;
@@ -551,10 +554,19 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const delen = relatief.split(path.sep);
   const doel = path.join(__dirname, relatief);
 
+  // Het kopieersjabloon (src/posts/_template.html) is alleen het startpunt
+  // voor een nieuwe post en hoort niet op de live site. Stond er van een
+  // eerdere build nog een gebouwde versie in posts/, ruim die dan op.
+  if (relatief === path.join("posts", "_template.html")) {
+    if (fs.existsSync(doel)) fs.unlinkSync(doel);
+    console.log(`○ ${relatief}  (sjabloon, wordt niet gepubliceerd)`);
+    continue;
+  }
+
   // Voorbereide post met een datum in de toekomst: geen pagina bouwen. Stond
   // er van een eerdere build nog een (bijvoorbeeld na het per ongeluk
   // vervroegen van de datum), ruim die dan op.
-  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+  if (delen[0] === "posts") {
     const naam = delen[1].slice(0, -".html".length);
     if (verborgenPosts.has(naam)) {
       if (fs.existsSync(doel)) fs.unlinkSync(doel);
@@ -574,8 +586,8 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const inhoud = leesTekst(bronbestand);
 
   // og/twitter/canonical genereren uit de eigen <title>/meta description en
-  // vervangen (of, bij _template.html, voor het eerst invoegen na de
-  // meta-description-regel).
+  // vervangen (of, bij een post zonder eigen og-blok in de bron, voor het
+  // eerst invoegen na de meta-description-regel).
   const { blok: nieuwMetaBlok, ogTitel, beschrijving, ogAfbeelding } = metaBlok({
     inhoud,
     paginaUrl,
@@ -604,10 +616,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // footer-partial gewoon leeg vervangen — geen extra knop, geen lege ruimte.
   // Zelfde .deelknop.instagram-stijl en icoon als de vaste "Volg op
   // Instagram"-knop onderaan de footer.
-  const instagramMatch =
-    relatief === path.join("posts", "_template.html")
-      ? null // anders matcht de uitgecommentte voorbeeldregel in het sjabloon ook
-      : inhoud.match(/<meta name="instagram_url" content="([^"]*)">/);
+  const instagramMatch = inhoud.match(/<meta name="instagram_url" content="([^"]*)">/);
   const instagramKnop = instagramMatch
     ? `\n      <a class="deelknop instagram" href="${instagramMatch[1]}" target="_blank" rel="noopener">${instagramSvg}Reageer op Instagram</a>`
     : "";
@@ -630,8 +639,8 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // zonder post-foto's.
   resultaat = markeerSmallePostFotos(resultaat);
 
-  // Op elke echte post: BlogPosting-schema (JSON-LD) vlak voor </head>.
-  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+  // Op elke post: BlogPosting-schema (JSON-LD) vlak voor </head>.
+  if (delen[0] === "posts") {
     const postNaam = delen[1].slice(0, -".html".length);
     const jsonLd = jsonLdBlok({
       bronbestand,
@@ -658,7 +667,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   }
 
   // Op elke post: "Misschien vind je dit ook leuk" vlak voor </main> plakken.
-  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+  if (delen[0] === "posts") {
     const verwant = verwanteHtml(relatiefUrl, root);
     if (verwant) {
       resultaat = resultaat.replace(/<\/main>/, verwant + "</main>");
@@ -676,9 +685,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   console.log(`✓ ${relatief}`);
   aantal++;
 
-  if (relatief !== path.join("posts", "_template.html")) {
-    sitemapPaginas.push({ url: paginaUrl, bronbestand });
-  }
+  sitemapPaginas.push({ url: paginaUrl, bronbestand });
 }
 
 // sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht
