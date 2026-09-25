@@ -22,6 +22,9 @@
 // datum is aangebroken, neemt de eerstvolgende build de post vanzelf mee.
 // Geen publicatiedatum-regel? Dan wordt de post gewoon meteen gebouwd,
 // zoals voorheen.
+//
+// Het kopieersjabloon src/posts/_template.html wordt nooit gebouwd: het is
+// alleen het startpunt voor een nieuwe post en hoort niet op de live site.
 
 const fs = require("fs");
 const path = require("path");
@@ -30,6 +33,21 @@ const { execFileSync } = require("child_process");
 const bronmap = path.join(__dirname, "src");
 const partialsmap = path.join(__dirname, "partials");
 const alles = process.argv.includes("--alles");
+
+// Leest een tekstbestand en zet Windows-regeleinden (CRLF) meteen om naar
+// gewone regeleinden (LF). Alle zoekpatronen in dit script rekenen op LF;
+// zonder deze stap vonden ze in een bestand met CRLF stilletjes niets, en
+// verdwenen bijvoorbeeld het broodkruimelpad, de Leestips en de og-tags
+// (zie AUDIT.md, B1). Zo maakt het niet uit hoe een bestand op schijf staat.
+function leesTekst(bestand) {
+  return fs.readFileSync(bestand, "utf8").replace(/\r\n/g, "\n");
+}
+
+// Schrijft een gebouwd bestand weg, gegarandeerd met LF-regeleinden: de build
+// schrijft zelf nooit CRLF, ook niet als er ergens toch een doorheen glipt.
+function schrijfTekst(bestand, inhoud) {
+  fs.writeFileSync(bestand, inhoud.replace(/\r\n/g, "\n"));
+}
 
 // "Vandaag" in Nederlandse tijd, als JJJJ-MM-DD — zodat de vergelijking
 // klopt ongeacht in welke tijdzone dit script draait (bijv. GitHub Actions
@@ -43,7 +61,7 @@ const vandaag = vandaagISO();
 // los te downloaden css-bestand): dat scheelt een blokkerende download
 // vóór de eerste weergave. assets/style.css blijft de enige bron — na een
 // wijziging daarin dus wel opnieuw builden.
-const stijl = fs.readFileSync(path.join(__dirname, "assets", "style.css"), "utf8").trimEnd();
+const stijl = leesTekst(path.join(__dirname, "assets", "style.css")).trimEnd();
 const stijlLink = /<link rel="stylesheet" href="(?:\.\.\/)*assets\/style\.css">/;
 
 // Lees alle partials één keer in; haal witruimte aan het einde weg zodat de
@@ -52,7 +70,7 @@ const partials = {};
 for (const bestand of fs.readdirSync(partialsmap)) {
   if (bestand.endsWith(".html")) {
     const naam = bestand.slice(0, -".html".length);
-    partials[naam] = fs.readFileSync(path.join(partialsmap, bestand), "utf8").trimEnd();
+    partials[naam] = leesTekst(path.join(partialsmap, bestand)).trimEnd();
   }
 }
 
@@ -83,7 +101,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const delen = relatief.split(path.sep);
   if (delen[0] !== "posts" || delen[1] === "_template.html") continue;
   const naam = delen[1].slice(0, -".html".length);
-  const inhoud = fs.readFileSync(bronbestand, "utf8");
+  const inhoud = leesTekst(bronbestand);
   const match = inhoud.match(/<meta name="publicatiedatum" content="(\d{4}-\d{2}-\d{2})">/);
   if (!match) continue;
   publicatiedatums[naam] = match[1];
@@ -152,13 +170,31 @@ function eersteWijziging(bronbestand) {
   return datum;
 }
 
-// Plekken uit places.json, voor de "Misschien vind je dit ook leuk"-sectie
-// onderaan elke post. Alleen al gepubliceerde plekken meetellen (dezelfde
-// verborgen-postscheck als hierboven), op postpad ("posts/naam.html") omdat
-// dat exact overeenkomt met het al berekende relatiefUrl van elke post.
-const livePlekken = JSON.parse(fs.readFileSync(path.join(bronmap, "places.json"), "utf8")).filter(
-  (plek) => !hoortBijVerborgenPost(plek.post)
-);
+// Alle plekken uit src/places.json, één keer ingelezen als echte JSON. De
+// opmaak van het bestand (spaties, tabs, alles op één regel) maakt dus niet
+// uit. Is het bestand kapot, dan stopt de build met een duidelijke melding in
+// plaats van een halve of lege kaart te publiceren.
+function leesPlekken() {
+  let data;
+  try {
+    data = JSON.parse(leesTekst(path.join(bronmap, "places.json")));
+  } catch (fout) {
+    throw new Error(
+      `src/places.json is geen geldige JSON (${fout.message}). Controleer komma's, aanhalingstekens en haakjes.`
+    );
+  }
+  if (!Array.isArray(data)) {
+    throw new Error("src/places.json moet een lijst van plekken zijn: beginnen met [ en eindigen met ].");
+  }
+  return data;
+}
+const allePlekken = leesPlekken();
+
+// Plekken die al gepubliceerd mogen worden (dezelfde verborgen-postscheck als
+// hierboven), voor de "Misschien vind je dit ook leuk"-sectie onderaan elke
+// post en voor de gepubliceerde places.json. Op postpad ("posts/naam.html")
+// omdat dat exact overeenkomt met het al berekende relatiefUrl van elke post.
+const livePlekken = allePlekken.filter((plek) => !(plek.post && hoortBijVerborgenPost(plek.post)));
 const plekPerPost = new Map(livePlekken.filter((plek) => plek.post).map((plek) => [plek.post, plek]));
 
 // Smalle post-foto's herkennen: op desktop wordt een post-foto begrensd tot
@@ -205,6 +241,11 @@ function eersteAfbeelding(inhoud, containerRegex) {
 // deze bronnen pas nadat hij door het hele inline stijlblok heen is — met
 // preload al meteen bij het parsen van de <head>. Geen afbeelding-preload op
 // pagina's zonder duidelijke hero-foto (over.html, kaart.html).
+// De foto-preload krijgt fetchpriority="high": anders start de browser deze
+// download met normale prioriteit, nog vóór hij bij de <img> (die zelf wél
+// fetchpriority="high" heeft) aankomt. Bij een post telt de eerste foto,
+// of die nu class="foto" heeft of (zoals bij DÂK en Station Bergweg)
+// class="post-foto".
 function preloadHtml(root, relatief, inhoud) {
   const regels = [
     `  <link rel="preload" as="font" type="font/woff2" href="${root}assets/fonts/archivo-latin.woff2" crossorigin>`,
@@ -214,13 +255,15 @@ function preloadHtml(root, relatief, inhoud) {
   let afbeelding = null;
   if (relatief === "index.html") {
     afbeelding = eersteAfbeelding(inhoud, /<img class="hero-foto"[^>]*\bid="hero-foto"([^>]*)>/);
-  } else if (relatief.startsWith("posts" + path.sep) && relatief !== path.join("posts", "_template.html")) {
-    afbeelding = eersteAfbeelding(inhoud, /<figure class="foto">\s*<img\b([^>]*)>/);
+  } else if (relatief.startsWith("posts" + path.sep)) {
+    afbeelding = eersteAfbeelding(inhoud, /<figure class="(?:foto|post-foto)">\s*<img\b([^>]*)>/);
   }
   if (afbeelding) {
     const srcsetAttr = afbeelding.srcset ? ` imagesrcset="${afbeelding.srcset}"` : "";
     const sizesAttr = afbeelding.sizes ? ` imagesizes="${afbeelding.sizes}"` : "";
-    regels.push(`  <link rel="preload" as="image" href="${afbeelding.src}"${srcsetAttr}${sizesAttr}>`);
+    regels.push(
+      `  <link rel="preload" as="image" href="${afbeelding.src}"${srcsetAttr}${sizesAttr} fetchpriority="high">`
+    );
   }
 
   return regels.join("\n");
@@ -360,7 +403,7 @@ function ontleedEntiteiten(tekst) {
 // of geen foto met alt-tekst heeft; kaart.html valt dan terug op de naam.
 function popupAltTekst(postPad) {
   try {
-    const inhoud = fs.readFileSync(path.join(bronmap, postPad), "utf8");
+    const inhoud = leesTekst(path.join(bronmap, postPad));
     const match = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\salt="([^"]+)"/);
     return match ? ontleedEntiteiten(match[1]) : null;
   } catch {
@@ -502,7 +545,7 @@ function broodkruimelHtml(relatiefUrl, ogTitel) {
 }
 
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
-// pagina's, behalve het kopieersjabloon (dat robots.txt ook al weert).
+// pagina's (het kopieersjabloon wordt niet gebouwd, zie hieronder).
 const sitemapPaginas = [];
 
 let aantal = 0;
@@ -511,10 +554,19 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const delen = relatief.split(path.sep);
   const doel = path.join(__dirname, relatief);
 
+  // Het kopieersjabloon (src/posts/_template.html) is alleen het startpunt
+  // voor een nieuwe post en hoort niet op de live site. Stond er van een
+  // eerdere build nog een gebouwde versie in posts/, ruim die dan op.
+  if (relatief === path.join("posts", "_template.html")) {
+    if (fs.existsSync(doel)) fs.unlinkSync(doel);
+    console.log(`○ ${relatief}  (sjabloon, wordt niet gepubliceerd)`);
+    continue;
+  }
+
   // Voorbereide post met een datum in de toekomst: geen pagina bouwen. Stond
   // er van een eerdere build nog een (bijvoorbeeld na het per ongeluk
   // vervroegen van de datum), ruim die dan op.
-  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+  if (delen[0] === "posts") {
     const naam = delen[1].slice(0, -".html".length);
     if (verborgenPosts.has(naam)) {
       if (fs.existsSync(doel)) fs.unlinkSync(doel);
@@ -531,11 +583,11 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const relatiefUrl = delen.join("/");
   const paginaUrl = SITE + (relatiefUrl === "index.html" ? "" : relatiefUrl);
 
-  const inhoud = fs.readFileSync(bronbestand, "utf8");
+  const inhoud = leesTekst(bronbestand);
 
   // og/twitter/canonical genereren uit de eigen <title>/meta description en
-  // vervangen (of, bij _template.html, voor het eerst invoegen na de
-  // meta-description-regel).
+  // vervangen (of, bij een post zonder eigen og-blok in de bron, voor het
+  // eerst invoegen na de meta-description-regel).
   const { blok: nieuwMetaBlok, ogTitel, beschrijving, ogAfbeelding } = metaBlok({
     inhoud,
     paginaUrl,
@@ -564,10 +616,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // footer-partial gewoon leeg vervangen — geen extra knop, geen lege ruimte.
   // Zelfde .deelknop.instagram-stijl en icoon als de vaste "Volg op
   // Instagram"-knop onderaan de footer.
-  const instagramMatch =
-    relatief === path.join("posts", "_template.html")
-      ? null // anders matcht de uitgecommentte voorbeeldregel in het sjabloon ook
-      : inhoud.match(/<meta name="instagram_url" content="([^"]*)">/);
+  const instagramMatch = inhoud.match(/<meta name="instagram_url" content="([^"]*)">/);
   const instagramKnop = instagramMatch
     ? `\n      <a class="deelknop instagram" href="${instagramMatch[1]}" target="_blank" rel="noopener">${instagramSvg}Reageer op Instagram</a>`
     : "";
@@ -590,8 +639,8 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // zonder post-foto's.
   resultaat = markeerSmallePostFotos(resultaat);
 
-  // Op elke echte post: BlogPosting-schema (JSON-LD) vlak voor </head>.
-  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+  // Op elke post: BlogPosting-schema (JSON-LD) vlak voor </head>.
+  if (delen[0] === "posts") {
     const postNaam = delen[1].slice(0, -".html".length);
     const jsonLd = jsonLdBlok({
       bronbestand,
@@ -618,7 +667,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   }
 
   // Op elke post: "Misschien vind je dit ook leuk" vlak voor </main> plakken.
-  if (delen[0] === "posts" && delen[1] !== "_template.html") {
+  if (delen[0] === "posts") {
     const verwant = verwanteHtml(relatiefUrl, root);
     if (verwant) {
       resultaat = resultaat.replace(/<\/main>/, verwant + "</main>");
@@ -632,13 +681,11 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   }
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });
-  fs.writeFileSync(doel, resultaat);
+  schrijfTekst(doel, resultaat);
   console.log(`✓ ${relatief}`);
   aantal++;
 
-  if (relatief !== path.join("posts", "_template.html")) {
-    sitemapPaginas.push({ url: paginaUrl, bronbestand });
-  }
+  sitemapPaginas.push({ url: paginaUrl, bronbestand });
 }
 
 // sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht
@@ -656,35 +703,47 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls +
     `</urlset>\n`;
-  fs.writeFileSync(path.join(__dirname, "sitemap.xml"), resultaat);
+  schrijfTekst(path.join(__dirname, "sitemap.xml"), resultaat);
   console.log(`✓ sitemap.xml`);
   aantal++;
 }
 
-// places.json: pins van nog niet gepubliceerde posts eruit filteren. Werkt
-// op de platte tekst (net als sitemap.xml hierboven) in plaats van via
-// JSON.parse + stringify, zodat de handgeschreven opmaak (bijvoorbeeld
-// "categorie": ["a", "b"] op één regel) intact blijft. Heeft een plek een
-// eigen post mét foto, dan wordt de alt-tekst van die foto als extra "alt"-
-// veld toegevoegd (voor de kaart-popup) — hier hoeft niets voor bijgehouden
-// te worden in src/places.json zelf.
+// Geeft een plek terug met de alt-tekst van de eigen postfoto als extra
+// "alt"-veld direct na "image" (voor de kaart-popup), als de plek een eigen
+// post mét foto heeft. Hier hoeft dus niets voor bijgehouden te worden in
+// src/places.json zelf.
+function metPopupAlt(plek) {
+  if (!plek.post || !plek.image) return plek;
+  const alt = popupAltTekst(plek.post);
+  if (!alt) return plek;
+  const uit = {};
+  for (const [sleutel, waarde] of Object.entries(plek)) {
+    uit[sleutel] = waarde;
+    if (sleutel === "image") uit.alt = alt;
+  }
+  return uit;
+}
+
+// places.json: de gepubliceerde versie bevat alleen de plekken van al
+// gepubliceerde posts (livePlekken hierboven), aangevuld met de alt-teksten.
+// Gelezen en geschreven als echte JSON, niet meer geknipt op spaties.
 {
-  const bron = fs.readFileSync(path.join(bronmap, "places.json"), "utf8");
-  const blokken = bron.match(/ {2}\{[\s\S]*?\n {2}\}/g) || [];
-  const overgebleven = blokken
-    .filter((blok) => !hoortBijVerborgenPost(blok))
-    .map((blok) => {
-      const postMatch = blok.match(/"post": "([^"]+)"/);
-      if (!postMatch || !/"image": "[^"]*"/.test(blok)) return blok;
-      const alt = popupAltTekst(postMatch[1]);
-      if (!alt) return blok;
-      // places.json staat (in tegenstelling tot de HTML-bronbestanden) met
-      // CRLF-regeleinden in de repo — \r?\n dus, niet zomaar \n.
-      return blok.replace(/("image": "[^"]*",\r?\n)/, `$1    "alt": ${JSON.stringify(alt)},\r\n`);
-    });
-  const resultaat = "[\n" + overgebleven.join(",\n") + "\n]\n";
-  JSON.parse(resultaat); // bouwfout meteen laten crashen i.p.v. kapotte JSON publiceren
-  fs.writeFileSync(path.join(__dirname, "places.json"), resultaat);
+  // Onafhankelijke controle: tel apart (exact op bestandsnaam) hoeveel pins
+  // bij nog niet gepubliceerde posts horen, en stop als het resultaat daar
+  // niet mee klopt. Zo kan er nooit ongemerkt een lege of halve kaart online.
+  const aantalVerborgen = allePlekken.filter(
+    (plek) => plek.post && verborgenPosts.has(path.basename(plek.post, ".html"))
+  ).length;
+  const verwacht = allePlekken.length - aantalVerborgen;
+  const uitvoer = livePlekken.map(metPopupAlt);
+  if (uitvoer.length !== verwacht) {
+    throw new Error(
+      `places.json: de build zou ${uitvoer.length} pins publiceren, maar dat hadden er ${verwacht} moeten zijn ` +
+        `(${allePlekken.length} in src/places.json, waarvan ${aantalVerborgen} bij nog niet gepubliceerde posts). ` +
+        `De build is gestopt, zodat er geen onvolledige kaart online komt.`
+    );
+  }
+  schrijfTekst(path.join(__dirname, "places.json"), JSON.stringify(uitvoer, null, 2) + "\n");
   console.log(`✓ places.json`);
   aantal++;
 }

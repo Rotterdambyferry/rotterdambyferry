@@ -3,7 +3,9 @@
     "naam": "Warung Melatie",
     "lat": 51.9163222,
     "lon": 4.4492634,
-    "categorie": ["lunchplek"],
+    "categorie": [
+      "lunchplek"
+    ],
     "gebied": "west",
     "wijk": "Nieuwe Westen",
     "post": "posts/warung-melatie.html",
@@ -15,7 +17,11 @@
     "naam": "Simit and Cheese",
     "lat": 51.8980534,
     "lon": 4.5110595,
-    "categorie": ["restaurant", "lunchplek", "kidsproof"],
+    "categorie": [
+      "restaurant",
+      "lunchplek",
+      "kidsproof"
+    ],
     "gebied": "zuid",
     "wijk": "Afrikaanderwijk",
     "post": "posts/simit-and-cheese.html",
@@ -27,7 +33,10 @@
     "naam": "Little Italy",
     "lat": 51.9236,
     "lon": 4.4846,
-    "categorie": ["lunchplek", "delicatessen"],
+    "categorie": [
+      "lunchplek",
+      "delicatessen"
+    ],
     "gebied": "centrum",
     "wijk": "Stadsdriehoek",
     "post": "posts/little-italy.html",
@@ -39,7 +48,9 @@
     "naam": "RiF010",
     "lat": 51.9201,
     "lon": 4.4844,
-    "categorie": ["kidsproof"],
+    "categorie": [
+      "kidsproof"
+    ],
     "gebied": "centrum",
     "wijk": "Stadsdriehoek",
     "post": "posts/rif010.html",
@@ -51,7 +62,9 @@
     "naam": "Due Tonino",
     "lat": 51.9244,
     "lon": 4.4915,
-    "categorie": ["restaurant"],
+    "categorie": [
+      "restaurant"
+    ],
     "gebied": "centrum",
     "wijk": "Goudsesingel",
     "post": "posts/due-tonino.html",
@@ -63,7 +76,10 @@
     "naam": "Station Bergweg",
     "lat": 51.9321,
     "lon": 4.4709,
-    "categorie": ["foodhal", "borrelplek"],
+    "categorie": [
+      "foodhal",
+      "borrelplek"
+    ],
     "gebied": "noord",
     "wijk": "Bergpolder",
     "post": "posts/station-bergweg.html",
@@ -75,7 +91,9 @@
     "naam": "Smickel Inn (Balkon van Europa)",
     "lat": 51.9822,
     "lon": 4.0462,
-    "categorie": ["dagje-uit"],
+    "categorie": [
+      "dagje-uit"
+    ],
     "gebied": "maasvlakte",
     "wijk": "Maasvlakte",
     "post": "posts/balkon-van-europa.html",
@@ -87,7 +105,9 @@
     "naam": "Pleinbios",
     "lat": 51.9024,
     "lon": 4.4887,
-    "categorie": ["dagje-uit"],
+    "categorie": [
+      "dagje-uit"
+    ],
     "gebied": "centrum",
     "wijk": "Kop van Zuid",
     "post": "posts/pleinbios.html",
@@ -99,7 +119,9 @@
     "naam": "De Vijgeboom",
     "lat": 51.9172,
     "lon": 4.4741,
-    "categorie": ["bruine-kroeg"],
+    "categorie": [
+      "bruine-kroeg"
+    ],
     "gebied": "centrum",
     "wijk": "Cool",
     "post": "posts/vijgeboom.html",
@@ -111,7 +133,9 @@
     "naam": "DÂK Rotterdam",
     "lat": 51.9162,
     "lon": 4.4775,
-    "categorie": ["borrelplek"],
+    "categorie": [
+      "borrelplek"
+    ],
     "gebied": "centrum",
     "wijk": "Cool (Westblaak)",
     "post": "posts/dak-rotterdam.html",
