@@ -167,13 +167,31 @@ function eersteWijziging(bronbestand) {
   return datum;
 }
 
-// Plekken uit places.json, voor de "Misschien vind je dit ook leuk"-sectie
-// onderaan elke post. Alleen al gepubliceerde plekken meetellen (dezelfde
-// verborgen-postscheck als hierboven), op postpad ("posts/naam.html") omdat
-// dat exact overeenkomt met het al berekende relatiefUrl van elke post.
-const livePlekken = JSON.parse(leesTekst(path.join(bronmap, "places.json"))).filter(
-  (plek) => !hoortBijVerborgenPost(plek.post)
-);
+// Alle plekken uit src/places.json, één keer ingelezen als echte JSON. De
+// opmaak van het bestand (spaties, tabs, alles op één regel) maakt dus niet
+// uit. Is het bestand kapot, dan stopt de build met een duidelijke melding in
+// plaats van een halve of lege kaart te publiceren.
+function leesPlekken() {
+  let data;
+  try {
+    data = JSON.parse(leesTekst(path.join(bronmap, "places.json")));
+  } catch (fout) {
+    throw new Error(
+      `src/places.json is geen geldige JSON (${fout.message}). Controleer komma's, aanhalingstekens en haakjes.`
+    );
+  }
+  if (!Array.isArray(data)) {
+    throw new Error("src/places.json moet een lijst van plekken zijn: beginnen met [ en eindigen met ].");
+  }
+  return data;
+}
+const allePlekken = leesPlekken();
+
+// Plekken die al gepubliceerd mogen worden (dezelfde verborgen-postscheck als
+// hierboven), voor de "Misschien vind je dit ook leuk"-sectie onderaan elke
+// post en voor de gepubliceerde places.json. Op postpad ("posts/naam.html")
+// omdat dat exact overeenkomt met het al berekende relatiefUrl van elke post.
+const livePlekken = allePlekken.filter((plek) => !(plek.post && hoortBijVerborgenPost(plek.post)));
 const plekPerPost = new Map(livePlekken.filter((plek) => plek.post).map((plek) => [plek.post, plek]));
 
 // Smalle post-foto's herkennen: op desktop wordt een post-foto begrensd tot
@@ -676,28 +694,42 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   aantal++;
 }
 
-// places.json: pins van nog niet gepubliceerde posts eruit filteren. Werkt
-// op de platte tekst (net als sitemap.xml hierboven) in plaats van via
-// JSON.parse + stringify, zodat de handgeschreven opmaak (bijvoorbeeld
-// "categorie": ["a", "b"] op één regel) intact blijft. Heeft een plek een
-// eigen post mét foto, dan wordt de alt-tekst van die foto als extra "alt"-
-// veld toegevoegd (voor de kaart-popup) — hier hoeft niets voor bijgehouden
-// te worden in src/places.json zelf.
+// Geeft een plek terug met de alt-tekst van de eigen postfoto als extra
+// "alt"-veld direct na "image" (voor de kaart-popup), als de plek een eigen
+// post mét foto heeft. Hier hoeft dus niets voor bijgehouden te worden in
+// src/places.json zelf.
+function metPopupAlt(plek) {
+  if (!plek.post || !plek.image) return plek;
+  const alt = popupAltTekst(plek.post);
+  if (!alt) return plek;
+  const uit = {};
+  for (const [sleutel, waarde] of Object.entries(plek)) {
+    uit[sleutel] = waarde;
+    if (sleutel === "image") uit.alt = alt;
+  }
+  return uit;
+}
+
+// places.json: de gepubliceerde versie bevat alleen de plekken van al
+// gepubliceerde posts (livePlekken hierboven), aangevuld met de alt-teksten.
+// Gelezen en geschreven als echte JSON, niet meer geknipt op spaties.
 {
-  const bron = leesTekst(path.join(bronmap, "places.json"));
-  const blokken = bron.match(/ {2}\{[\s\S]*?\n {2}\}/g) || [];
-  const overgebleven = blokken
-    .filter((blok) => !hoortBijVerborgenPost(blok))
-    .map((blok) => {
-      const postMatch = blok.match(/"post": "([^"]+)"/);
-      if (!postMatch || !/"image": "[^"]*"/.test(blok)) return blok;
-      const alt = popupAltTekst(postMatch[1]);
-      if (!alt) return blok;
-      return blok.replace(/("image": "[^"]*",\n)/, `$1    "alt": ${JSON.stringify(alt)},\n`);
-    });
-  const resultaat = "[\n" + overgebleven.join(",\n") + "\n]\n";
-  JSON.parse(resultaat); // bouwfout meteen laten crashen i.p.v. kapotte JSON publiceren
-  schrijfTekst(path.join(__dirname, "places.json"), resultaat);
+  // Onafhankelijke controle: tel apart (exact op bestandsnaam) hoeveel pins
+  // bij nog niet gepubliceerde posts horen, en stop als het resultaat daar
+  // niet mee klopt. Zo kan er nooit ongemerkt een lege of halve kaart online.
+  const aantalVerborgen = allePlekken.filter(
+    (plek) => plek.post && verborgenPosts.has(path.basename(plek.post, ".html"))
+  ).length;
+  const verwacht = allePlekken.length - aantalVerborgen;
+  const uitvoer = livePlekken.map(metPopupAlt);
+  if (uitvoer.length !== verwacht) {
+    throw new Error(
+      `places.json: de build zou ${uitvoer.length} pins publiceren, maar dat hadden er ${verwacht} moeten zijn ` +
+        `(${allePlekken.length} in src/places.json, waarvan ${aantalVerborgen} bij nog niet gepubliceerde posts). ` +
+        `De build is gestopt, zodat er geen onvolledige kaart online komt.`
+    );
+  }
+  schrijfTekst(path.join(__dirname, "places.json"), JSON.stringify(uitvoer, null, 2) + "\n");
   console.log(`✓ places.json`);
   aantal++;
 }
