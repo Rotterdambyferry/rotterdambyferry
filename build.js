@@ -31,6 +31,21 @@ const bronmap = path.join(__dirname, "src");
 const partialsmap = path.join(__dirname, "partials");
 const alles = process.argv.includes("--alles");
 
+// Leest een tekstbestand en zet Windows-regeleinden (CRLF) meteen om naar
+// gewone regeleinden (LF). Alle zoekpatronen in dit script rekenen op LF;
+// zonder deze stap vonden ze in een bestand met CRLF stilletjes niets, en
+// verdwenen bijvoorbeeld het broodkruimelpad, de Leestips en de og-tags
+// (zie AUDIT.md, B1). Zo maakt het niet uit hoe een bestand op schijf staat.
+function leesTekst(bestand) {
+  return fs.readFileSync(bestand, "utf8").replace(/\r\n/g, "\n");
+}
+
+// Schrijft een gebouwd bestand weg, gegarandeerd met LF-regeleinden: de build
+// schrijft zelf nooit CRLF, ook niet als er ergens toch een doorheen glipt.
+function schrijfTekst(bestand, inhoud) {
+  fs.writeFileSync(bestand, inhoud.replace(/\r\n/g, "\n"));
+}
+
 // "Vandaag" in Nederlandse tijd, als JJJJ-MM-DD — zodat de vergelijking
 // klopt ongeacht in welke tijdzone dit script draait (bijv. GitHub Actions
 // draait in UTC). Het gaat hier om publicatiedagen, niet -tijdstippen.
@@ -43,7 +58,7 @@ const vandaag = vandaagISO();
 // los te downloaden css-bestand): dat scheelt een blokkerende download
 // vóór de eerste weergave. assets/style.css blijft de enige bron — na een
 // wijziging daarin dus wel opnieuw builden.
-const stijl = fs.readFileSync(path.join(__dirname, "assets", "style.css"), "utf8").trimEnd();
+const stijl = leesTekst(path.join(__dirname, "assets", "style.css")).trimEnd();
 const stijlLink = /<link rel="stylesheet" href="(?:\.\.\/)*assets\/style\.css">/;
 
 // Lees alle partials één keer in; haal witruimte aan het einde weg zodat de
@@ -52,7 +67,7 @@ const partials = {};
 for (const bestand of fs.readdirSync(partialsmap)) {
   if (bestand.endsWith(".html")) {
     const naam = bestand.slice(0, -".html".length);
-    partials[naam] = fs.readFileSync(path.join(partialsmap, bestand), "utf8").trimEnd();
+    partials[naam] = leesTekst(path.join(partialsmap, bestand)).trimEnd();
   }
 }
 
@@ -83,7 +98,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const delen = relatief.split(path.sep);
   if (delen[0] !== "posts" || delen[1] === "_template.html") continue;
   const naam = delen[1].slice(0, -".html".length);
-  const inhoud = fs.readFileSync(bronbestand, "utf8");
+  const inhoud = leesTekst(bronbestand);
   const match = inhoud.match(/<meta name="publicatiedatum" content="(\d{4}-\d{2}-\d{2})">/);
   if (!match) continue;
   publicatiedatums[naam] = match[1];
@@ -156,7 +171,7 @@ function eersteWijziging(bronbestand) {
 // onderaan elke post. Alleen al gepubliceerde plekken meetellen (dezelfde
 // verborgen-postscheck als hierboven), op postpad ("posts/naam.html") omdat
 // dat exact overeenkomt met het al berekende relatiefUrl van elke post.
-const livePlekken = JSON.parse(fs.readFileSync(path.join(bronmap, "places.json"), "utf8")).filter(
+const livePlekken = JSON.parse(leesTekst(path.join(bronmap, "places.json"))).filter(
   (plek) => !hoortBijVerborgenPost(plek.post)
 );
 const plekPerPost = new Map(livePlekken.filter((plek) => plek.post).map((plek) => [plek.post, plek]));
@@ -360,7 +375,7 @@ function ontleedEntiteiten(tekst) {
 // of geen foto met alt-tekst heeft; kaart.html valt dan terug op de naam.
 function popupAltTekst(postPad) {
   try {
-    const inhoud = fs.readFileSync(path.join(bronmap, postPad), "utf8");
+    const inhoud = leesTekst(path.join(bronmap, postPad));
     const match = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\salt="([^"]+)"/);
     return match ? ontleedEntiteiten(match[1]) : null;
   } catch {
@@ -531,7 +546,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const relatiefUrl = delen.join("/");
   const paginaUrl = SITE + (relatiefUrl === "index.html" ? "" : relatiefUrl);
 
-  const inhoud = fs.readFileSync(bronbestand, "utf8");
+  const inhoud = leesTekst(bronbestand);
 
   // og/twitter/canonical genereren uit de eigen <title>/meta description en
   // vervangen (of, bij _template.html, voor het eerst invoegen na de
@@ -632,7 +647,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   }
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });
-  fs.writeFileSync(doel, resultaat);
+  schrijfTekst(doel, resultaat);
   console.log(`✓ ${relatief}`);
   aantal++;
 
@@ -656,7 +671,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls +
     `</urlset>\n`;
-  fs.writeFileSync(path.join(__dirname, "sitemap.xml"), resultaat);
+  schrijfTekst(path.join(__dirname, "sitemap.xml"), resultaat);
   console.log(`✓ sitemap.xml`);
   aantal++;
 }
@@ -669,7 +684,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 // veld toegevoegd (voor de kaart-popup) — hier hoeft niets voor bijgehouden
 // te worden in src/places.json zelf.
 {
-  const bron = fs.readFileSync(path.join(bronmap, "places.json"), "utf8");
+  const bron = leesTekst(path.join(bronmap, "places.json"));
   const blokken = bron.match(/ {2}\{[\s\S]*?\n {2}\}/g) || [];
   const overgebleven = blokken
     .filter((blok) => !hoortBijVerborgenPost(blok))
@@ -678,13 +693,11 @@ for (const bronbestand of verzamelHtml(bronmap)) {
       if (!postMatch || !/"image": "[^"]*"/.test(blok)) return blok;
       const alt = popupAltTekst(postMatch[1]);
       if (!alt) return blok;
-      // places.json staat (in tegenstelling tot de HTML-bronbestanden) met
-      // CRLF-regeleinden in de repo — \r?\n dus, niet zomaar \n.
-      return blok.replace(/("image": "[^"]*",\r?\n)/, `$1    "alt": ${JSON.stringify(alt)},\r\n`);
+      return blok.replace(/("image": "[^"]*",\n)/, `$1    "alt": ${JSON.stringify(alt)},\n`);
     });
   const resultaat = "[\n" + overgebleven.join(",\n") + "\n]\n";
   JSON.parse(resultaat); // bouwfout meteen laten crashen i.p.v. kapotte JSON publiceren
-  fs.writeFileSync(path.join(__dirname, "places.json"), resultaat);
+  schrijfTekst(path.join(__dirname, "places.json"), resultaat);
   console.log(`✓ places.json`);
   aantal++;
 }

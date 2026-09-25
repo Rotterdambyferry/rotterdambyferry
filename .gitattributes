@@ -1,0 +1,21 @@
+# Regeleinden: alle tekstbestanden altijd met LF (Linux/Mac-stijl), ook op
+# Windows. Zo staan de bestanden op elke computer en op GitHub hetzelfde, en
+# kan build.js er niet meer over struikelen (zie AUDIT.md, B1).
+* text=auto eol=lf
+
+# Uitzondering: Windows-batchbestanden (dubbelklikbestanden) werken het
+# betrouwbaarst met Windows-regeleinden (CRLF).
+*.bat text eol=crlf
+
+# Binaire bestanden: nooit als tekst behandelen of aanpassen.
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
