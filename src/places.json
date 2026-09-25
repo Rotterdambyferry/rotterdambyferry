@@ -1,5 +1,16 @@
 [
   {
+    "naam": "Warung Melatie",
+    "lat": 51.9163222,
+    "lon": 4.4492634,
+    "categorie": ["lunchplek"],
+    "gebied": "west",
+    "wijk": "Nieuwe Westen",
+    "post": "posts/warung-melatie.html",
+    "image": "assets/img/warung-melatie-saoto-soep-hero-mobiel.jpg",
+    "teaser": "Volgens Per de Man de beste saoto soep van Rotterdam."
+  },
+  {
     "naam": "Simit and Cheese",
     "lat": 51.8980534,
     "lon": 4.5110595,
