@@ -1,14 +1,14 @@
-# Nieuwe blogpost toevoegen — spiekbriefje
+# Nieuwe blogpost toevoegen: spiekbriefje
 
 Een nieuwe post kost drie stappen: (1) post schrijven, (2) kaart op de
 homepage zetten, (3) publiceren. Een foto erbij? Zie het kopje "Foto's"
 onderaan.
 
 > **Goed om te weten:** je werkt altijd in de map `src`. De html-bestanden
-> daarbuiten (in de hoofdmap en in `posts`) worden automatisch opgebouwd —
+> daarbuiten (in de hoofdmap en in `posts`) worden automatisch opgebouwd:
 > daar hoef (en mag) je niets in te veranderen.
 
-## Stap 1 — De post zelf
+## Stap 1: De post zelf
 
 1. Ga naar de map `src\posts` en kopieer het bestand `_template.html`.
 2. Geef de kopie een korte naam zonder spaties of hoofdletters,
@@ -28,7 +28,7 @@ onderaan.
    vul de datum in, bijvoorbeeld `2026-09-05`. Zolang die datum nog niet
    is aangebroken, bouwt de site deze post nergens mee: geen pagina,
    geen kaart op de homepage, geen pin op de kaartpagina. Je kunt de
-   volgende stappen dus gewoon nu al afronden en later gewoon vergeten —
+   volgende stappen dus gewoon nu al afronden en later gewoon vergeten:
    op de publicatiedag verschijnt alles vanzelf.
 6. Optioneel afsluitblok met Instagram-vraag. Voeg dit alleen toe als er
    een Instagram-post over deze plek bestaat (vraag Ferry om de URL,
@@ -43,7 +43,7 @@ onderaan.
    het slot van `src/posts/warung-melatie.html`. Staat een van beide
    voorwaarden niet vast, vraag het Ferry in plaats van te gokken.
 
-## Stap 2 — Kaart op de homepage
+## Stap 2: Kaart op de homepage
 
 Open `src\index.html` en zoek de regel `<main class="grid" id="verhalen">`.
 Plak daaronder dit blokje en vul het in:
@@ -64,7 +64,7 @@ Plak daaronder dit blokje en vul het in:
 ```
 
 Geen foto voor deze post? Laat dan het hele blokje met
-`<a class="thumb" ...>` tot en met `</a>` gewoon weg — de kaart werkt
+`<a class="thumb" ...>` tot en met `</a>` gewoon weg: de kaart werkt
 ook prima zonder.
 
 Let op bij `data-categorie` en `data-gebied`: gebruik kleine letters en
@@ -91,26 +91,26 @@ titel-link en "Lees het verhaal"-regel toe zoals hierboven.
 
 De site heeft ook een kaart van Rotterdam (`kaart.html`) met een pin
 voor elke plek. Die pins staan in het bestand `src/places.json` (net
-als `src/index.html` is dit een bronbestand — de gepubliceerde versie
+als `src/index.html` is dit een bronbestand: de gepubliceerde versie
 in de hoofdmap wordt door de build gemaakt). Vraag Claude Code gewoon:
-"Zet deze plek ook op de kaart" — de coördinaten worden dan opgezocht
+"Zet deze plek ook op de kaart": de coördinaten worden dan opgezocht
 en toegevoegd. (Publiceer je via stap 3 hieronder, dan gebeurt dit
 automatisch mee. Heb je bij deze post een publicatiedatum in de
 toekomst gezet, dan verschijnt de pin pas als die datum is
 aangebroken.)
 
-`sitemap.xml` hoef je nergens handmatig bij te werken — die bouwt
+`sitemap.xml` hoef je nergens handmatig bij te werken: die bouwt
 `build.js` telkens zelf op uit de pagina's die er (dan) echt zijn.
 
-## Stap 3 — Publiceren
+## Stap 3: Publiceren
 
 Open Claude Code in deze map en zeg simpelweg:
 
 > "Ik heb een nieuwe post geschreven, controleer 'm even en publiceer."
 
 Claude controleert dan of alles klopt en zet het online. (Voor wie het
-zelf wil: eerst `npm run build` — dat plakt de header en footer in je
-nieuwe post en zet hem klaar in de map `posts` — dan `git add -A`, dan
+zelf wil: eerst `npm run build`: dat plakt de header en footer in je
+nieuwe post en zet hem klaar in de map `posts`. Dan `git add -A`, dan
 `git commit -m "Nieuwe post: titel"`, dan `git push`. Na een minuutje
 staat het live.)
 
@@ -129,15 +129,15 @@ homepage een kleine versie. Zo werkt het:
    Er komen dan twee verkleinde versies in `assets/img`:
    `naam.jpg` (groot, voor het artikel) en `naam-kaart.jpg`
    (klein, voor de homepagekaart). Originelen worden niet mee
-   gepubliceerd — die blijven alleen op je eigen computer.
+   gepubliceerd: die blijven alleen op je eigen computer.
 3. Draai daarna in PowerShell (in de projectmap):
-   `.\maak-mobiele-fotos.ps1` — dat maakt van elke grote foto ook een
+   `.\maak-mobiele-fotos.ps1`: dat maakt van elke grote foto ook een
    lichte `naam-mobiel.jpg` van 800 pixels breed. Telefoons laden die
    kleine versie, zodat de site op mobiel snel blijft. (Vraag je Claude
    Code om de foto's te verkleinen, dan gebeurt dit automatisch mee.)
 4. In je post: haal in het foto-blok uit het template de
    commentaarregels weg en vul de bestandsnaam, afmetingen en alt-tekst
-   in (de alt-tekst beschrijft in één zin wat er op de foto staat —
+   in (de alt-tekst beschrijft in één zin wat er op de foto staat:
    voor bezoekers die slecht zien en voor Google).
 4. Op de homepagekaart: gebruik het blokje met `class="thumb"` uit
    stap 2 hierboven.
@@ -146,25 +146,25 @@ homepage een kleine versie. Zo werkt het:
 
 - Bekijk je post eerst lokaal: dubbelklik op `start-preview.bat` in de
   projectmap. Die bouwt de site, start een mini-webservertje en opent je
-  browser vanzelf op de homepage — klik daar je nieuwe post aan. Klaar
+  browser vanzelf op de homepage: klik daar je nieuwe post aan. Klaar
   met kijken? Sluit gewoon het zwarte venster.
 - Een nieuwe categorie of gebied toevoegen aan de filters? Vraag het
   aan Claude Code, dat is een kleine aanpassing in `src\index.html`.
 - Noemt je nieuwe post een straat of plek waar al een andere post over
   gaat (bijvoorbeeld nog een kroeg op de Oude Binnenweg, of een plek
   vlak bij een eerdere post)? Link die vermelding dan in de lopende
-  tekst naar die post — goed voor de bezoeker én voor Google. Alleen
+  tekst naar die post: goed voor de bezoeker én voor Google. Alleen
   doen als het al vanzelf in de zin past; geen extra zin verzinnen om
   een link erin te proppen.
 - Datzelfde geldt voor een verwijzing naar jezelf: noem je in de tekst
   ergens dat je ergens vandaan komt of ergens woont, dan mag dat ook
   linken naar `over.html`. Voorbeeld uit de Simit and Cheese-post: "Als
   jongen van [Rotterdam Zuid](over.html) moeten er natuurlijk ook food
-  tips komen..." — het gebied "Rotterdam Zuid" linkt daar naar de
+  tips komen...": het gebied "Rotterdam Zuid" linkt daar naar de
   Over Ferry-pagina. Een gewone tekstlink, geen aparte opmaak nodig:
   alle links op de site zijn standaard groen.
 - Zo'n inline link in de lopende tekst (naar een andere post of naar
   `over.html`) opent altijd in een nieuw tabblad: `target="_blank"
   rel="noopener"`, zodat de lezer het artikel niet kwijtraakt. Geldt
-  alleen voor dit soort tekstlinks — niet voor de header/footer-links,
+  alleen voor dit soort tekstlinks: niet voor de header/footer-links,
   die blijven gewoon in hetzelfde tabblad.
