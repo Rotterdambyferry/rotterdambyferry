@@ -30,6 +30,18 @@ onderaan.
    geen kaart op de homepage, geen pin op de kaartpagina. Je kunt de
    volgende stappen dus gewoon nu al afronden en later gewoon vergeten —
    op de publicatiedag verschijnt alles vanzelf.
+6. Optioneel afsluitblok met Instagram-vraag. Voeg dit alleen toe als er
+   een Instagram-post over deze plek bestaat (vraag Ferry om de URL,
+   verzin hem nooit en gebruik geen profiellink) én als er een
+   natuurlijke vraag bij past waar lezers echt een mening over hebben,
+   zoals de beste saoto soep of de favoriete bruine kroeg. Past er geen
+   vraag bij, laat het blok dan weg. Het blok bestaat uit een `<h2>` met
+   een vraag die bij de plek past (geen vaste standaardtekst) en een
+   korte alinea die lezers uitnodigt hun mening te delen onder de
+   Instagram-post, met een link naar die post (`target="_blank"
+   rel="noopener"`). Het komt direct vóór het Praktisch-blok. Voorbeeld:
+   het slot van `src/posts/warung-melatie.html`. Staat een van beide
+   voorwaarden niet vast, vraag het Ferry in plaats van te gokken.
 
 ## Stap 2 — Kaart op de homepage
 
