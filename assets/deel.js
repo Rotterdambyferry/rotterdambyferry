@@ -9,7 +9,7 @@
 
   var whatsapp = document.querySelector(".deelknop.whatsapp");
   if (whatsapp) {
-    var bericht = encodeURIComponent(titel + " — " + url);
+    var bericht = encodeURIComponent(titel + "\n" + url);
     var mobiel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     // Mobiel: wa.me opent de WhatsApp-app. Desktop: rechtstreeks WhatsApp Web.
     whatsapp.href = mobiel

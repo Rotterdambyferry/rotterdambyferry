@@ -58,6 +58,7 @@ Alle kleuren staan als CSS-variabelen in `assets/style.css`:
 - Fonts (sinds augustus 2026 zelf gehost in `assets/fonts/`, niet meer via Google Fonts — scheelt render-blocking externe domeinen): **Archivo** (variabel, 600–900) voor koppen, labels, knoppen en meta; **Source Serif 4** (variabel, 400–600 + cursief) voor lopende tekst. De `@font-face`-regels staan bovenin `style.css` met absolute paden (`/assets/fonts/...`).
 - Kenmerkend: harde 2–3px zwarte randen (geen schaduw/afronding behalve de pill-filterknoppen), uppercase labels met letter-spacing (`.tag`), donkere footer.
 - Layoutbreedtes: `--breedte: 1080px` (site), `--leesbreedte: 680px` (artikel).
+- Geen gedachtestreepjes (— of –, ook niet als `&mdash;`/`&ndash;`) in zichtbare tekst: titels, h1, meta description, lopende tekst, figcaptions, Praktisch-blok, homepagekaarten, footer en `places.json`. Vervang ze door een komma, dubbele punt, haakjes of een nieuwe zin; tijden/bereiken als "11.45 tot 12.00". Koppeltekens binnen woorden (Rotterdam-West) en het scheidingsteken " | Rotterdam by Ferry" in `<title>` blijven. Sinds september 2026 is de hele site hierop opgeschoond; code-commentaar mag wel streepjes bevatten.
 
 ## Opbouw van een blogpost
 

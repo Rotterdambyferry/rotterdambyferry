@@ -16,6 +16,10 @@ onderaan.
 3. Open het bestand en vervang alles wat tussen [BLOKHAKEN] staat door
    je eigen tekst. Voor een extra alinea kopieer je een regel die met
    `<p>` begint en eindigt op `</p>`.
+   Gebruik geen gedachtestreepjes (— of –) in je titel, teksten of in
+   `places.json`: kies een komma, dubbele punt, haakjes of een nieuwe
+   zin. Tijden schrijf je als "11.45 tot 12.00". Koppeltekens binnen
+   een woord (Rotterdam-West) mogen gewoon.
 4. Deelknoppen (WhatsApp + link kopiëren) hoef je niets meer aan te
    doen: die staan automatisch in de footer van elke pagina.
 5. Moet de post pas later verschijnen (bijvoorbeeld een post die je nu
