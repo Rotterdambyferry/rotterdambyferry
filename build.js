@@ -238,6 +238,11 @@ function eersteAfbeelding(inhoud, containerRegex) {
 // deze bronnen pas nadat hij door het hele inline stijlblok heen is — met
 // preload al meteen bij het parsen van de <head>. Geen afbeelding-preload op
 // pagina's zonder duidelijke hero-foto (over.html, kaart.html).
+// De foto-preload krijgt fetchpriority="high": anders start de browser deze
+// download met normale prioriteit, nog vóór hij bij de <img> (die zelf wél
+// fetchpriority="high" heeft) aankomt. Bij een post telt de eerste foto,
+// of die nu class="foto" heeft of (zoals bij DÂK en Station Bergweg)
+// class="post-foto".
 function preloadHtml(root, relatief, inhoud) {
   const regels = [
     `  <link rel="preload" as="font" type="font/woff2" href="${root}assets/fonts/archivo-latin.woff2" crossorigin>`,
@@ -248,12 +253,14 @@ function preloadHtml(root, relatief, inhoud) {
   if (relatief === "index.html") {
     afbeelding = eersteAfbeelding(inhoud, /<img class="hero-foto"[^>]*\bid="hero-foto"([^>]*)>/);
   } else if (relatief.startsWith("posts" + path.sep) && relatief !== path.join("posts", "_template.html")) {
-    afbeelding = eersteAfbeelding(inhoud, /<figure class="foto">\s*<img\b([^>]*)>/);
+    afbeelding = eersteAfbeelding(inhoud, /<figure class="(?:foto|post-foto)">\s*<img\b([^>]*)>/);
   }
   if (afbeelding) {
     const srcsetAttr = afbeelding.srcset ? ` imagesrcset="${afbeelding.srcset}"` : "";
     const sizesAttr = afbeelding.sizes ? ` imagesizes="${afbeelding.sizes}"` : "";
-    regels.push(`  <link rel="preload" as="image" href="${afbeelding.src}"${srcsetAttr}${sizesAttr}>`);
+    regels.push(
+      `  <link rel="preload" as="image" href="${afbeelding.src}"${srcsetAttr}${sizesAttr} fetchpriority="high">`
+    );
   }
 
   return regels.join("\n");
