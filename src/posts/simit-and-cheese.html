@@ -27,8 +27,6 @@
 <!-- INCLUDE:header -->
 
 <main class="artikel">
-  <a class="terug" href="/">&larr; Alle verhalen</a>
-
   <div class="tags">
     <span class="tag">Restaurant</span>
     <span class="tag">Lunchplek</span>
@@ -82,13 +80,17 @@
     <figcaption>De kuymak in beeld gebracht op de muur, minstens zo bekend als de menemen.</figcaption>
   </figure>
 
-  <figure class="post-video verticaal">
-    <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@simitandcheese/video/7353280449768115488" data-video-id="7353280449768115488" style="max-width: 360px;min-width: 325px;">
-      <section></section>
-    </blockquote>
+  <!-- TikTok-video achter een afspeelknop: pas na een tik wordt TikTok
+       geladen (via assets/video.js, onderaan deze pagina). -->
+  <figure class="post-video staand">
+    <div class="video-frame">
+      <a class="video-facade" href="https://www.tiktok.com/@simitandcheese/video/7353280449768115488" data-titel="Zo eet je de kuymak volgens Simit and Cheese">
+        <img src="../assets/img/simit-and-cheese-tiktok-kuymak.jpg" alt="" width="576" height="1024" loading="lazy">
+        <span class="video-facade-knop">Speel af</span>
+      </a>
+    </div>
     <figcaption>Zo eet je de kuymak volgens Simit and Cheese zelf. Video van <a href="https://www.tiktok.com/@simitandcheese" target="_blank" rel="noopener">@simitandcheese</a>.</figcaption>
   </figure>
-  <script async src="https://www.tiktok.com/embed.js"></script>
 
   <div class="praktisch">
     <p class="kop">Praktisch</p>
@@ -99,6 +101,7 @@
 <!-- INCLUDE:footer -->
 
 <script src="../assets/header.js" defer></script>
+<script src="../assets/video.js" defer></script>
 
 </body>
 </html>

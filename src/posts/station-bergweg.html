@@ -34,8 +34,6 @@
 <!-- INCLUDE:header -->
 
 <main class="artikel">
-  <a class="terug" href="/">&larr; Alle verhalen</a>
-
   <div class="tags">
     <span class="tag">Foodhal</span>
     <span class="tag">Borrelplek</span>
@@ -60,9 +58,14 @@
 
   <p>Je hoeft trouwens niet alleen mij te geloven. De mannen van Broodjestester, die op YouTube heel Nederland afreizen op zoek naar de beste broodjes, wijdden een complete aflevering aan Station Bergweg en aten zich langs de verschillende zaken:</p>
 
+  <!-- YouTube-video achter een afspeelknop: pas na een tik wordt YouTube
+       (youtube-nocookie.com) geladen, via assets/video.js onderaan deze pagina. -->
   <figure class="post-video">
     <div class="video-frame">
-      <iframe src="https://www.youtube-nocookie.com/embed/Xv2pQDfrovI" title="Broodjestester bij Station Bergweg" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <a class="video-facade" href="https://www.youtube.com/watch?v=Xv2pQDfrovI" data-titel="Broodjestester bij Station Bergweg">
+        <img src="../assets/img/station-bergweg-broodjestester.jpg" srcset="../assets/img/station-bergweg-broodjestester-mobiel.jpg 800w, ../assets/img/station-bergweg-broodjestester.jpg 960w" sizes="(max-width: 720px) 100vw, 640px" alt="" width="960" height="540" loading="lazy">
+        <span class="video-facade-knop">Speel af</span>
+      </a>
     </div>
     <figcaption>De Broodjestesters op bezoek bij Station Bergweg. Video van <a href="https://www.youtube.com/@broodjestester" target="_blank" rel="noopener">Broodjestester</a>.</figcaption>
   </figure>
@@ -85,6 +88,7 @@
 <!-- INCLUDE:footer -->
 
 <script src="../assets/header.js" defer></script>
+<script src="../assets/video.js" defer></script>
 
 </body>
 </html>

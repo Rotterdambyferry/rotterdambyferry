@@ -654,7 +654,8 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     resultaat = resultaat.replace("</head>", jsonLd + "\n</head>");
 
     // Broodkruimelpad vlak na de openende <main class="artikel">, boven de
-    // bestaande "← Alle verhalen"-link (die blijft gewoon staan).
+    // labels. (De losse "← Alle verhalen"-link die hier vroeger stond, is in
+    // september 2026 weggehaald: het broodkruimelpad en de footer doen hetzelfde.)
     const broodkruimel = broodkruimelHtml(relatiefUrl, ogTitel);
     resultaat = resultaat.replace('<main class="artikel">\n', `<main class="artikel">\n${broodkruimel}`);
   }

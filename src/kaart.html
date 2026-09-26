@@ -96,7 +96,11 @@
       west: "West", maasvlakte: "Maasvlakte"
     };
 
-    var map = L.map("plattegrond", { scrollWheelZoom: false }).setView([51.92, 4.47], 12);
+    // Nog geen beginpositie: de kaart krijgt pas een uitsnede als de plekken
+    // binnen zijn (toonPlekken hieronder). Zo worden de kaarttegels maar één
+    // keer geladen, meteen voor de goede uitsnede, in plaats van eerst voor
+    // een tijdelijke positie en daarna nog eens.
+    var map = L.map("plattegrond", { scrollWheelZoom: false });
     map.on("focus click", function () { map.scrollWheelZoom.enable(); });
     map.on("blur", function () { map.scrollWheelZoom.disable(); });
 
@@ -166,12 +170,21 @@
     function toonPlekken() {
       map.invalidateSize(); // voor het geval de pagina net geladen of geroteerd is
       var zichtbaar = [];
+      // De pins waarop de kaart inzoomt. De Maasvlakte ligt zo'n 35 km
+      // westelijker dan de stad: telt die mee, dan zoomt de kaart uit tot
+      // aan Den Haag en zie je Rotterdam nauwelijks. Die pin blijft dus wel
+      // op de kaart staan, maar telt alleen mee voor de zoom als het filter
+      // Maasvlakte gekozen is.
+      var zoomOp = [];
       plekken.forEach(function (plek) {
         var p = plek.data;
         var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
         var gebOk = actief.gebied === "alles" || p.gebied === actief.gebied;
         if (catOk && gebOk) {
           zichtbaar.push(plek.marker);
+          if (p.gebied !== "maasvlakte" || actief.gebied === "maasvlakte") {
+            zoomOp.push(plek.marker.getLatLng());
+          }
         }
       });
       // De clustergroep helemaal opnieuw vullen, zodat gefilterde pins
@@ -180,9 +193,12 @@
       cluster.addLayers(zichtbaar);
       leeg.hidden = zichtbaar.length > 0;
       if (zichtbaar.length > 0) {
+        // Staat er alleen een Maasvlakte-pin in beeld (bijvoorbeeld bij een
+        // categorie die verder nergens voorkomt), dan toch daarop inzoomen.
+        var grenzen = zoomOp.length > 0 ? L.latLngBounds(zoomOp) : cluster.getBounds();
         // animate: false — anders kan een direct volgende invalidateSize
         // (load-event/ResizeObserver) de zoom-animatie afbreken
-        map.fitBounds(cluster.getBounds().pad(0.2), { maxZoom: 14, animate: false });
+        map.fitBounds(grenzen.pad(0.2), { maxZoom: 14, animate: false });
       }
     }
 
@@ -220,6 +236,7 @@
         }
       })
       .catch(function () {
+        map.setView([51.92, 4.47], 12); // dan in elk geval de stad tonen
         leeg.hidden = false;
         leeg.innerHTML = "De plekken konden niet geladen worden. Probeer het later nog eens.";
       });
