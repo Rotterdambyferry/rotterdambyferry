@@ -570,15 +570,6 @@ a:focus-visible, button:focus-visible {
 }
 .deelknop.instagram:hover { background: var(--ink); border-color: var(--ink); }
 
-.terug {
-  font-family: "Archivo", sans-serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: 2rem;
-}
-
 /* ---------- Footer ---------- */
 .site-footer {
   border-top: 3px solid var(--ink);
