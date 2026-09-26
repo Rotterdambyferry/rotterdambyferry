@@ -437,6 +437,7 @@ a:focus-visible, button:focus-visible {
   }
 }
 .post-video .video-frame {
+  position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--ink);
@@ -457,6 +458,29 @@ a:focus-visible, button:focus-visible {
 }
 .post-video.verticaal blockquote.tiktok-embed {
   margin: 0 auto !important;
+}
+/* Pauzeknop op een eigen video (gezet door assets/video.js) */
+.video-pauze {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 0.85rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--papier);
+  border: 2px solid var(--papier);
+  cursor: pointer;
+}
+.video-pauze svg { flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .video-pauze:hover { background: var(--groen); }
 }
 /* Eigen staande video (9:16, bijv. een telefoonfilmpje), geladen via
    assets/video.js zodra hij in beeld komt. Het vaste 9:16-kader houdt de
