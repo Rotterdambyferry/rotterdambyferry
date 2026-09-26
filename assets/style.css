@@ -192,6 +192,29 @@ a:focus-visible, button:focus-visible {
   color: rgba(255, 255, 255, 0.92);
   margin: 0;
 }
+/* Mobiel (tot 600px breed): een lagere hero van ongeveer 200px, zodat het
+   eerste verhaal zonder scrollen in beeld komt. Minder lucht boven de
+   tekst, een iets kleinere ondertitel, en een wat sterkere donkere laag: de
+   tekst beslaat nu een groter deel van de foto en moet op elke herofoto
+   leesbaar blijven. Op de computer verandert er niets. */
+@media (max-width: 600px) {
+  .hero { min-height: 200px; }
+  .hero .inner { padding: 1.5rem 1.25rem 1.1rem; }
+  .hero h1 { margin-bottom: 0.35rem; }
+  .hero p {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    /* Altijd ruimte voor 3 regels: zo schuift de tekst niet als het
+       lettertype binnenkomt en de zin net anders afbreekt */
+    min-height: 4.35em;
+  }
+  .hero::after {
+    background: linear-gradient(to top,
+      rgba(21, 25, 27, 0.82) 0%,
+      rgba(21, 25, 27, 0.55) 55%,
+      rgba(21, 25, 27, 0.2) 100%);
+  }
+}
 
 /* ---------- Havenlabels (categorie & gebied) ---------- */
 .tag {

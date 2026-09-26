@@ -91,6 +91,8 @@ Foto's: originelen heten `*-origineel.jpg` en blijven lokaal (staan in `.gitigno
 
 De homepage heeft een hero met een roterende foto. Sinds augustus 2026 is dat een echt `<img class="hero-foto">` (absoluut gepositioneerd, `object-fit: cover`) in plaats van een CSS-achtergrond, zodat de browser via `srcset` op telefoons de kleine `-mobiel`-variant laadt; als LCP-afbeelding heeft hij `loading="eager"` en `fetchpriority="high"`. Zonder JavaScript (en bij het allereerste bezoek) toont hij altijd `hero-skyline-euromast.jpg` (die staat hard in de HTML en is ook de og:image); bij herhaalbezoek kiest een klein inline script in `index.html` willekeurig een andere foto dan de vorige (onthouden via localStorage-sleutel `heroFoto`; het script zet eerst `srcset`, dan `src`, dan `alt`).
 
+Op telefoons (tot 600px breed) is de hero sinds september 2026 ongeveer 200px hoog in plaats van 300, met minder lucht boven de tekst, een iets kleinere ondertitel en een wat sterkere donkere laag, zodat het eerste verhaal zonder scrollen in beeld staat (audit M2). Een nieuwe herofoto dus ook even op telefoonformaat bekijken: de tekst beslaat daar een groot deel van de foto.
+
 Een foto toevoegen aan de rotatie:
 
 1. Zet het bestand in `assets/img/`, bijgesneden naar 16:9, ± 1600px breed, 300 tot 400 KB, naam `hero-*.jpg`, en draai `.\maak-mobiele-fotos.ps1` voor de `-mobiel`-variant.
