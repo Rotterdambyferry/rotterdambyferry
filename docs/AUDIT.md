@@ -559,3 +559,38 @@ Wat er nu in de weg zit, van groot naar klein:
 | 24 | Interviewrubriek "Rotterdam van …" | Wordt een tweede sjabloon op het fundament. |
 | 25 | Best gelezen | Kan pas na de privacykeuze (13) en de head-partial (14). |
 | 26 | Reacties, alleen als je dat dan nog wilt | Pas als de adressen definitief vastliggen. |
+
+---
+
+## Afgerond
+
+| # | Actie | Bevinding | Afgerond op | Waar |
+|---|---|---|---|---|
+| 1 | Regeleinden gelijktrekken in `build.js` en een `.gitattributes` toevoegen | B1, SEO1 | 25 september 2026 | pull request #1 |
+| 2 | `places.json` echt als gegevens lezen en wegschrijven, met een controle op het aantal pins | B2 | 25 september 2026 | pull request #1 |
+| 3 | TikTok- en YouTube-video pas laden na een klik (facade) | S1, S2, T7 | 26 september 2026 | pull request #2 |
+| 4 | Hoofdfoto-preload: `fetchpriority="high"` erbij, en ook posts die met een `post-foto` beginnen | S3, S4 | 25 september 2026 | pull request #1 |
+| 5 | Menulinks en broodkruimels op mobiel groter tikdoel | M1 | 26 september 2026 | pull request #2 |
+| 6 | Kaart: standaard inzoomen op Rotterdam en grotere zoomknoppen | M3, M5 | 26 september 2026 | pull request #2 |
+| 7 | Pauzeknop op de video van Warung Melatie | T1 | 26 september 2026 | pull request #2 |
+| 10 | Kopieersjabloon niet meer online zetten | SEO5 | 25 september 2026 | pull request #1 |
+| 11 | Losse terug-link boven artikelen weghalen | M6, V5 | 26 september 2026 | pull request #2 |
+
+### Wat er in pull request #2 precies veranderd is
+
+- **Actie 3:** op de Simit-pagina en de Station Bergweg-pagina staat nu eerst een stilstaand plaatje met een groene knop "Speel af". Pas na een tik wordt de video van TikTok of YouTube (via youtube-nocookie.com) geladen, met een titel voor screenreaders. Vóór de tik gaat er niets naar TikTok of YouTube (gemeten: 0 verzoeken, was 99 verzoeken en ruim 13 MB bij TikTok en 13 verzoeken en 1 MB bij YouTube). Herbruikbaar via `assets/video.js`, uitgelegd in `NIEUWE-POST.md` onder "Video's". Voor TikTok laadt het script na de tik TikToks gewone embed: TikToks kale speler (`player/v1`) gaf in tests bij nieuwe bezoekers een foutmelding.
+- **Actie 5:** menulinks en broodkruimellinks zijn op een telefoon 44 pixels hoog (was 14). De tekst is even groot gebleven. Gevolg: de header op een telefoon is iets hoger geworden (van 62 naar 76 pixels).
+- **Actie 6:** de kaart opent op de stad in plaats van op Den Haag en Delft. De Maasvlakte-pin staat er nog steeds op, maar telt alleen mee voor de zoom als je het filter Maasvlakte kiest. De zoomknoppen zijn 44×44 pixels (was 30×30). De kaart laadt de kaarttegels nu ook maar één keer, meteen voor de goede uitsnede.
+- **Actie 7:** de soepvideo bij Warung Melatie heeft rechtsonder een zichtbare knop "Pauzeer" / "Speel af". Wie "minder beweging" heeft aanstaan, kan de video daarmee zelf starten.
+- **Actie 11:** de losse "← Alle verhalen"-link bovenaan is weg uit alle tien de posts en uit het sjabloon. Het broodkruimelpad en de link in de footer blijven. De hoofdfoto staat op een telefoon daardoor zo'n 50 pixels hoger.
+
+Lighthouse (lokaal gemeten via de preview-server, mobiele instelling, dus niet één op één te vergelijken met de metingen op de live site bovenaan):
+
+| Pagina | Prestaties | Toegankelijkheid | Praktische tips | SEO | Totaal gedownload |
+|---|---|---|---|---|---|
+| Simit and Cheese, vóór | 90 | 91 | 79 | 100 | 8,3 tot 9,8 MB |
+| Simit and Cheese, na | 90 | 100 | 100 | 100 | 0,8 MB |
+| Kaart, vóór | 81 | 96 | 100 | 100 | 519 KB |
+| Kaart, na | 71 en 76 | 100 | 100 | 100 | 731 KB |
+
+De kaart scoort iets lager op prestaties. Dat komt door het inzoomen zelf: ingezoomd op de stad zijn de kaarttegels veel gedetailleerder (6 tegels, samen 366 KB) dan de bijna lege tegels van de uitgezoomde regio (159 KB). Een snellere kaartpagina staat al op de lijst als actie 17 (S8).
