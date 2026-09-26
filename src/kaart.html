@@ -42,7 +42,13 @@
 
 <section class="filters" aria-label="Filter plekken">
   <div class="inner">
-    <div class="groep">
+    <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
+         assets/gebiedkeuze.js maakt uit de gebiedknoppen hieronder. Op de
+         computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
+    <div class="gebiedkeuze">
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
+    </div>
+    <div class="groep groep-categorie">
       <span class="label">Categorie</span>
       <div class="chips">
         <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
@@ -56,7 +62,7 @@
         <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
       </div>
     </div>
-    <div class="groep">
+    <div class="groep groep-gebied">
       <span class="label">Gebied</span>
       <div class="chips">
         <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
@@ -187,6 +193,20 @@
           }
         }
       });
+      // Aantal plekken per gebied bij de gekozen categorie, als data-aantal
+      // op elk gebiedknopje. De keuzelijst op mobiel (assets/gebiedkeuze.js)
+      // toont die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het
+      // filteren of de zoom.
+      document.querySelectorAll('.filterknop[data-filter="gebied"]').forEach(function (knop) {
+        var aantal = 0;
+        plekken.forEach(function (plek) {
+          var p = plek.data;
+          var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
+          var gebOk = knop.dataset.waarde === "alles" || p.gebied === knop.dataset.waarde;
+          if (catOk && gebOk) aantal++;
+        });
+        knop.dataset.aantal = aantal;
+      });
       // De clustergroep helemaal opnieuw vullen, zodat gefilterde pins
       // ook uit de cluster-telling verdwijnen
       cluster.clearLayers();
@@ -257,6 +277,7 @@
 </script>
 
 <script src="assets/header.js" defer></script>
+<script src="assets/gebiedkeuze.js" defer></script>
 
 </body>
 </html>

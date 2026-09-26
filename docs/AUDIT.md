@@ -575,6 +575,8 @@ Wat er nu in de weg zit, van groot naar klein:
 | 7 | Pauzeknop op de video van Warung Melatie | T1 | 26 september 2026 | pull request #2 |
 | 10 | Kopieersjabloon niet meer online zetten | SEO5 | 25 september 2026 | pull request #1 |
 | 11 | Losse terug-link boven artikelen weghalen | M6, V5 | 26 september 2026 | pull request #2 |
+| extra | Eerste verhaal eerder in beeld op mobiel: lagere hero en alle filters in één rij, ook op de kaartpagina (stond niet als los nummer in de actielijst) | M2 | 26 september 2026 | pull request #3 |
+| 20 (deels) | Lege filters grijs: in de keuzelijst voor het gebied op mobiel, met het aantal verhalen per gebied. De datums, het auteursblokje en het "In het kort"-blok uit actie 20 staan nog open. | V3 | 26 september 2026 | pull request #3 |
 
 ### Wat er in pull request #2 precies veranderd is
 
@@ -594,3 +596,34 @@ Lighthouse (lokaal gemeten via de preview-server, mobiele instelling, dus niet �
 | Kaart, na | 71 en 76 | 100 | 100 | 100 | 731 KB |
 
 De kaart scoort iets lager op prestaties. Dat komt door het inzoomen zelf: ingezoomd op de stad zijn de kaarttegels veel gedetailleerder (6 tegels, samen 366 KB) dan de bijna lege tegels van de uitgezoomde regio (159 KB). Een snellere kaartpagina staat al op de lijst als actie 17 (S8).
+
+### Wat er in pull request #3 precies veranderd is
+
+- **M2, hero:** op telefoons tot 600 pixels breed is de hero op de homepage 200 pixels hoog (was 300). De titel en de ondertitel blijven goed leesbaar; gecontroleerd op alle zes de herofoto's en op een kleine telefoon van 320 pixels breed. Op de computer verandert er niets.
+- **M2, filters:** op telefoons (tot 640 pixels breed) staan alle filters in één rij, op de homepage én op de kaartpagina. Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied, daarachter de categorieknoppen die je opzij kunt vegen. Na een keuze toont de knop het gebied, bijvoorbeeld "Zuid ▾". De filterlogica is niet veranderd: de lijst drukt op de achtergrond gewoon het oude gebiedknopje in. Links met `?gebied=` (zoals in het broodkruimelpad) kiezen het gebied nog steeds vooraf.
+- **V3 (deels):** de keuzelijst toont per gebied het aantal verhalen bij de gekozen categorie, bijvoorbeeld "Oost (0)", en maakt gebieden zonder verhalen grijs.
+- **Foto van het eerste verhaal:** die staat op een telefoon nu meteen in beeld en is daar het grootste beeld van de pagina. De build laat die ene foto daarom direct laden in plaats van "lui" (de andere foto's blijven lui laden). Dat klopt ook vanzelf als er een nieuwe post bovenaan komt.
+- **Toegankelijk:** de keuzelijst werkt met het toetsenbord (Enter of spatie opent, pijltjes lopen door de gebieden, Enter kiest, Escape sluit) en een screenreader hoort bijvoorbeeld "Gebied: Heel Rotterdam, knop, uitgeklapt" en "Oost (0), niet ingedrukt". Alle tikdoelen in de filterrij zijn minimaal 44 pixels.
+
+Gemeten op een nagebootste telefoon van 375 bij 812 pixels:
+
+| | Vóór | Na |
+|---|---|---|
+| Homepage: eerste verhaal begint op | 616 pixels | 366 pixels |
+| Homepage: deel van het eerste verhaal in beeld zonder scrollen | 196 pixels (bovenkant van de foto) | 446 pixels (foto, labels en titel) |
+| Homepage: hoogte hero | 300 pixels | 200 pixels |
+| Hoogte filterblok (homepage en kaart) | 208 pixels | 70 pixels |
+| Kaartpagina: kaart begint op | 530 pixels | 381 pixels |
+
+Verder getest: alle 63 filtercombinaties (9 categorieën maal 7 gebieden) op de homepage en op de kaart, via de keuzelijst op de telefoon en via de knoppen op de computer. Ze geven precies dezelfde uitkomst als vóór de wijziging, en de aantallen in de lijst kloppen bij elke combinatie. Het filter Maasvlakte zoomt op de kaart nog steeds in op die pin. Op de computer (1280 pixels breed) en op tabletbreedte (800 pixels) zijn de homepage en de kaart pixel voor pixel gelijk aan vóór.
+
+Lighthouse (lokaal, mobiele instelling, drie metingen per pagina):
+
+| Pagina | Prestaties | Toegankelijkheid | Praktische tips | SEO |
+|---|---|---|---|---|
+| Homepage, vóór | 88 tot 89 | 100 | 100 | 100 |
+| Homepage, na | 86 tot 87 | 100 | 100 | 100 |
+| Kaart, vóór | 67 tot 70 | 100 | 100 | 100 |
+| Kaart, na | 60 tot 79 | 100 | 100 | 100 |
+
+De homepage scoort 1 à 2 punten lager. Dat komt door twee dingen. (1) Het grootste beeld op het scherm is nu de foto van het eerste verhaal in plaats van de herofoto, en die staat ongeveer 0,3 seconde later in beeld (3,8 in plaats van 3,5 seconden). Kleinere homepagefoto's voor telefoons (actie 17, S5) maken dat weer sneller. (2) De browser heeft bij het laden iets meer opmaakwerk: ongeveer 40 milliseconden extra op een nagebootste trage telefoon. Er is ook een heel kleine verschuiving bijgekomen (0,007, de grens voor "goed" is 0,1): de introtekst van het eerste verhaal loopt iets anders af zodra het lettertype binnen is. Dat gebeurde vóór de wijziging ook, maar toen onder de rand van het scherm. De kaart schommelt sterk door de externe kaartservers; een echt verschil door deze wijziging is daarin niet te zien.

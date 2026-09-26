@@ -221,6 +221,29 @@ a:focus-visible, button:focus-visible {
   color: rgba(255, 255, 255, 0.92);
   margin: 0;
 }
+/* Mobiel (tot 600px breed): een lagere hero van ongeveer 200px, zodat het
+   eerste verhaal zonder scrollen in beeld komt. Minder lucht boven de
+   tekst, een iets kleinere ondertitel, en een wat sterkere donkere laag: de
+   tekst beslaat nu een groter deel van de foto en moet op elke herofoto
+   leesbaar blijven. Op de computer verandert er niets. */
+@media (max-width: 600px) {
+  .hero { min-height: 200px; }
+  .hero .inner { padding: 1.5rem 1.25rem 1.1rem; }
+  .hero h1 { margin-bottom: 0.35rem; }
+  .hero p {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    /* Altijd ruimte voor 3 regels: zo schuift de tekst niet als het
+       lettertype binnenkomt en de zin net anders afbreekt */
+    min-height: 4.35em;
+  }
+  .hero::after {
+    background: linear-gradient(to top,
+      rgba(21, 25, 27, 0.82) 0%,
+      rgba(21, 25, 27, 0.55) 55%,
+      rgba(21, 25, 27, 0.2) 100%);
+  }
+}
 
 /* ---------- Havenlabels (categorie & gebied) ---------- */
 .tag {
@@ -319,6 +342,120 @@ a:focus-visible, button:focus-visible {
 }
 .filterknop:hover { border-color: var(--groen); color: var(--groen); }
 .filterknop[aria-pressed="true"]:hover { color: var(--papier); }
+
+/* Tekst die alleen voor screenreaders bedoeld is (wel voorgelezen, niet te zien) */
+.visueel-verborgen {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Mobiel: alle filters in één rij ----------
+   Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
+   (gemaakt door assets/gebiedkeuze.js), daarachter de categorieknoppen,
+   horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
+   de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
+   pagina precies hetzelfde blijft. Op de computer verandert er niets. */
+.gebiedkeuze { display: none; }
+@media (max-width: 640px) {
+  .filters {
+    padding: 0.75rem 0;
+    margin-bottom: 1.25rem;
+  }
+  .filters .inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .filters .groep-categorie {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+  .filters .groep-gebied { display: none; }
+  /* Het woord "Categorie" blijft er voor screenreaders, maar neemt geen ruimte in */
+  .filters .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .gebiedkeuze {
+    display: block;
+    position: relative;
+    flex: none;
+  }
+  .gebiedkeuze-knop {
+    min-height: 44px;
+    padding: 0.35rem 0.9rem;
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  /* Een gekozen gebied (dus niet "Heel Rotterdam"): donker, net als een
+     ingedrukt filterknopje */
+  .gebiedkeuze-knop.is-gekozen {
+    background: var(--ink);
+    color: var(--papier);
+  }
+  .gebiedkeuze-lijst {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    z-index: 1100; /* boven de kaart en de Leaflet-knoppen (1000), onder de header (1200) */
+    min-width: 12.5rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem;
+    background: var(--papier);
+    border: 2px solid var(--ink);
+  }
+  .gebiedkeuze-lijst[hidden] { display: none; }
+  .gebiedkeuze-optie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    min-height: 44px;
+    padding: 0 0.8rem;
+    font-family: "Archivo", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .gebiedkeuze-optie[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--papier);
+  }
+  /* Gebied zonder verhalen (bij de gekozen categorie): grijs */
+  .gebiedkeuze-optie.is-leeg { color: var(--staal); }
+  .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
+  .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+}
+@media (max-width: 640px) and (hover: hover) and (pointer: fine) {
+  .gebiedkeuze-knop:hover { border-color: var(--groen); }
+  .gebiedkeuze-optie:hover { background: var(--groen-licht); }
+  .gebiedkeuze-optie[aria-pressed="true"]:hover { background: var(--ink); }
+}
 
 /* ---------- Postkaarten ---------- */
 .grid {

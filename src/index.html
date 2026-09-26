@@ -88,7 +88,13 @@
 
 <section class="filters" aria-label="Filter verhalen">
   <div class="inner">
-    <div class="groep">
+    <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
+         assets/gebiedkeuze.js maakt uit de gebiedknoppen hieronder. Op de
+         computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
+    <div class="gebiedkeuze">
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
+    </div>
+    <div class="groep groep-categorie">
       <span class="label">Categorie</span>
       <div class="chips">
         <button class="filterknop" data-filter="categorie" data-waarde="alles" aria-pressed="true">Alles</button>
@@ -102,7 +108,7 @@
         <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
       </div>
     </div>
-    <div class="groep">
+    <div class="groep groep-gebied">
       <span class="label">Gebied</span>
       <div class="chips">
         <button class="filterknop" data-filter="gebied" data-waarde="alles" aria-pressed="true">Alles</button>
@@ -282,8 +288,26 @@
         if (toon) zichtbaar++;
       });
       leeg.hidden = zichtbaar > 0;
+      telPerGebied();
     });
   });
+
+  // Aantal verhalen per gebied bij de gekozen categorie, als data-aantal op
+  // elk gebiedknopje. De keuzelijst op mobiel (assets/gebiedkeuze.js) toont
+  // die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het filteren.
+  function telPerGebied() {
+    knoppen.forEach(function (knop) {
+      if (knop.dataset.filter !== "gebied") return;
+      let aantal = 0;
+      kaarten.forEach(function (kaart) {
+        const catOk = actief.categorie === "alles" || (kaart.dataset.categorie || "").split(" ").includes(actief.categorie);
+        const gebOk = knop.dataset.waarde === "alles" || (kaart.dataset.gebied || "").split(" ").includes(knop.dataset.waarde);
+        if (catOk && gebOk) aantal++;
+      });
+      knop.dataset.aantal = aantal;
+    });
+  }
+  telPerGebied();
 
   // Komt een bezoeker binnen via ?gebied=centrum (bijv. het broodkruimelpad
   // op een postpagina), dan simuleren we een klik op dat filterknopje zodat
@@ -295,6 +319,7 @@
 </script>
 
 <script src="assets/header.js" defer></script>
+<script src="assets/gebiedkeuze.js" defer></script>
 
 </body>
 </html>
