@@ -141,26 +141,36 @@ a:focus-visible, button:focus-visible {
   margin-left: 1.25rem;
 }
 .site-header nav a:hover { color: var(--groen); }
-/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt */
+/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt.
+   De menulinks zijn wel elk minimaal 44px hoog als tikdoel (de tekst zelf
+   blijft even klein): de ruimte tussen de links zit nu in hun eigen padding
+   in plaats van in een marge, en de negatieve marge op de nav houdt
+   "Verhalen" netjes recht onder het logo. */
 @media (max-width: 640px) {
   .site-header .inner {
-    padding: 0.55rem 1rem;
-    row-gap: 0.1rem;
+    padding: 0.3rem 1rem 0;
+    row-gap: 0;
   }
+  /* line-height 1.5: het logo zelf is zo ook een tikdoel van minimaal 24px */
   .wordmark {
     font-size: 1.02rem;
-    line-height: 1.35;
+    line-height: 1.5;
   }
   .site-header nav {
+    display: flex;
+    margin-left: -0.45rem;
     font-size: 0.8rem;
     line-height: 1.4;
   }
   .site-header nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0.45rem;
     font-size: 0.8rem;
     line-height: 1.4;
-    margin-left: 0.85rem;
+    margin-left: 0;
   }
-  .site-header nav a:first-child { margin-left: 0; }
 }
 
 /* ---------- Hero met achtergrondfoto ---------- */
@@ -385,6 +395,16 @@ a:focus-visible, button:focus-visible {
 .broodkruimel a { color: var(--staal); text-decoration: none; }
 .broodkruimel a:hover { color: var(--groen); }
 .broodkruimel [aria-current="page"] { color: var(--ink); }
+/* Mobiel: groter tikdoel (minimaal 44px hoog) voor de broodkruimellinks,
+   zonder dat de regel zelf hoger wordt of de tekst groter: de padding
+   vergroot het tikvlak, de even grote negatieve marge houdt de opmaak gelijk. */
+@media (max-width: 640px) {
+  .broodkruimel a {
+    display: inline-block;
+    padding: 0.7rem 0.3rem;
+    margin: -0.7rem -0.3rem;
+  }
+}
 .artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
 .artikel h1 {
   font-size: clamp(2rem, 5vw, 3rem);
@@ -446,6 +466,7 @@ a:focus-visible, button:focus-visible {
   }
 }
 .post-video .video-frame {
+  position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--ink);
@@ -457,21 +478,111 @@ a:focus-visible, button:focus-visible {
   height: 100%;
   border: 0;
 }
-/* Verticale video (bijv. TikTok): geen 16:9-kader, gewoon de eigen hoogte
-   van het embed, gecentreerd en niet breder dan een telefoonscherm. */
-.post-video.verticaal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Video van YouTube of TikTok: eerst alleen een stilstaand plaatje met een
+   afspeelknop; pas na een tik laadt assets/video.js de echte video in
+   hetzelfde kader. Zonder JavaScript is het een gewone link naar de video. */
+.video-facade {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  text-decoration: none;
 }
-.post-video.verticaal blockquote.tiktok-embed {
+.video-facade img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Lichte donkere laag, zodat de knop op elk plaatje goed opvalt */
+.video-facade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(21, 25, 27, 0.25);
+}
+.video-facade:focus-visible { outline-offset: -3px; }
+.video-facade-knop {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0.7rem 1.3rem;
+  background: var(--groen);
+  border: 2px solid var(--papier);
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Het afspeeldriehoekje, getekend met CSS (geen extra bestand nodig) */
+.video-facade-knop::before {
+  content: "";
+  border-style: solid;
+  border-width: 0.55em 0 0.55em 0.9em;
+  border-color: transparent transparent transparent currentColor;
+}
+.video-facade:hover .video-facade-knop,
+.video-facade:focus-visible .video-facade-knop { background: var(--ink); }
+/* Klein label linksboven ("YouTube" of "TikTok"), gezet door video.js */
+.video-facade-bron {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border: 1.5px solid var(--ink);
+  background: var(--papier);
+  color: var(--ink);
+  pointer-events: none; /* een tik op het label telt gewoon als tik op de video */
+}
+/* De TikTok-embed die na een tik op "Speel af" in de plaats van het plaatje
+   komt: gecentreerd (TikToks eigen stijl zet er anders een marge op). */
+.post-video blockquote.tiktok-embed {
   margin: 0 auto !important;
 }
-/* Eigen staande video (9:16, bijv. een telefoonfilmpje), geladen via
-   assets/video.js zodra hij in beeld komt. Het vaste 9:16-kader houdt de
-   ruimte vooraf vrij, zodat er niets verspringt. Net als staande post-foto's
-   niet hoger dan driekwart van het scherm, en op desktop met hetzelfde
-   rustige kadertje als .post-foto.smal. */
+/* Pauzeknop op een eigen video (gezet door assets/video.js) */
+.video-pauze {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 0.85rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--papier);
+  border: 2px solid var(--papier);
+  cursor: pointer;
+}
+.video-pauze svg { flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .video-pauze:hover { background: var(--groen); }
+}
+/* Staande video (9:16, bijv. een telefoonfilmpje of een TikTok): eigen video
+   geladen via assets/video.js zodra hij in beeld komt, of een TikTok achter
+   een afspeelknop. Het vaste 9:16-kader houdt de ruimte vooraf vrij, zodat
+   er niets verspringt. Net als staande post-foto's niet hoger dan driekwart
+   van het scherm, en op desktop met hetzelfde rustige kadertje als
+   .post-foto.smal. */
 .post-video.staand .video-frame {
   aspect-ratio: 9 / 16;
   width: min(100%, calc(75vh * 9 / 16));
@@ -599,15 +710,6 @@ a:focus-visible, button:focus-visible {
 }
 .deelknop.instagram:hover { background: var(--ink); border-color: var(--ink); }
 
-.terug {
-  font-family: "Archivo", sans-serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: 2rem;
-}
-
 /* ---------- Footer ---------- */
 .site-footer {
   border-top: 3px solid var(--ink);
@@ -723,6 +825,14 @@ body:has(.artikel) .site-footer .inner {
   background: var(--ink);
 }
 .kaart-sectie .leeg { margin-top: 1rem; }
+/* Zoomknoppen (+ en -) 44x44 in plaats van Leaflets eigen 30x30: groter
+   tikdoel op touchscreens. #plattegrond erbij zodat dit wint van leaflet.css. */
+#plattegrond .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 24px;
+}
 /* Clustericoon: grotere versie van de losse pin, met het aantal erin */
 .cluster-pin {
   background: var(--groen);
@@ -852,7 +962,7 @@ body:has(.artikel) .site-footer .inner {
       "https://rotterdambyferry.nl/assets/img/bergweg_foodhal_blog.jpg"
     ],
     "datePublished": "2026-07-15",
-    "dateModified": "2026-08-26",
+    "dateModified": "2026-09-26",
     "author": {
       "@type": "Person",
       "name": "Ferry",
@@ -928,8 +1038,6 @@ body:has(.artikel) .site-footer .inner {
   <nav class="broodkruimel" aria-label="Kruimelpad">
     <a href="/">Home</a> <span aria-hidden="true">&rsaquo;</span> <a href="/?gebied=noord">Noord</a> <span aria-hidden="true">&rsaquo;</span> <span aria-current="page">Station Bergweg: borrelen waar vroeger de trein stopte</span>
   </nav>
-  <a class="terug" href="/">&larr; Alle verhalen</a>
-
   <div class="tags">
     <span class="tag">Foodhal</span>
     <span class="tag">Borrelplek</span>
@@ -954,9 +1062,14 @@ body:has(.artikel) .site-footer .inner {
 
   <p>Je hoeft trouwens niet alleen mij te geloven. De mannen van Broodjestester, die op YouTube heel Nederland afreizen op zoek naar de beste broodjes, wijdden een complete aflevering aan Station Bergweg en aten zich langs de verschillende zaken:</p>
 
+  <!-- YouTube-video achter een afspeelknop: pas na een tik wordt YouTube
+       (youtube-nocookie.com) geladen, via assets/video.js onderaan deze pagina. -->
   <figure class="post-video">
     <div class="video-frame">
-      <iframe src="https://www.youtube-nocookie.com/embed/Xv2pQDfrovI" title="Broodjestester bij Station Bergweg" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <a class="video-facade" href="https://www.youtube.com/watch?v=Xv2pQDfrovI" data-titel="Broodjestester bij Station Bergweg">
+        <img src="../assets/img/station-bergweg-broodjestester.jpg" srcset="../assets/img/station-bergweg-broodjestester-mobiel.jpg 800w, ../assets/img/station-bergweg-broodjestester.jpg 960w" sizes="(max-width: 720px) 100vw, 640px" alt="" width="960" height="540" loading="lazy">
+        <span class="video-facade-knop">Speel af</span>
+      </a>
     </div>
     <figcaption>De Broodjestesters op bezoek bij Station Bergweg. Video van <a href="https://www.youtube.com/@broodjestester" target="_blank" rel="noopener">Broodjestester</a>.</figcaption>
   </figure>
@@ -1022,6 +1135,7 @@ body:has(.artikel) .site-footer .inner {
 <script src="../assets/deel.js" defer></script>
 
 <script src="../assets/header.js" defer></script>
+<script src="../assets/video.js" defer></script>
 
 </body>
 </html>
