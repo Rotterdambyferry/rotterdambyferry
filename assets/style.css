@@ -112,26 +112,36 @@ a:focus-visible, button:focus-visible {
   margin-left: 1.25rem;
 }
 .site-header nav a:hover { color: var(--groen); }
-/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt */
+/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt.
+   De menulinks zijn wel elk minimaal 44px hoog als tikdoel (de tekst zelf
+   blijft even klein): de ruimte tussen de links zit nu in hun eigen padding
+   in plaats van in een marge, en de negatieve marge op de nav houdt
+   "Verhalen" netjes recht onder het logo. */
 @media (max-width: 640px) {
   .site-header .inner {
-    padding: 0.55rem 1rem;
-    row-gap: 0.1rem;
+    padding: 0.3rem 1rem 0;
+    row-gap: 0;
   }
+  /* line-height 1.5: het logo zelf is zo ook een tikdoel van minimaal 24px */
   .wordmark {
     font-size: 1.02rem;
-    line-height: 1.35;
+    line-height: 1.5;
   }
   .site-header nav {
+    display: flex;
+    margin-left: -0.45rem;
     font-size: 0.8rem;
     line-height: 1.4;
   }
   .site-header nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0.45rem;
     font-size: 0.8rem;
     line-height: 1.4;
-    margin-left: 0.85rem;
+    margin-left: 0;
   }
-  .site-header nav a:first-child { margin-left: 0; }
 }
 
 /* ---------- Hero met achtergrondfoto ---------- */
@@ -356,6 +366,16 @@ a:focus-visible, button:focus-visible {
 .broodkruimel a { color: var(--staal); text-decoration: none; }
 .broodkruimel a:hover { color: var(--groen); }
 .broodkruimel [aria-current="page"] { color: var(--ink); }
+/* Mobiel: groter tikdoel (minimaal 44px hoog) voor de broodkruimellinks,
+   zonder dat de regel zelf hoger wordt of de tekst groter: de padding
+   vergroot het tikvlak, de even grote negatieve marge houdt de opmaak gelijk. */
+@media (max-width: 640px) {
+  .broodkruimel a {
+    display: inline-block;
+    padding: 0.7rem 0.3rem;
+    margin: -0.7rem -0.3rem;
+  }
+}
 .artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
 .artikel h1 {
   font-size: clamp(2rem, 5vw, 3rem);
