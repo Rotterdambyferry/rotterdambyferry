@@ -705,6 +705,14 @@ body:has(.artikel) .site-footer .inner {
   background: var(--ink);
 }
 .kaart-sectie .leeg { margin-top: 1rem; }
+/* Zoomknoppen (+ en -) 44x44 in plaats van Leaflets eigen 30x30: groter
+   tikdoel op touchscreens. #plattegrond erbij zodat dit wint van leaflet.css. */
+#plattegrond .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 24px;
+}
 /* Clustericoon: grotere versie van de losse pin, met het aantal erin */
 .cluster-pin {
   background: var(--groen);
