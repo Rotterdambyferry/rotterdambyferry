@@ -667,6 +667,19 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     );
   }
 
+  // Op de homepage: de foto van het eerste (nieuwste) verhaal meteen laden in
+  // plaats van "lui". Sinds de lagere hero op telefoons (audit M2) staat dat
+  // verhaal daar direct in beeld en is die foto het grootste beeld (LCP); lui
+  // laden liet hem onnodig wachten. Hier in de build (ná het wegfilteren van
+  // nog niet gepubliceerde posts), zodat het vanzelf klopt als er een nieuwe
+  // post bovenaan komt. De andere foto's blijven gewoon lui laden.
+  if (relatief === "index.html") {
+    resultaat = resultaat.replace(
+      /(<article class="kaart"[^>]*>\s*<a class="thumb"[^>]*>\s*<img\b[^>]*?) loading="lazy"/,
+      '$1 loading="eager"'
+    );
+  }
+
   // Op elke post: "Misschien vind je dit ook leuk" vlak voor </main> plakken.
   if (delen[0] === "posts") {
     const verwant = verwanteHtml(relatiefUrl, root);
