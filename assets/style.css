@@ -449,14 +449,80 @@ a:focus-visible, button:focus-visible {
   height: 100%;
   border: 0;
 }
-/* Verticale video (bijv. TikTok): geen 16:9-kader, gewoon de eigen hoogte
-   van het embed, gecentreerd en niet breder dan een telefoonscherm. */
-.post-video.verticaal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Video van YouTube of TikTok: eerst alleen een stilstaand plaatje met een
+   afspeelknop; pas na een tik laadt assets/video.js de echte video in
+   hetzelfde kader. Zonder JavaScript is het een gewone link naar de video. */
+.video-facade {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  text-decoration: none;
 }
-.post-video.verticaal blockquote.tiktok-embed {
+.video-facade img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Lichte donkere laag, zodat de knop op elk plaatje goed opvalt */
+.video-facade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(21, 25, 27, 0.25);
+}
+.video-facade:focus-visible { outline-offset: -3px; }
+.video-facade-knop {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0.7rem 1.3rem;
+  background: var(--groen);
+  border: 2px solid var(--papier);
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Het afspeeldriehoekje, getekend met CSS (geen extra bestand nodig) */
+.video-facade-knop::before {
+  content: "";
+  border-style: solid;
+  border-width: 0.55em 0 0.55em 0.9em;
+  border-color: transparent transparent transparent currentColor;
+}
+.video-facade:hover .video-facade-knop,
+.video-facade:focus-visible .video-facade-knop { background: var(--ink); }
+/* Klein label linksboven ("YouTube" of "TikTok"), gezet door video.js */
+.video-facade-bron {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border: 1.5px solid var(--ink);
+  background: var(--papier);
+  color: var(--ink);
+  pointer-events: none; /* een tik op het label telt gewoon als tik op de video */
+}
+/* De TikTok-embed die na een tik op "Speel af" in de plaats van het plaatje
+   komt: gecentreerd (TikToks eigen stijl zet er anders een marge op). */
+.post-video blockquote.tiktok-embed {
   margin: 0 auto !important;
 }
 /* Pauzeknop op een eigen video (gezet door assets/video.js) */
@@ -482,11 +548,12 @@ a:focus-visible, button:focus-visible {
 @media (hover: hover) and (pointer: fine) {
   .video-pauze:hover { background: var(--groen); }
 }
-/* Eigen staande video (9:16, bijv. een telefoonfilmpje), geladen via
-   assets/video.js zodra hij in beeld komt. Het vaste 9:16-kader houdt de
-   ruimte vooraf vrij, zodat er niets verspringt. Net als staande post-foto's
-   niet hoger dan driekwart van het scherm, en op desktop met hetzelfde
-   rustige kadertje als .post-foto.smal. */
+/* Staande video (9:16, bijv. een telefoonfilmpje of een TikTok): eigen video
+   geladen via assets/video.js zodra hij in beeld komt, of een TikTok achter
+   een afspeelknop. Het vaste 9:16-kader houdt de ruimte vooraf vrij, zodat
+   er niets verspringt. Net als staande post-foto's niet hoger dan driekwart
+   van het scherm, en op desktop met hetzelfde rustige kadertje als
+   .post-foto.smal. */
 .post-video.staand .video-frame {
   aspect-ratio: 9 / 16;
   width: min(100%, calc(75vh * 9 / 16));

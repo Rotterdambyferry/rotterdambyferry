@@ -142,6 +142,62 @@ homepage een kleine versie. Zo werkt het:
 4. Op de homepagekaart: gebruik het blokje met `class="thumb"` uit
    stap 2 hierboven.
 
+## Video's
+
+### Een video van YouTube of TikTok
+
+Een video van iemand anders zet je niet rechtstreeks in je post. Er
+staat eerst een stilstaand plaatje met een groene knop "Speel af", en
+pas als een lezer daarop tikt, wordt de video van YouTube of TikTok
+geladen. Zo blijft je pagina snel (één TikTok-video is al gauw 7 MB) en
+komen er pas cookies van YouTube of TikTok mee als de lezer zelf kiest
+om te kijken.
+
+1. Het plaatje: vraag Claude Code "Maak een voorbeeldplaatje voor deze
+   video: LINK". Claude vraagt dan toestemming om het officiële
+   voorbeeldplaatje van de video te downloaden, verkleint het en zet het
+   in `assets/img`. (Een eigen foto mag ook.)
+2. Plak dit blok in je post, op de plek waar de video moet komen:
+
+   ```html
+   <figure class="post-video">
+     <div class="video-frame">
+       <a class="video-facade" href="LINK NAAR DE VIDEO" data-titel="KORTE OMSCHRIJVING VAN DE VIDEO">
+         <img src="../assets/img/PLAATJE.jpg" alt="" width="BREEDTE" height="HOOGTE" loading="lazy">
+         <span class="video-facade-knop">Speel af</span>
+       </a>
+     </div>
+     <figcaption>ONDERSCHRIFT. Video van <a href="LINK NAAR HET KANAAL" target="_blank" rel="noopener">NAAM</a>.</figcaption>
+   </figure>
+   ```
+
+   - **LINK NAAR DE VIDEO**: gewoon de link zoals je hem in je browser
+     ziet, bijvoorbeeld `https://www.youtube.com/watch?v=...`,
+     `https://youtu.be/...` of `https://www.tiktok.com/@naam/video/...`.
+     Het script herkent zelf of het YouTube of TikTok is.
+   - **data-titel**: een paar woorden over de video, bijvoorbeeld
+     "Broodjestester bij Station Bergweg". Die wordt voorgelezen aan
+     bezoekers die een screenreader gebruiken.
+   - Een **staande video** (zoals bijna elke TikTok)? Schrijf dan
+     `class="post-video staand"` in plaats van `class="post-video"`.
+3. Zet onderaan de post, direct onder de regel met `header.js`:
+   `<script src="../assets/video.js" defer></script>`
+
+Voorbeelden: `src/posts/station-bergweg.html` (YouTube) en
+`src/posts/simit-and-cheese.html` (TikTok). Goed om te weten: YouTube
+begint na de tik meteen te spelen. TikTok toont op een telefoon eerst
+nog zijn eigen afspeelknop (en bij nieuwe bezoekers een cookievraag van
+TikTok zelf), daar is dus één tik extra nodig.
+
+### Een eigen filmpje
+
+Een eigen filmpje, zoals het roeren door de soep bij Warung Melatie?
+Vraag Claude Code om het in te bouwen. Het wordt pas geladen als de
+lezer ernaartoe scrolt, speelt dan zonder geluid in een lus, en krijgt
+vanzelf een knop "Pauzeer" (dat is een toegankelijkheidsregel:
+bewegend beeld moet je kunnen stilzetten). Ook hiervoor is de regel
+met `video.js` onderaan de post nodig.
+
 ## Tips
 
 - Bekijk je post eerst lokaal: dubbelklik op `start-preview.bat` in de
