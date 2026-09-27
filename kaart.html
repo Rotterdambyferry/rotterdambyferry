@@ -101,6 +101,35 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
 }
 
+/* "Ga naar inhoud": de eerste link op elke pagina (partials/header.html),
+   alleen zichtbaar als hij met het toetsenbord focus krijgt (Tab). Springt
+   over het logo en het menu heen naar #inhoud, direct onder de header. */
+.naar-inhoud {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1300; /* boven de sticky header (1200) */
+  padding: 0.7rem 1.1rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--ink);
+  color: var(--papier);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.naar-inhoud:focus { transform: none; }
+#inhoud:focus { outline: none; }
+
+/* De kopjes met class="kop" ("Praktisch", "Misschien vind je dit ook leuk",
+   "Leestips", "Iemand die dit moet weten?") zijn sinds september 2026 echte
+   h2-kopjes, zodat screenreadergebruikers ze kunnen vinden. Ze moeten er
+   precies zo uitzien als de alinea's die ze eerst waren: dezelfde
+   regelafstand als lopende tekst in plaats van die van koppen, en in de
+   footer dezelfde ruimte erboven als een alinea had. */
+h2.kop { line-height: 1.7; }
+.footer-delen h2.kop { margin-top: 1em; }
+
 /* ---------- Header ---------- */
 .site-header {
   position: sticky;
@@ -359,7 +388,7 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- Mobiel: alle filters in één rij ----------
    Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
-   (gemaakt door assets/gebiedkeuze.js), daarachter de categorieknoppen,
+   (gemaakt door assets/filterrij.js), daarachter de categorieknoppen,
    horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
    de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
    pagina precies hetzelfde blijft. Op de computer verandert er niets. */
@@ -451,6 +480,12 @@ a:focus-visible, button:focus-visible {
   .gebiedkeuze-optie.is-leeg { color: var(--staal); }
   .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
   .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+}
+/* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
+   gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
+   op te tikken (assets/filterrij.js). */
+@media (max-width: 600px) {
+  .filters .groep-categorie .filterknop[data-waarde="alles"] { display: none; }
 }
 @media (max-width: 640px) and (hover: hover) and (pointer: fine) {
   .gebiedkeuze-knop:hover { border-color: var(--groen); }
@@ -1089,6 +1124,7 @@ body:has(.artikel) .site-footer .inner {
 </head>
 <body>
 
+<a class="naar-inhoud" href="#inhoud">Ga naar inhoud</a>
 <header class="site-header">
   <div class="inner">
     <a class="wordmark" href="/">Rotterdam by Ferry <span class="hart">&#10084;</span></a>
@@ -1100,6 +1136,7 @@ body:has(.artikel) .site-footer .inner {
     </nav>
   </div>
 </header>
+<div id="inhoud" tabindex="-1"></div>
 
 <div class="kaart-kop">
   <h1>De kaart van mijn Rotterdam <span class="groen">&#128154;</span></h1>
@@ -1109,7 +1146,7 @@ body:has(.artikel) .site-footer .inner {
 <section class="filters" aria-label="Filter plekken">
   <div class="inner">
     <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/gebiedkeuze.js maakt uit de gebiedknoppen hieronder. Op de
+         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
          computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
     <div class="gebiedkeuze">
       <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
@@ -1141,6 +1178,9 @@ body:has(.artikel) .site-footer .inner {
       </div>
     </div>
   </div>
+  <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
+       plekken er overblijven (gevuld door het kaartscript onderaan). -->
+  <p class="visueel-verborgen" role="status" id="filter-uitkomst"></p>
 </section>
 
 <main class="kaart-sectie">
@@ -1150,7 +1190,7 @@ body:has(.artikel) .site-footer .inner {
 
 <footer class="site-footer">
   <div class="footer-delen">
-    <p class="kop">Iemand die dit moet weten?</p>
+    <h2 class="kop">Iemand die dit moet weten?</h2>
     <div class="knoppen">
       <a class="deelknop whatsapp" href="https://wa.me/?text=https%3A%2F%2Frotterdambyferry.nl%2Fkaart.html" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
@@ -1239,7 +1279,6 @@ body:has(.artikel) .site-footer .inner {
     function popupHtml(p) {
       var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
       tags += " &middot; " + (LABELS[p.gebied] || p.gebied);
-      if (p.wijk) { tags += " (" + p.wijk + ")"; }
       var tekst = '<p class="popup-naam">' + p.naam + "</p>" +
                   '<p class="popup-tags">' + tags + "</p>";
       if (p.teaser) {
@@ -1281,7 +1320,7 @@ body:has(.artikel) .site-footer .inner {
         }
       });
       // Aantal plekken per gebied bij de gekozen categorie, als data-aantal
-      // op elk gebiedknopje. De keuzelijst op mobiel (assets/gebiedkeuze.js)
+      // op elk gebiedknopje. De keuzelijst op mobiel (assets/filterrij.js)
       // toont die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het
       // filteren of de zoom.
       document.querySelectorAll('.filterknop[data-filter="gebied"]').forEach(function (knop) {
@@ -1307,6 +1346,7 @@ body:has(.artikel) .site-footer .inner {
         // (load-event/ResizeObserver) de zoom-animatie afbreken
         map.fitBounds(grenzen.pad(0.2), { maxZoom: 14, animate: false });
       }
+      return zichtbaar.length;
     }
 
     fetch("places.json")
@@ -1357,14 +1397,18 @@ body:has(.artikel) .site-footer .inner {
             k.setAttribute("aria-pressed", k === knop ? "true" : "false");
           }
         });
-        toonPlekken();
+        var aantal = toonPlekken();
+        // Voor screenreaders: hoeveel plekken blijven er over?
+        document.getElementById("filter-uitkomst").textContent = aantal === 0
+          ? "Geen plekken in deze combinatie."
+          : aantal + (aantal === 1 ? " plek" : " plekken") + " op de kaart.";
       });
     });
   });
 </script>
 
 <script src="assets/header.js" defer></script>
-<script src="assets/gebiedkeuze.js" defer></script>
+<script src="assets/filterrij.js" defer></script>
 
 </body>
 </html>
