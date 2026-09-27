@@ -581,6 +581,8 @@ Wat er nu in de weg zit, van groot naar klein:
 | 9 | Echte kopjes, een "Ga naar inhoud"-link, filterresultaat voorlezen | T3, T4, T5 | 27 september 2026 | pull request #4 |
 | 12 | Te lange titels inkorten (vijf titels, nu 55 tot 59 tekens) | SEO2 | 27 september 2026 | pull request #4 |
 | extra | Filterrij op mobiel: geen categorieknop "Alles" meer, een categorie zet je aan en weer uit (vervolg op M2) | M2 | 27 september 2026 | pull request #4 |
+| 12 (vervolg) | Nog vier titels inkorten: Warung Melatie, DÂK Rotterdam, Station Bergweg en De Vijgeboom (nu 52 tot 60 tekens) | SEO2 | 27 september 2026 | pull request #5 |
+| 9 (vervolg) | Het kopje "Niet vergeten" op de Over-pagina ook een echt h2-kopje | T4 | 27 september 2026 | pull request #5 |
 
 ### Wat er in pull request #2 precies veranderd is
 
@@ -645,3 +647,8 @@ Getest:
 - De vier kopjes: lettertype, grootte, regelafstand, marges en positie gemeten; exact gelijk aan vóór, op de computer en op de telefoon.
 - Pixelvergelijking van de computerweergave (1280 en 800 pixels breed) tegen de live versie: de kaart, de Over-pagina en de andere posts zijn gelijk. Anders zijn alleen de homepage (de Simit-kaart heeft twee labels meer) en de regel met het broodkruimelpad bij Simit and Cheese en Due Tonino (kortere titel). De filterrij en de kopjes gaven op elke breedte 0 pixels verschil.
 - Alle tien de kaart-popups tonen categorie en gebied zonder wijk. De JSON-LD van alle tien de posts is behalve de weggehaalde wijk precies gelijk aan vóór, met alle verplichte velden.
+
+### Wat er in pull request #5 precies veranderd is
+
+- **Titels (vervolg op actie 12):** "Warung Melatie: de beste saoto soep?" (57 tekens met " | Rotterdam by Ferry", was 71), "DÂK Rotterdam: borrelen op het dak" (55, was 73), "Station Bergweg: foodhal op de Hofbogen" (60, was 75) en "De Vijgeboom: mijn bruine kroeg" (52, was 66). De koppen boven de artikelen zijn niet veranderd; de deeltitel voor WhatsApp en Facebook, de kop voor Google en het broodkruimelpad nemen de nieuwe titel vanzelf over. Nu zijn alle titels op de site maximaal 60 tekens.
+- **Kopje op de Over-pagina (vervolg op actie 9):** "Niet vergeten" is nu ook een echt h2-kopje. Opmaak en positie gemeten en een screenshot op 375 en 1280 pixels breed vergeleken: exact gelijk aan vóór.
