@@ -1,5 +1,15 @@
-// Keuzelijst voor het gebied op mobiel (homepage en kaartpagina).
+// De filterrij op mobiel (homepage en kaartpagina): de keuzelijst voor het
+// gebied, en het aan- en uitzetten van een categorie.
 //
+// 1. Categorieën (tot 600px breed): op een telefoon staat er geen knop
+// "Alles" bij de categorieën (verborgen via style.css); geen categorie
+// gekozen betekent alle categorieën. Tik je op de categorie die al aan
+// staat, dan gaat die weer uit: dit script drukt dan op de achtergrond het
+// verborgen knopje "Alles" in, zodat de pagina gewoon zelf filtert (en de
+// aantallen in de keuzelijst bijwerkt). Op bredere schermen verandert er
+// niets: daar blijft "Alles" gewoon staan.
+//
+// 2. Keuzelijst voor het gebied (tot 640px breed).
 // Op een telefoon staan de filters in één rij: vooraan de knop
 // "Heel Rotterdam ▾" (staat al in de HTML, zodat er bij het laden niets
 // verspringt), daarachter de categorieknoppen. Dit script maakt bij die knop
@@ -17,6 +27,24 @@
 // Toetsenbord: Enter of spatie opent de lijst, pijltjes (of Tab) lopen door
 // de gebieden, Enter kiest, Escape sluit. De stijl staat in style.css
 // (".gebiedkeuze").
+
+// ---------- 1. Categorie aan en weer uit (tot 600px breed) ----------
+(function () {
+  var smal = window.matchMedia && window.matchMedia("(max-width: 600px)");
+  var allesKnop = document.querySelector('.filterknop[data-filter="categorie"][data-waarde="alles"]');
+  if (!smal || !allesKnop) return;
+  // Luistert vóór de knoppen zelf (capture), zodat een tik op de al actieve
+  // categorie de pagina niet bereikt en een tik op "Alles" wordt.
+  document.addEventListener("click", function (e) {
+    if (!smal.matches) return;
+    var knop = e.target.closest && e.target.closest('.filterknop[data-filter="categorie"]');
+    if (!knop || knop === allesKnop || knop.getAttribute("aria-pressed") !== "true") return;
+    e.stopPropagation();
+    allesKnop.click();
+  }, true);
+})();
+
+// ---------- 2. Keuzelijst voor het gebied ----------
 (function () {
   var houder = document.querySelector(".gebiedkeuze");
   if (!houder) return;

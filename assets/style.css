@@ -329,7 +329,7 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- Mobiel: alle filters in één rij ----------
    Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
-   (gemaakt door assets/gebiedkeuze.js), daarachter de categorieknoppen,
+   (gemaakt door assets/filterrij.js), daarachter de categorieknoppen,
    horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
    de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
    pagina precies hetzelfde blijft. Op de computer verandert er niets. */
@@ -421,6 +421,12 @@ a:focus-visible, button:focus-visible {
   .gebiedkeuze-optie.is-leeg { color: var(--staal); }
   .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
   .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+}
+/* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
+   gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
+   op te tikken (assets/filterrij.js). */
+@media (max-width: 600px) {
+  .filters .groep-categorie .filterknop[data-waarde="alles"] { display: none; }
 }
 @media (max-width: 640px) and (hover: hover) and (pointer: fine) {
   .gebiedkeuze-knop:hover { border-color: var(--groen); }

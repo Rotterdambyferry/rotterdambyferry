@@ -89,7 +89,7 @@
 <section class="filters" aria-label="Filter verhalen">
   <div class="inner">
     <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/gebiedkeuze.js maakt uit de gebiedknoppen hieronder. Op de
+         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
          computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
     <div class="gebiedkeuze">
       <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
@@ -293,7 +293,7 @@
   });
 
   // Aantal verhalen per gebied bij de gekozen categorie, als data-aantal op
-  // elk gebiedknopje. De keuzelijst op mobiel (assets/gebiedkeuze.js) toont
+  // elk gebiedknopje. De keuzelijst op mobiel (assets/filterrij.js) toont
   // die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het filteren.
   function telPerGebied() {
     knoppen.forEach(function (knop) {
@@ -319,7 +319,7 @@
 </script>
 
 <script src="assets/header.js" defer></script>
-<script src="assets/gebiedkeuze.js" defer></script>
+<script src="assets/filterrij.js" defer></script>
 
 </body>
 </html>
