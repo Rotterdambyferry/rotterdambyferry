@@ -577,6 +577,10 @@ Wat er nu in de weg zit, van groot naar klein:
 | 11 | Losse terug-link boven artikelen weghalen | M6, V5 | 26 september 2026 | pull request #2 |
 | extra | Eerste verhaal eerder in beeld op mobiel: lagere hero en alle filters in één rij, ook op de kaartpagina (stond niet als los nummer in de actielijst) | M2 | 26 september 2026 | pull request #3 |
 | 20 (deels) | Lege filters grijs: in de keuzelijst voor het gebied op mobiel, met het aantal verhalen per gebied. De datums, het auteursblokje en het "In het kort"-blok uit actie 20 staan nog open. | V3 | 26 september 2026 | pull request #3 |
+| 8 | Gegevens rechtzetten. Gekozen voor vereenvoudigen: het veld wijk is helemaal weg (uit `places.json`, de kaart-popup en de JSON-LD), Due Tonino blijft bewust Centrum, en de Simit-kaart op de homepage toont alle drie de categorieën | D1 t/m D4 | 27 september 2026 | pull request #4 |
+| 9 | Echte kopjes, een "Ga naar inhoud"-link, filterresultaat voorlezen | T3, T4, T5 | 27 september 2026 | pull request #4 |
+| 12 | Te lange titels inkorten (vijf titels, nu 55 tot 59 tekens) | SEO2 | 27 september 2026 | pull request #4 |
+| extra | Filterrij op mobiel: geen categorieknop "Alles" meer, een categorie zet je aan en weer uit (vervolg op M2) | M2 | 27 september 2026 | pull request #4 |
 
 ### Wat er in pull request #2 precies veranderd is
 
@@ -627,3 +631,17 @@ Lighthouse (lokaal, mobiele instelling, drie metingen per pagina):
 | Kaart, na | 60 tot 79 | 100 | 100 | 100 |
 
 De homepage scoort 1 à 2 punten lager. Dat komt door twee dingen. (1) Het grootste beeld op het scherm is nu de foto van het eerste verhaal in plaats van de herofoto, en die staat ongeveer 0,3 seconde later in beeld (3,8 in plaats van 3,5 seconden). Kleinere homepagefoto's voor telefoons (actie 17, S5) maken dat weer sneller. (2) De browser heeft bij het laden iets meer opmaakwerk: ongeveer 40 milliseconden extra op een nagebootste trage telefoon. Er is ook een heel kleine verschuiving bijgekomen (0,007, de grens voor "goed" is 0,1): de introtekst van het eerste verhaal loopt iets anders af zodra het lettertype binnen is. Dat gebeurde vóór de wijziging ook, maar toen onder de rand van het scherm. De kaart schommelt sterk door de externe kaartservers; een echt verschil door deze wijziging is daarin niet te zien.
+
+### Wat er in pull request #4 precies veranderd is
+
+- **Filterrij op mobiel (vervolg op M2):** op telefoons tot 600 pixels breed staat er geen categorieknop "Alles" meer. Geen categorie gekozen betekent alles; tik je nog eens op de categorie die aan staat, dan gaat die weer uit. De aantallen in de keuzelijst "Heel Rotterdam ▾" kloppen gewoon mee. Breder dan 600 pixels is er niets veranderd. Het script heet nu `assets/filterrij.js` (was `gebiedkeuze.js`).
+- **Actie 8 (D1 t/m D4):** het veld wijk is weg uit `places.json`, uit de kaart-popup en uit de gegevens voor Google (JSON-LD). Bezoekers zien alleen categorie en gebied, bijvoorbeeld "Borrelplek · Centrum". Daarmee zijn ook de verkeerde wijk bij Simit (D1), de straatnaam als wijk bij Due Tonino (D2) en de dubbele haakjes bij DÂK (D3) weg. Due Tonino blijft bewust in Centrum; dat staat nu uitdrukkelijk in de wijkindeling in `CLAUDE.md`. De Simit-kaart op de homepage toont nu alle drie de categorieën (D4).
+- **Actie 9 (T3, T4, T5):** "Praktisch", "Misschien vind je dit ook leuk", "Leestips" en "Iemand die dit moet weten?" zijn echte kopjes voor screenreaders, en zien er precies hetzelfde uit als eerst. Elke pagina begint met een link "Ga naar inhoud" die alleen verschijnt als je met Tab begint. Na het filteren leest een screenreader voor hoeveel verhalen (of op de kaart: plekken) er over zijn.
+- **Actie 12 (SEO2):** vijf titels ingekort, in overleg: "Menemen met sucuk bij Simit and Cheese", "Balkon van Europa op de Maasvlakte", "Due Tonino: mijn nummer één Italiaan", "Little Italy: een stukje Italië in 010" en "Pleinbios: film kijken aan de Maas" (55 tot 59 tekens met " | Rotterdam by Ferry"). De koppen boven de artikelen zijn niet veranderd. De nieuwe titels verschijnen ook als deeltitel in WhatsApp en Facebook en als laatste stap in het broodkruimelpad.
+
+Getest:
+
+- Filterrij op 375 pixels breed, homepage en kaart: voor elk gebied elke categorie aan en weer uit gezet, plus wisselen tussen twee categorieën (127 controles per pagina). Zichtbare verhalen of pins en de aantallen in de keuzelijst klopten elke keer.
+- De vier kopjes: lettertype, grootte, regelafstand, marges en positie gemeten; exact gelijk aan vóór, op de computer en op de telefoon.
+- Pixelvergelijking van de computerweergave (1280 en 800 pixels breed) tegen de live versie: de kaart, de Over-pagina en de andere posts zijn gelijk. Anders zijn alleen de homepage (de Simit-kaart heeft twee labels meer) en de regel met het broodkruimelpad bij Simit and Cheese en Due Tonino (kortere titel). De filterrij en de kopjes gaven op elke breedte 0 pixels verschil.
+- Alle tien de kaart-popups tonen categorie en gebied zonder wijk. De JSON-LD van alle tien de posts is behalve de weggehaalde wijk precies gelijk aan vóór, met alle verplichte velden.
