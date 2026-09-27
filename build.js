@@ -506,7 +506,6 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
       address: {
         "@type": "PostalAddress",
         addressLocality: "Rotterdam",
-        addressRegion: plek.wijk,
         addressCountry: "NL",
       },
     };
