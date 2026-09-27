@@ -121,6 +121,9 @@
       </div>
     </div>
   </div>
+  <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
+       verhalen er overblijven (gevuld door het filterscript onderaan). -->
+  <p class="visueel-verborgen" role="status" id="filter-uitkomst"></p>
 </section>
 
 <main class="grid" id="verhalen">
@@ -291,6 +294,10 @@
       });
       leeg.hidden = zichtbaar > 0;
       telPerGebied();
+      // Voor screenreaders: hoeveel verhalen blijven er over?
+      document.getElementById("filter-uitkomst").textContent = zichtbaar === 0
+        ? "Geen verhalen in deze combinatie."
+        : zichtbaar + (zichtbaar === 1 ? " verhaal" : " verhalen") + " gevonden.";
     });
   });
 

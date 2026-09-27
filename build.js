@@ -299,7 +299,7 @@ function verwanteHtml(relatiefUrl, root) {
     .join("");
 
   return `\n  <section class="verwant">
-    <p class="kop">Misschien vind je dit ook leuk</p>
+    <h2 class="kop">Misschien vind je dit ook leuk</h2>
     <div class="verwant-grid">
 ${items}    </div>
   </section>\n`;
@@ -337,7 +337,7 @@ function leestipsHtml(root) {
     .join("");
 
   return `  <section class="verwant">
-    <p class="kop">Leestips</p>
+    <h2 class="kop">Leestips</h2>
     <div class="verwant-grid">
 ${items}    </div>
   </section>\n\n`;

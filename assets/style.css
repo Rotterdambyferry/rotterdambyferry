@@ -71,6 +71,35 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
 }
 
+/* "Ga naar inhoud": de eerste link op elke pagina (partials/header.html),
+   alleen zichtbaar als hij met het toetsenbord focus krijgt (Tab). Springt
+   over het logo en het menu heen naar #inhoud, direct onder de header. */
+.naar-inhoud {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1300; /* boven de sticky header (1200) */
+  padding: 0.7rem 1.1rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--ink);
+  color: var(--papier);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.naar-inhoud:focus { transform: none; }
+#inhoud:focus { outline: none; }
+
+/* De kopjes met class="kop" ("Praktisch", "Misschien vind je dit ook leuk",
+   "Leestips", "Iemand die dit moet weten?") zijn sinds september 2026 echte
+   h2-kopjes, zodat screenreadergebruikers ze kunnen vinden. Ze moeten er
+   precies zo uitzien als de alinea's die ze eerst waren: dezelfde
+   regelafstand als lopende tekst in plaats van die van koppen, en in de
+   footer dezelfde ruimte erboven als een alinea had. */
+h2.kop { line-height: 1.7; }
+.footer-delen h2.kop { margin-top: 1em; }
+
 /* ---------- Header ---------- */
 .site-header {
   position: sticky;

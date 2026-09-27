@@ -75,6 +75,9 @@
       </div>
     </div>
   </div>
+  <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
+       plekken er overblijven (gevuld door het kaartscript onderaan). -->
+  <p class="visueel-verborgen" role="status" id="filter-uitkomst"></p>
 </section>
 
 <main class="kaart-sectie">
@@ -219,6 +222,7 @@
         // (load-event/ResizeObserver) de zoom-animatie afbreken
         map.fitBounds(grenzen.pad(0.2), { maxZoom: 14, animate: false });
       }
+      return zichtbaar.length;
     }
 
     fetch("places.json")
@@ -269,7 +273,11 @@
             k.setAttribute("aria-pressed", k === knop ? "true" : "false");
           }
         });
-        toonPlekken();
+        var aantal = toonPlekken();
+        // Voor screenreaders: hoeveel plekken blijven er over?
+        document.getElementById("filter-uitkomst").textContent = aantal === 0
+          ? "Geen plekken in deze combinatie."
+          : aantal + (aantal === 1 ? " plek" : " plekken") + " op de kaart.";
       });
     });
   });
