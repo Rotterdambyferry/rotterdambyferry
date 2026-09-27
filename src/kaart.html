@@ -43,7 +43,7 @@
 <section class="filters" aria-label="Filter plekken">
   <div class="inner">
     <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/gebiedkeuze.js maakt uit de gebiedknoppen hieronder. Op de
+         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
          computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
     <div class="gebiedkeuze">
       <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
@@ -75,6 +75,9 @@
       </div>
     </div>
   </div>
+  <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
+       plekken er overblijven (gevuld door het kaartscript onderaan). -->
+  <p class="visueel-verborgen" role="status" id="filter-uitkomst"></p>
 </section>
 
 <main class="kaart-sectie">
@@ -152,7 +155,6 @@
     function popupHtml(p) {
       var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
       tags += " &middot; " + (LABELS[p.gebied] || p.gebied);
-      if (p.wijk) { tags += " (" + p.wijk + ")"; }
       var tekst = '<p class="popup-naam">' + p.naam + "</p>" +
                   '<p class="popup-tags">' + tags + "</p>";
       if (p.teaser) {
@@ -194,7 +196,7 @@
         }
       });
       // Aantal plekken per gebied bij de gekozen categorie, als data-aantal
-      // op elk gebiedknopje. De keuzelijst op mobiel (assets/gebiedkeuze.js)
+      // op elk gebiedknopje. De keuzelijst op mobiel (assets/filterrij.js)
       // toont die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het
       // filteren of de zoom.
       document.querySelectorAll('.filterknop[data-filter="gebied"]').forEach(function (knop) {
@@ -220,6 +222,7 @@
         // (load-event/ResizeObserver) de zoom-animatie afbreken
         map.fitBounds(grenzen.pad(0.2), { maxZoom: 14, animate: false });
       }
+      return zichtbaar.length;
     }
 
     fetch("places.json")
@@ -270,14 +273,18 @@
             k.setAttribute("aria-pressed", k === knop ? "true" : "false");
           }
         });
-        toonPlekken();
+        var aantal = toonPlekken();
+        // Voor screenreaders: hoeveel plekken blijven er over?
+        document.getElementById("filter-uitkomst").textContent = aantal === 0
+          ? "Geen plekken in deze combinatie."
+          : aantal + (aantal === 1 ? " plek" : " plekken") + " op de kaart.";
       });
     });
   });
 </script>
 
 <script src="assets/header.js" defer></script>
-<script src="assets/gebiedkeuze.js" defer></script>
+<script src="assets/filterrij.js" defer></script>
 
 </body>
 </html>

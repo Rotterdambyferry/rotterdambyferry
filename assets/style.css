@@ -71,6 +71,35 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
 }
 
+/* "Ga naar inhoud": de eerste link op elke pagina (partials/header.html),
+   alleen zichtbaar als hij met het toetsenbord focus krijgt (Tab). Springt
+   over het logo en het menu heen naar #inhoud, direct onder de header. */
+.naar-inhoud {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1300; /* boven de sticky header (1200) */
+  padding: 0.7rem 1.1rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--ink);
+  color: var(--papier);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.naar-inhoud:focus { transform: none; }
+#inhoud:focus { outline: none; }
+
+/* De kopjes met class="kop" ("Praktisch", "Misschien vind je dit ook leuk",
+   "Leestips", "Iemand die dit moet weten?") zijn sinds september 2026 echte
+   h2-kopjes, zodat screenreadergebruikers ze kunnen vinden. Ze moeten er
+   precies zo uitzien als de alinea's die ze eerst waren: dezelfde
+   regelafstand als lopende tekst in plaats van die van koppen, en in de
+   footer dezelfde ruimte erboven als een alinea had. */
+h2.kop { line-height: 1.7; }
+.footer-delen h2.kop { margin-top: 1em; }
+
 /* ---------- Header ---------- */
 .site-header {
   position: sticky;
@@ -329,7 +358,7 @@ a:focus-visible, button:focus-visible {
 
 /* ---------- Mobiel: alle filters in één rij ----------
    Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
-   (gemaakt door assets/gebiedkeuze.js), daarachter de categorieknoppen,
+   (gemaakt door assets/filterrij.js), daarachter de categorieknoppen,
    horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
    de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
    pagina precies hetzelfde blijft. Op de computer verandert er niets. */
@@ -421,6 +450,12 @@ a:focus-visible, button:focus-visible {
   .gebiedkeuze-optie.is-leeg { color: var(--staal); }
   .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
   .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+}
+/* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
+   gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
+   op te tikken (assets/filterrij.js). */
+@media (max-width: 600px) {
+  .filters .groep-categorie .filterknop[data-waarde="alles"] { display: none; }
 }
 @media (max-width: 640px) and (hover: hover) and (pointer: fine) {
   .gebiedkeuze-knop:hover { border-color: var(--groen); }
