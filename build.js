@@ -121,10 +121,9 @@ function hoortBijVerborgenPost(stuk) {
 }
 
 // Datum van de laatste git-commit die dit bronbestand raakte (voor
-// <lastmod> in de sitemap en om "meest recent" te bepalen bij gerelateerde
-// posts) — valt terug op vandaag als het bestand nog niet gecommit is, of
-// als git om wat voor reden dan ook niet beschikbaar is. Gememoized omdat
-// hetzelfde bestand voor meerdere posts als kandidaat langskomt.
+// <lastmod> in de sitemap) — valt terug op vandaag als het bestand nog niet
+// gecommit is, of als git om wat voor reden dan ook niet beschikbaar is.
+// Gememoized zodat git per bestand maar één keer hoeft te draaien.
 const laatsteWijzigingCache = new Map();
 function laatsteWijziging(bronbestand) {
   if (laatsteWijzigingCache.has(bronbestand)) return laatsteWijzigingCache.get(bronbestand);
@@ -196,6 +195,75 @@ const allePlekken = leesPlekken();
 // omdat dat exact overeenkomt met het al berekende relatiefUrl van elke post.
 const livePlekken = allePlekken.filter((plek) => !(plek.post && hoortBijVerborgenPost(plek.post)));
 const plekPerPost = new Map(livePlekken.filter((plek) => plek.post).map((plek) => [plek.post, plek]));
+
+// "Misschien vind je dit ook leuk": welke posts onder welke post komen. Dit
+// wordt één keer voor alle posts samen berekend, zodat de links eerlijk over
+// alle posts verdeeld worden, in plaats van dat elke post los van de rest
+// dezelfde paar favorieten kiest. Werking:
+//  - Relevantie per paar: +2 zelfde gebied, +1 gedeelde categorie, +0,5
+//    aangrenzend gebied (zie BUURGEBIEDEN).
+//  - In AANTAL_VERWANT rondes kiest elke post (op alfabet van bestandsnaam)
+//    er telkens één bij. Voorkeur, in deze volgorde: posts die het plafond
+//    nog niet bereikt hebben, dan de hoogste relevantie, dan de minste
+//    inkomende links tot nu toe, dan alfabetisch.
+//  - Het plafond is het eerlijke aandeel: het totale aantal links gedeeld
+//    door het aantal posts. Omdat elke post er evenveel geeft, komt dat op
+//    AANTAL_VERWANT uit (alleen bij minder dan vier posts lager), ook bij
+//    15 of 20 posts.
+//  - Geen datums of git: dezelfde posts geven altijd dezelfde uitkomst, ook
+//    als de volgorde in places.json verandert.
+const AANTAL_VERWANT = 3;
+const BUURGEBIEDEN = {
+  centrum: ["noord", "oost", "zuid", "west"],
+  noord: ["centrum", "oost", "west"],
+  oost: ["centrum", "noord", "zuid"],
+  zuid: ["centrum", "oost", "west", "maasvlakte"],
+  west: ["centrum", "noord", "zuid", "maasvlakte"],
+  maasvlakte: ["zuid", "west"],
+};
+
+function relevantie(bron, doel) {
+  const zelfdeGebied = doel.gebied === bron.gebied;
+  const buurgebied = !zelfdeGebied && (BUURGEBIEDEN[bron.gebied] || []).includes(doel.gebied);
+  const gedeeldeCategorie = doel.categorie.some((c) => bron.categorie.includes(c));
+  return (zelfdeGebied ? 2 : 0) + (gedeeldeCategorie ? 1 : 0) + (buurgebied ? 0.5 : 0);
+}
+
+// Gewone tekenvolgorde in plaats van localeCompare, zodat de uitkomst niet
+// afhangt van de taalinstellingen van de computer (lokaal vs. GitHub).
+const alfabetisch = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+function verdeelVerwantePosts() {
+  const posts = [...plekPerPost.values()].sort((a, b) => alfabetisch(a.post, b.post));
+  const keuzes = new Map(posts.map((plek) => [plek.post, []]));
+  if (posts.length < 2) return keuzes;
+
+  const perPost = Math.min(AANTAL_VERWANT, posts.length - 1);
+  const plafond = Math.ceil((posts.length * perPost) / posts.length);
+  const inkomend = new Map(posts.map((plek) => [plek.post, 0]));
+
+  for (let ronde = 0; ronde < perPost; ronde++) {
+    for (const bron of posts) {
+      const gekozen = keuzes.get(bron.post);
+      const [beste] = posts
+        .filter((doel) => doel !== bron && !gekozen.includes(doel))
+        .map((doel) => ({
+          doel,
+          vol: inkomend.get(doel.post) >= plafond ? 1 : 0,
+          score: relevantie(bron, doel),
+          inkomend: inkomend.get(doel.post),
+        }))
+        .sort(
+          (a, b) =>
+            a.vol - b.vol || b.score - a.score || a.inkomend - b.inkomend || alfabetisch(a.doel.post, b.doel.post)
+        );
+      gekozen.push(beste.doel);
+      inkomend.set(beste.doel.post, inkomend.get(beste.doel.post) + 1);
+    }
+  }
+  return keuzes;
+}
+const verwantePerPost = verdeelVerwantePosts();
 
 // Smalle post-foto's herkennen: op desktop wordt een post-foto begrensd tot
 // 75vh hoogte (zie ".post-foto img" in style.css), waardoor een staande of
@@ -269,25 +337,15 @@ function preloadHtml(root, relatief, inhoud) {
   return regels.join("\n");
 }
 
-// Bouwt het HTML-blok met 2-3 gerelateerde posts voor de post op
-// `relatiefUrl`, of "" als er geen eigen plek of geen kandidaten zijn.
+// Bouwt het HTML-blok met de gerelateerde posts voor de post op
+// `relatiefUrl` (gekozen door verdeelVerwantePosts hierboven), of "" als er
+// geen eigen plek of geen kandidaten zijn.
 function verwanteHtml(relatiefUrl, root) {
-  const eigenPlek = plekPerPost.get(relatiefUrl);
-  if (!eigenPlek) return "";
+  const gekozen = verwantePerPost.get(relatiefUrl) || [];
+  if (gekozen.length === 0) return "";
 
-  const kandidaten = livePlekken
-    .filter((plek) => plek.post && plek.post !== relatiefUrl)
+  const items = gekozen
     .map((plek) => {
-      const gedeeldeGebied = plek.gebied === eigenPlek.gebied ? 2 : 0;
-      const gedeeldeCategorie = plek.categorie.some((c) => eigenPlek.categorie.includes(c)) ? 1 : 0;
-      return { plek, score: gedeeldeGebied + gedeeldeCategorie, datum: laatsteWijziging(path.join(bronmap, plek.post)) };
-    })
-    .sort((a, b) => b.score - a.score || (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0))
-    .slice(0, 3);
-  if (kandidaten.length === 0) return "";
-
-  const items = kandidaten
-    .map(({ plek }) => {
       const thumb = plek.image
         ? `\n        <span class="thumb"><img src="${root}${plek.image}" alt="" loading="lazy"></span>`
         : "";
