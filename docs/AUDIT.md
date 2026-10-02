@@ -583,6 +583,7 @@ Wat er nu in de weg zit, van groot naar klein:
 | extra | Filterrij op mobiel: geen categorieknop "Alles" meer, een categorie zet je aan en weer uit (vervolg op M2) | M2 | 27 september 2026 | pull request #4 |
 | 12 (vervolg) | Nog vier titels inkorten: Warung Melatie, DÂK Rotterdam, Station Bergweg en De Vijgeboom (nu 52 tot 60 tekens) | SEO2 | 27 september 2026 | pull request #5 |
 | 9 (vervolg) | Het kopje "Niet vergeten" op de Over-pagina ook een echt h2-kopje | T4 | 27 september 2026 | pull request #5 |
+| extra | "Misschien vind je dit ook leuk" eerlijk verdeeld: elke post krijgt precies 3 links vanuit andere posts, zonder datums (stond niet als los nummer in de actielijst) | B8 | 2 oktober 2026 | branch `verwante-posts-balans` |
 
 ### Wat er in pull request #2 precies veranderd is
 
@@ -652,3 +653,20 @@ Getest:
 
 - **Titels (vervolg op actie 12):** "Warung Melatie: de beste saoto soep?" (57 tekens met " | Rotterdam by Ferry", was 71), "DÂK Rotterdam: borrelen op het dak" (55, was 73), "Station Bergweg: foodhal op de Hofbogen" (60, was 75) en "De Vijgeboom: mijn bruine kroeg" (52, was 66). De koppen boven de artikelen zijn niet veranderd; de deeltitel voor WhatsApp en Facebook, de kop voor Google en het broodkruimelpad nemen de nieuwe titel vanzelf over. Nu zijn alle titels op de site maximaal 60 tekens.
 - **Kopje op de Over-pagina (vervolg op actie 9):** "Niet vergeten" is nu ook een echt h2-kopje. Opmaak en positie gemeten en een screenshot op 375 en 1280 pixels breed vergeleken: exact gelijk aan vóór.
+
+### Wat er op de branch verwante-posts-balans precies veranderd is
+
+- **Aanleiding (SEO-onderzoek van 2 oktober 2026):** 19 van de 30 links in "Misschien vind je dit ook leuk" gingen naar drie posts. De Vijgeboom, Station Bergweg en Balkon van Europa kregen er geen enkele. Oorzaak: elke post koos los van de rest, en bij een gelijke score besliste de laatste wijzigingsdatum (B8). Die was voor alle posts gelijk, dus in de praktijk besliste de volgorde in `places.json`.
+- **Nieuw:** de build verdeelt de links in één keer over alle posts. Relevantie gaat voor (+2 zelfde gebied, +1 gedeelde categorie, +0,5 aangrenzend gebied), maar een post die zijn eerlijke aandeel al heeft (3 links), komt pas weer aan de beurt als het niet anders kan. Daarna beslist het minste aantal links, daarna het alfabet. Er spelen geen datums meer mee, dus B8 is daarmee ook opgelost.
+- **Afweging, in overleg:** 21 van de 30 links hebben hetzelfde gebied of een gedeelde categorie (was 25), 8 komen uit een aangrenzend gebied en één link heeft geen verband (Station Bergweg naar Balkon van Europa). Dat is de prijs voor minimaal 3 links per post.
+
+| Links vanuit andere posts | Vóór | Na |
+|---|---|---|
+| Little Italy, RiF010 | 7 | 3 |
+| Due Tonino | 5 | 3 |
+| Pleinbios | 4 | 3 |
+| Simit and Cheese, Warung Melatie | 3 | 3 |
+| DÂK Rotterdam | 1 | 3 |
+| De Vijgeboom, Station Bergweg, Balkon van Europa | 0 | 3 |
+
+Getest: elke post toont precies 3 posts, nooit zichzelf en nooit dubbel. Een tweede build geeft 0 verschillen, en een build met de plekken in omgekeerde volgorde geeft exact dezelfde blokken. De HTML van de posts is alleen binnen het blok veranderd. Screenshots van De Vijgeboom op 1280 en 390 pixels breed: het blok ziet er hetzelfde uit als eerst.
