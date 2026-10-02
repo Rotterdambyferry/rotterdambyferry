@@ -105,6 +105,13 @@ Een foto toevoegen aan de rotatie:
 - Deployen = pushen naar `main` (vergeet niet eerst lokaal te builden zodat je eigen preview klopt: de publicatie zelf bouwt sowieso opnieuw, zie hieronder).
 - Sinds augustus 2026 publiceert een GitHub Actions-workflow (`.github/workflows/publiceer.yml`) de site, in plaats van dat GitHub Pages rechtstreeks de branch serveert. Die workflow draait `node build.js`, verzamelt daarna alleen de bestanden die echt bij de site horen (dus niet `src/`, niet `CLAUDE.md` e.d.) en zet dat resultaat online. Dit gebeurt: bij elke push naar `main` (zoals voorheen), elke ochtend automatisch (zodat een voorbereide post met een verstreken publicatiedatum vanzelf verschijnt, zie "Voorbereide posts publiceren op datum"), en handmatig via de knop "Run workflow" op het tabblad Actions van de repo op GitHub. Voortgang bekijken: tabblad "Actions" op GitHub. Live na ± een minuut op rotterdambyferry.nl.
 - Let op (Windows): `git push` via PowerShell draaien, niet via de Bash-tool: credentials werken daar niet betrouwbaar.
+- Feature branch, Pull Request en mergen (afspraak met Ferry sinds oktober 2026): Claude Code werkt op een eigen feature branch (nooit rechtstreeks op `main`) en mag zonder te vragen die branch pushen, de Pull Request maken en die PR zelf naar `main` mergen, met een gewone merge-commit zoals bij de eerdere PR's. Voorwaarden voor het mergen, eerst controleren:
+  1. De bestandenlijst van de PR (`gh pr diff <nummer> --name-only`) bevat alleen bestanden die bij de wijziging horen: de bewerkte bronbestanden en de gebouwde pagina's die daardoor veranderen. Niets onverwachts.
+  2. Er zijn geen conflicten (GitHub meldt `MERGEABLE` en `CLEAN`).
+
+  Na het mergen, altijd: wachten tot de publicatie-workflow klaar is (`gh run watch`), op rotterdambyferry.nl controleren dat de wijziging echt live zichtbaar is (verse versie ophalen: een extra parameter zoals `?vers=<tijd>` achter het adres plus een no-cache-header, anders kun je een oude kopie te zien krijgen), en de lokale map op de nieuwste `main` zetten (`git checkout main` en `git pull`). Verandert de PR niets aan de gepubliceerde site (bijvoorbeeld alleen `CLAUDE.md`), dan is de live controle: publicatie gelukt en de site reageert normaal. Daarna aan Ferry melden wat er gecontroleerd is.
+
+  Staat er iets onverwachts in de bestandenlijst, of faalt een controle (conflict, mislukte publicatie, wijziging live niet te zien), dan stopt Claude Code en vraagt Ferry eerst wat er moet gebeuren.
 - Verwijder nooit het `CNAME`-bestand; dat koppelt het custom domein.
 
 ## Kaartpagina
