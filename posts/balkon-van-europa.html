@@ -997,6 +997,56 @@ body:has(.artikel) .site-footer .inner {
   background: var(--ink);
 }
 .kaart-sectie .leeg { margin-top: 1rem; }
+/* "Alle plekken op een rij" onder de kaart (door build.js gemaakt uit
+   places.json): gewone links naar de posts, ook zonder JavaScript. Kolommen
+   balanceren vanzelf uit; onder ±560px breed één kolom. Elke regel is ruim
+   44px hoog, dus goed aan te tikken. */
+.plekkenlijst {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+}
+.plekkenlijst .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.plekkenlijst-groepen { columns: 3 240px; column-gap: 2.5rem; }
+.plekkenlijst-groep { break-inside: avoid; margin-bottom: 1.8rem; }
+.plekkenlijst-groep h3 {
+  font-size: 1.15rem;
+  margin: 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--ink);
+}
+.plekkenlijst-groep ul { list-style: none; margin: 0; padding: 0; }
+.plekkenlijst-groep a {
+  display: block;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--lijn);
+  color: inherit;
+  text-decoration: none;
+}
+.plekkenlijst-groep .naam {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.plekkenlijst-groep a:hover .naam { color: var(--groen); text-decoration: underline; }
+.plekkenlijst-groep .soort {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
 /* Zoomknoppen (+ en -) 44x44 in plaats van Leaflets eigen 30x30: groter
    tikdoel op touchscreens. #plattegrond erbij zodat dit wint van leaflet.css. */
 #plattegrond .leaflet-bar a {
