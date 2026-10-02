@@ -401,6 +401,68 @@ ${items}    </div>
   </section>\n\n`;
 }
 
+// "Alle plekken op een rij" onder de kaart op kaart.html: elke plek met een
+// echte post als gewone link, gegroepeerd per gebied. Staat gewoon in de
+// HTML, dus ook zichtbaar zonder JavaScript en vindbaar voor Google (de pins
+// en popups op de kaart zelf ontstaan pas via JavaScript). Gebieden zonder
+// plekken worden overgeslagen; binnen een gebied op alfabet. Respecteert via
+// livePlekken vanzelf de publicatiedatum, en een plek waarvan het
+// postbestand niet bestaat (tikfout in "post") komt er niet in.
+const CATEGORIE_LABELS = {
+  restaurant: "Restaurant",
+  lunchplek: "Lunchplek",
+  "bruine-kroeg": "Bruine kroeg",
+  kidsproof: "Kidsproof",
+  delicatessen: "Delicatessen",
+  foodhal: "Foodhal",
+  borrelplek: "Borrelplek",
+  "dagje-uit": "Dagje uit",
+};
+const GEBIED_VOLGORDE = ["centrum", "noord", "oost", "zuid", "west", "maasvlakte"];
+
+// Tekst veilig in HTML zetten: een & of aanhalingsteken in een plaatsnaam
+// kan zo de pagina niet breken.
+function htmlTekst(tekst) {
+  return String(tekst).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function plekkenlijstHtml(root) {
+  const plekken = livePlekken.filter((plek) => plek.post && fs.existsSync(path.join(bronmap, plek.post)));
+  if (plekken.length === 0) return "";
+
+  // Onbekende gebieden (nog niet in GEBIED_VOLGORDE) komen achteraan, zodat
+  // een nieuwe plek nooit stilletjes uit de lijst valt.
+  const gebiedVan = (plek) => plek.gebied || "overig";
+  const extra = [...new Set(plekken.map(gebiedVan))].filter((g) => !GEBIED_VOLGORDE.includes(g)).sort(alfabetisch);
+  const label = (categorie) => CATEGORIE_LABELS[categorie] || gebiedLabel(categorie.replace(/-/g, " "));
+
+  const groepen = [...GEBIED_VOLGORDE, ...extra]
+    .map((gebied) => {
+      const inGebied = plekken
+        .filter((plek) => gebiedVan(plek) === gebied)
+        .sort((a, b) => a.naam.localeCompare(b.naam, "nl", { sensitivity: "base" }) || alfabetisch(a.post, b.post));
+      if (inGebied.length === 0) return "";
+      const items = inGebied
+        .map(
+          (plek) =>
+            `          <li><a href="${root}${plek.post}"><span class="naam">${htmlTekst(plek.naam)}</span> <span class="soort">${plek.categorie.map(label).join(" &middot; ")}</span></a></li>\n`
+        )
+        .join("");
+      return `      <div class="plekkenlijst-groep">
+        <h3>${gebiedLabel(gebied)}</h3>
+        <ul>
+${items}        </ul>
+      </div>\n`;
+    })
+    .join("");
+
+  return `  <section class="plekkenlijst" aria-labelledby="plekkenlijst-kop">
+    <h2 class="kop" id="plekkenlijst-kop">Alle plekken op een rij</h2>
+    <div class="plekkenlijst-groepen">
+${groepen}    </div>
+  </section>\n`;
+}
+
 // Leest de echte pixelafmetingen van een JPEG-bestand, puur door de
 // SOF-marker in de header op te zoeken (geen npm-package nodig). Geeft
 // null terug als het bestand ontbreekt of niet als JPEG te lezen is.
@@ -749,6 +811,13 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // 3 meest recente posts op de aangegeven plek plakken.
   if (resultaat.includes("<!-- LEESTIPS -->")) {
     resultaat = resultaat.replace(/[ \t]*<!-- LEESTIPS -->\n\n?/, leestipsHtml(root));
+  }
+
+  // Op kaart.html: "Alle plekken op een rij" onder de kaart. Vervangen via
+  // een functie, zodat een $-teken in een plaatsnaam niet als speciaal teken
+  // van replace() gelezen wordt.
+  if (resultaat.includes("<!-- PLEKKENLIJST -->")) {
+    resultaat = resultaat.replace(/[ \t]*<!-- PLEKKENLIJST -->\n\n?/, () => plekkenlijstHtml(root));
   }
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });

@@ -99,6 +99,11 @@ automatisch mee. Heb je bij deze post een publicatiedatum in de
 toekomst gezet, dan verschijnt de pin pas als die datum is
 aangebroken.)
 
+Onder de kaart staat ook een lijst "Alle plekken op een rij", per
+gebied. Die maakt de build zelf uit `src/places.json`: staat je plek
+daarin, dan komt hij vanzelf ook in die lijst, met de naam precies
+zoals hij in `places.json` staat. Je hoeft er dus niets voor te doen.
+
 `sitemap.xml` hoef je nergens handmatig bij te werken: die bouwt
 `build.js` telkens zelf op uit de pagina's die er (dan) echt zijn.
 

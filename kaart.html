@@ -998,6 +998,56 @@ body:has(.artikel) .site-footer .inner {
   background: var(--ink);
 }
 .kaart-sectie .leeg { margin-top: 1rem; }
+/* "Alle plekken op een rij" onder de kaart (door build.js gemaakt uit
+   places.json): gewone links naar de posts, ook zonder JavaScript. Kolommen
+   balanceren vanzelf uit; onder ±560px breed één kolom. Elke regel is ruim
+   44px hoog, dus goed aan te tikken. */
+.plekkenlijst {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+}
+.plekkenlijst .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.plekkenlijst-groepen { columns: 3 240px; column-gap: 2.5rem; }
+.plekkenlijst-groep { break-inside: avoid; margin-bottom: 1.8rem; }
+.plekkenlijst-groep h3 {
+  font-size: 1.15rem;
+  margin: 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--ink);
+}
+.plekkenlijst-groep ul { list-style: none; margin: 0; padding: 0; }
+.plekkenlijst-groep a {
+  display: block;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--lijn);
+  color: inherit;
+  text-decoration: none;
+}
+.plekkenlijst-groep .naam {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.plekkenlijst-groep a:hover .naam { color: var(--groen); text-decoration: underline; }
+.plekkenlijst-groep .soort {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
 /* Zoomknoppen (+ en -) 44x44 in plaats van Leaflets eigen 30x30: groter
    tikdoel op touchscreens. #plattegrond erbij zodat dit wint van leaflet.css. */
 #plattegrond .leaflet-bar a {
@@ -1140,7 +1190,7 @@ body:has(.artikel) .site-footer .inner {
 
 <div class="kaart-kop">
   <h1>De kaart van mijn Rotterdam <span class="groen">&#128154;</span></h1>
-  <p>Alle plekken uit de verhalen op &eacute;&eacute;n kaart. Filter op wat je zoekt, klik op een pin en lees het verhaal erbij.</p>
+  <p>Op deze kaart staan de plekken in Rotterdam waar ik zelf ben geweest, van de bruine kroeg op de Oude Binnenweg tot de snackbar helemaal achteraan op de Maasvlakte. Bij elke pin hoort een verhaal, zoals ik het zelf beleefd heb. Filter op wat je zoekt, klik op een pin of kijk onder de kaart in de lijst per gebied.</p>
 </div>
 
 <section class="filters" aria-label="Filter plekken">
@@ -1186,6 +1236,47 @@ body:has(.artikel) .site-footer .inner {
 <main class="kaart-sectie">
   <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen"></div>
   <p class="leeg" hidden>Nog geen plekken in deze combinatie. Die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">@rotterdambyferry</a> voor het laatste nieuws.</p>
+
+  <section class="plekkenlijst" aria-labelledby="plekkenlijst-kop">
+    <h2 class="kop" id="plekkenlijst-kop">Alle plekken op een rij</h2>
+    <div class="plekkenlijst-groepen">
+      <div class="plekkenlijst-groep">
+        <h3>Centrum</h3>
+        <ul>
+          <li><a href="posts/dak-rotterdam.html"><span class="naam">DÂK Rotterdam</span> <span class="soort">Borrelplek</span></a></li>
+          <li><a href="posts/vijgeboom.html"><span class="naam">De Vijgeboom</span> <span class="soort">Bruine kroeg</span></a></li>
+          <li><a href="posts/due-tonino.html"><span class="naam">Due Tonino</span> <span class="soort">Restaurant</span></a></li>
+          <li><a href="posts/little-italy.html"><span class="naam">Little Italy</span> <span class="soort">Lunchplek &middot; Delicatessen</span></a></li>
+          <li><a href="posts/pleinbios.html"><span class="naam">Pleinbios</span> <span class="soort">Dagje uit</span></a></li>
+          <li><a href="posts/rif010.html"><span class="naam">RiF010</span> <span class="soort">Kidsproof</span></a></li>
+        </ul>
+      </div>
+      <div class="plekkenlijst-groep">
+        <h3>Noord</h3>
+        <ul>
+          <li><a href="posts/station-bergweg.html"><span class="naam">Station Bergweg</span> <span class="soort">Foodhal &middot; Borrelplek</span></a></li>
+        </ul>
+      </div>
+      <div class="plekkenlijst-groep">
+        <h3>Zuid</h3>
+        <ul>
+          <li><a href="posts/simit-and-cheese.html"><span class="naam">Simit and Cheese</span> <span class="soort">Restaurant &middot; Lunchplek &middot; Kidsproof</span></a></li>
+        </ul>
+      </div>
+      <div class="plekkenlijst-groep">
+        <h3>West</h3>
+        <ul>
+          <li><a href="posts/warung-melatie.html"><span class="naam">Warung Melatie</span> <span class="soort">Lunchplek</span></a></li>
+        </ul>
+      </div>
+      <div class="plekkenlijst-groep">
+        <h3>Maasvlakte</h3>
+        <ul>
+          <li><a href="posts/balkon-van-europa.html"><span class="naam">Smickel Inn (Balkon van Europa)</span> <span class="soort">Dagje uit</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">
