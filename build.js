@@ -640,14 +640,18 @@ function metaBlok({ inhoud, paginaUrl, ogType }) {
   // Bij een post: de eerste artikelfoto proberen als og:image (zowel de
   // bovenste hero-foto met class="foto" als een post-foto verderop in
   // oudere posts die daarmee beginnen), maar alleen als die ook echt groot
-  // genoeg is (Facebook/LinkedIn adviseren minimaal 1200x630) — anders
-  // terugvallen op de site-brede standaardfoto.
+  // genoeg is: minimaal 1000 pixels breed en 630 hoog — anders terugvallen
+  // op de site-brede standaardfoto. (Tot november 2026 was de grens 1200
+  // breed, het advies van Facebook/LinkedIn. Daardoor deelden DÂK (1080
+  // breed) en Simit and Cheese (1050 breed) met de algemene skylinefoto in
+  // plaats van hun eigen foto, terwijl WhatsApp en Facebook zulke foto's
+  // prima groot tonen.)
   let ogAfbeelding = standaardOgAfbeelding;
   const fotoMatch = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\ssrc="([^"]+)"/);
   if (fotoMatch) {
     const relatiefPad = fotoMatch[1].replace(/^(\.\.\/)+/, "");
     const afmeting = jpegAfmetingen(path.join(__dirname, relatiefPad));
-    if (afmeting && afmeting.breedte >= 1200 && afmeting.hoogte >= 630) {
+    if (afmeting && afmeting.breedte >= 1000 && afmeting.hoogte >= 630) {
       ogAfbeelding = SITE + relatiefPad.replace(/\\/g, "/");
     }
   }
