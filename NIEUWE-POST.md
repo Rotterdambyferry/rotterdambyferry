@@ -240,6 +240,11 @@ Let op de komma's tussen de regels (behalve na de laatste). Daarna gewoon
 publiceren zoals altijd. Lokaal bekijken met voorbeeldfoto's: vraag het
 Claude Code.
 
+Staan er ineens geen foto's meer op de pagina, dan is meestal de
+Instagram-sleutel verlopen (die is 60 dagen geldig). Op GitHub zie je dat
+op het tabblad Actions als gele melding "Snapshots uit 010". Vraag Claude
+Code dan om de sleutel te verlengen.
+
 ## Tips
 
 - Bekijk je post eerst lokaal: dubbelklik op `start-preview.bat` in de

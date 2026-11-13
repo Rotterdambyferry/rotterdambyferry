@@ -75,8 +75,33 @@ function voorbeeld() {
   console.log(`✓ instagram.json met ${posts.length} voorbeeldposts (draai nu npm run build)`);
 }
 
+// Video: het stilstaande beeld. Foto: de foto. Carrousel: het eerste
+// onderdeel dat een foto heeft (bij een video het stilstaande beeld).
+function fotoVan(item) {
+  if (item.media_type === "VIDEO") return item.thumbnail_url;
+  if (item.media_type === "CAROUSEL_ALBUM") {
+    const onderdelen = (item.children && item.children.data) || [];
+    for (const deel of onderdelen) {
+      const url = deel.media_type === "VIDEO" ? deel.thumbnail_url : deel.media_url;
+      if (url) return url;
+    }
+  }
+  return item.media_url;
+}
+
+// Melding in de terminal, en in de publicatie op GitHub ook als gele
+// waarschuwing in de samenvatting van de run, zodat het opvalt (bijvoorbeeld
+// als de sleutel verlopen is).
+function waarschuw(tekst) {
+  console.warn(`⚠ ${tekst}`);
+  if (process.env.GITHUB_ACTIONS) console.log(`::warning title=Snapshots uit 010::${tekst}`);
+}
+
 async function haalOp(token) {
-  const velden = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
+  // children: bij een carrousel de losse onderdelen, zodat een carrousel
+  // die met een video begint toch een foto (of het stilstaande beeld) krijgt.
+  const velden =
+    "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,children{media_type,media_url,thumbnail_url}";
   const url = `${API}?fields=${velden}&limit=${AANTAL_OPHALEN}&access_token=${encodeURIComponent(token)}`;
   const antwoord = await fetch(url, { signal: AbortSignal.timeout(20000) });
   const json = await antwoord.json().catch(() => ({}));
@@ -93,9 +118,9 @@ async function haalOp(token) {
 
   const posts = [];
   for (const item of json.data) {
-    const c = code(item.permalink);
-    // Video: het stilstaande beeld. Foto en carrousel: de (eerste) foto.
-    const fotoUrl = item.media_type === "VIDEO" ? item.thumbnail_url : item.media_url;
+    // Alleen echte Instagram-links (de build controleert dit ook).
+    const c = /^https:\/\/www\.instagram\.com\//.test(String(item.permalink || "")) ? code(item.permalink) : null;
+    const fotoUrl = fotoVan(item);
     if (!c || !fotoUrl) continue;
     try {
       const foto = await fetch(fotoUrl, { signal: AbortSignal.timeout(20000) });
@@ -112,7 +137,7 @@ async function haalOp(token) {
         datum: isoTijd(item.timestamp),
       });
     } catch (fout) {
-      console.warn(`⚠ foto van post ${c} niet opgehaald (${fout.message}): overgeslagen`);
+      waarschuw(`foto van post ${c} niet opgehaald (${fout.message}): overgeslagen`);
     }
   }
 
@@ -132,12 +157,12 @@ async function haalOp(token) {
 
   const token = (process.env.INSTAGRAM_TOKEN || "").trim();
   if (!token) {
-    console.warn("⚠ geen INSTAGRAM_TOKEN: snapshots niet opgehaald (de pagina toont de lege stand)");
+    waarschuw("geen INSTAGRAM_TOKEN: snapshots niet opgehaald (de pagina toont de lege stand)");
     return;
   }
   try {
     await haalOp(token);
   } catch (fout) {
-    console.warn(`⚠ snapshots niet opgehaald: ${fout.message}`);
+    waarschuw(`snapshots niet opgehaald: ${fout.message}. Is de sleutel verlopen? Zie CLAUDE.md, Snapshots uit 010.`);
   }
 })();

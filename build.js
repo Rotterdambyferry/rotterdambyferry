@@ -786,12 +786,19 @@ for (const bestand of fs.readdirSync(path.join(bronmap, "posts"))) {
 }
 
 // Kort onderschrift uit een Instagram-caption: de eerste regel, daarvan de
-// eerste zin, zonder hashtags, maximaal ± 130 tekens. Gedachtestreepjes
+// eerste zin, zonder de hashtags aan het eind (een hashtag midden in een
+// zin blijft als gewoon woord staan), maximaal ± 130 tekens. Gedachtestreepjes
 // worden komma's (huisstijl: geen streepjes in zichtbare tekst).
 function snapshotOnderschrift(caption) {
   let tekst = String(caption || "")
     .split(/\r?\n/)
-    .map((regel) => regel.replace(/#[^\s#]+/g, "").replace(/\s+/g, " ").trim())
+    .map((regel) =>
+      regel
+        .replace(/(?:\s*#[^\s#]+)+\s*$/u, "") // rij hashtags aan het eind: weg
+        .replace(/#([^\s#]+)/g, "$1") // hashtag midden in een zin: woord blijft, # weg
+        .replace(/\s+/g, " ")
+        .trim()
+    )
     .find((regel) => regel.replace(/[^\p{L}\p{N}]/gu, "").length > 0) || "";
   tekst = tekst.replace(/\s*[—–]\s*/g, ", ");
   const zin = tekst.match(/^.+?[.!?](?=\s|$)/);
@@ -800,10 +807,31 @@ function snapshotOnderschrift(caption) {
   return tekst || "Snapshot uit 010";
 }
 
+// Datum van een post in Nederlandse tijd: als tekst ("10 november 2026")
+// en als JJJJ-MM-DD (voor <time datetime> en de lastmod). Zonder geldige
+// tijd: leeg, dus geen datum op de tegel.
 function snapshotDatum(iso) {
-  const datum = new Date(iso);
-  if (isNaN(datum)) return "";
+  const datum = iso ? new Date(iso) : null;
+  if (!datum || isNaN(datum)) return "";
   return new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Amsterdam" }).format(datum);
+}
+function snapshotDag(iso) {
+  const datum = iso ? new Date(iso) : null;
+  if (!datum || isNaN(datum)) return "";
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam" }).format(datum);
+}
+
+// Een "verhaal" uit de uitzonderingen alleen gebruiken als die post bestaat
+// en al gepubliceerd is; anders een melding in plaats van een dode link.
+function geldigVerhaal(verhaal, code) {
+  if (!verhaal) return null;
+  const pad = String(verhaal).replace(/^\/+/, "");
+  const naam = path.basename(pad, ".html");
+  if (!/^posts\/[^/]+\.html$/.test(pad) || !fs.existsSync(path.join(bronmap, pad)) || verborgenPosts.has(naam)) {
+    console.warn(`⚠ instagram-uitzonderingen.json: verhaal ${verhaal} bij ${code} bestaat (nog) niet: genegeerd`);
+    return null;
+  }
+  return pad;
 }
 
 // De snapshots die echt getoond worden: verborgen posts eruit, foto moet
@@ -812,6 +840,7 @@ const snapshots = (() => {
   if (!instagramData || !Array.isArray(instagramData.posts)) return [];
   return instagramData.posts
     .map((post) => ({ ...post, code: post.code || instagramCode(post.permalink) }))
+    .filter((post) => /^https:\/\/www\.instagram\.com\//.test(String(post.permalink || "")))
     .filter((post) => post.code && !(instagramUitzonderingen[post.code] || {}).verbergen)
     .filter((post) => post.afbeelding && fs.existsSync(path.join(__dirname, post.afbeelding)))
     .slice(0, SNAPSHOTS_AANTAL)
@@ -820,7 +849,7 @@ const snapshots = (() => {
       return {
         ...post,
         onderschrift: uitzondering.onderschrift || snapshotOnderschrift(post.caption),
-        verhaal: uitzondering.verhaal || postPerInstagramCode.get(post.code) || null,
+        verhaal: geldigVerhaal(uitzondering.verhaal, post.code) || postPerInstagramCode.get(post.code) || null,
       };
     });
 })();
@@ -829,7 +858,7 @@ const snapshots = (() => {
 // puur om lokaal te bekijken.
 const snapshotsEcht = snapshots.length > 0 && instagramData && instagramData.bron === "instagram";
 const nieuwsteSnapshotDatum = snapshotsEcht
-  ? snapshots.map((post) => String(post.datum || "").slice(0, 10)).filter(Boolean).sort().pop()
+  ? snapshots.map((post) => snapshotDag(post.datum)).filter(Boolean).sort().pop()
   : null;
 
 function snapshotsHtml(root) {
@@ -847,7 +876,7 @@ function snapshotsHtml(root) {
     <a class="snapshot-foto" href="${htmlTekst(post.permalink)}" target="_blank" rel="noopener noreferrer">
       <img src="${root}${post.afbeelding}" alt="${tekst}" width="1080" height="1350" loading="lazy">
     </a>
-    <div class="snapshot-tekst">${datum ? `\n      <time datetime="${htmlTekst(String(post.datum).slice(0, 10))}">${datum}</time>` : ""}
+    <div class="snapshot-tekst">${datum ? `\n      <time datetime="${snapshotDag(post.datum)}">${datum}</time>` : ""}
       <p>${tekst}</p>${verhaal}
     </div>
   </li>
