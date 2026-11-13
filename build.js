@@ -794,7 +794,7 @@ function snapshotOnderschrift(caption) {
     .split(/\r?\n/)
     .map((regel) =>
       regel
-        .replace(/(?:\s*#[^\s#]+)+\s*$/u, "") // rij hashtags aan het eind: weg
+        .replace(/(?:\s*#[\p{L}\p{N}_]+)+\s*$/u, "") // rij hashtags aan het eind: weg
         .replace(/#([^\s#]+)/g, "$1") // hashtag midden in een zin: woord blijft, # weg
         .replace(/\s+/g, " ")
         .trim()
