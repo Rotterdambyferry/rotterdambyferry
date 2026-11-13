@@ -883,7 +883,7 @@ function snapshotsHtml(root) {
 `;
     })
     .join("");
-  return `<p class="snapshots-uitleg">Hier zie je steeds mijn laatste ${snapshots.length}:</p>\n<ul class="snapshots">\n${items}</ul>\n\n`;
+  return `<p class="snapshots-uitleg">Hieronder alvast een kijkje op mijn Instagram: dit zijn de laatste ${snapshots.length} foto's uit Rotterdam.</p>\n<ul class="snapshots">\n${items}</ul>\n\n`;
 }
 
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
