@@ -220,6 +220,15 @@ h2.kop { line-height: 1.7; }
   object-fit: cover;
   object-position: center;
 }
+/* Fotowissel: er liggen twee fotolagen op elkaar (de tweede maakt het script
+   in index.html). De laag met .is-weg is onzichtbaar; bij een wissel vloeien
+   de twee in elkaar over. Wie "minder beweging" heeft ingesteld krijgt geen
+   overvloeier (en ook geen automatische wissel, dat regelt het script). */
+.hero-foto { transition: opacity 1.2s ease; }
+.hero-foto.is-weg { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-foto { transition: none; }
+}
 .hero::after {
   content: "";
   position: absolute;
@@ -249,6 +258,61 @@ h2.kop { line-height: 1.7; }
   color: rgba(255, 255, 255, 0.92);
   margin: 0;
 }
+/* Bediening van de fotowissel, rechtsonder in de hero (op de computer in
+   lijn met de rechterrand van de inhoud): het label met de plek van de foto
+   (link naar het verhaal) en de pauzeknop. Wit op een donker vlak, zodat ze
+   op elke foto leesbaar zijn. */
+.hero-bediening {
+  position: absolute;
+  z-index: 2;
+  right: max(1.25rem, calc((100% - var(--breedte)) / 2 + 1.25rem));
+  bottom: 1.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hero-plek,
+.hero-pauze {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(21, 25, 27, 0.66);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
+.hero-plek[hidden],
+.hero-pauze[hidden] { display: none; }
+.hero-plek {
+  padding: 0 0.75rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hero-pauze {
+  width: 2.25rem;
+  padding: 0;
+  cursor: pointer;
+}
+/* Alleen met een muis: op een aanraakscherm blijft zo'n kleur anders na
+   een tik hangen. */
+@media (hover: hover) {
+  .hero-plek:hover,
+  .hero-pauze:hover { background: var(--groen); border-color: #fff; }
+}
+.hero-plek:focus-visible,
+.hero-pauze:focus-visible { outline-color: #fff; }
+/* Pauzeknop: het pauze-icoon zolang de foto's wisselen, het afspeel-icoon
+   als het wisselen stilstaat. */
+.hero-pauze .icoon-speel { display: none; }
+.hero-pauze[aria-pressed="true"] .icoon-pauze { display: none; }
+.hero-pauze[aria-pressed="true"] .icoon-speel { display: block; }
+
 /* Mobiel (tot 600px breed): een lagere hero van ongeveer 200px, zodat het
    eerste verhaal zonder scrollen in beeld komt. Minder lucht boven de
    tekst, een iets kleinere ondertitel, en een wat sterkere donkere laag: de
@@ -270,6 +334,19 @@ h2.kop { line-height: 1.7; }
       rgba(21, 25, 27, 0.82) 0%,
       rgba(21, 25, 27, 0.55) 55%,
       rgba(21, 25, 27, 0.2) 100%);
+  }
+  /* Op de telefoon staat de tekst over bijna de hele foto: label en
+     pauzeknop daarom rechtsboven. Ze ogen klein (32px hoog), maar het
+     tikvlak is via ::before rondom 8px groter, dus 48px. */
+  .hero-bediening { top: 0.75rem; bottom: auto; right: 1rem; gap: 0.75rem; }
+  .hero-plek,
+  .hero-pauze { position: relative; min-height: 2rem; }
+  .hero-pauze { width: 2rem; }
+  .hero-plek::before,
+  .hero-pauze::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
   }
 }
 
@@ -1338,16 +1415,39 @@ body:has(.artikel) .site-footer .inner {
     <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
     <p>Skyline, food, kroegen &amp; kidsproof 010. Van Zuid tot Noord, gewoon door een Rotterdammer.</p>
   </div>
+  <!-- Bediening van de fotowissel: het label met de plek (alleen bij een foto
+       uit een verhaal) en de pauzeknop. Beide staan verborgen in de HTML; het
+       script hieronder zet ze aan. Zonder JavaScript blijft het dus bij de
+       ene vaste foto, zonder knoppen die niets doen. -->
+  <div class="hero-bediening">
+    <a class="hero-plek" id="hero-plek" href="#verhalen" hidden></a>
+    <button type="button" class="hero-pauze" id="hero-pauze" aria-pressed="false" hidden>
+      <svg class="icoon-pauze" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><rect x="1.5" y="1" width="3" height="10" fill="currentColor"/><rect x="7.5" y="1" width="3" height="10" fill="currentColor"/></svg>
+      <svg class="icoon-speel" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 1l8 5-8 5z" fill="currentColor"/></svg>
+      <span class="visueel-verborgen" id="hero-pauze-tekst">Pauzeer het wisselen van de foto's</span>
+    </button>
+  </div>
 </section>
 <script>
-  // Hero-foto's: bij het eerste bezoek altijd de skyline (staat ook al in de
-  // HTML hierboven, voor bezoekers zonder JavaScript). Bij een volgend bezoek
-  // kiest dit script willekeurig een andere foto dan de vorige keer.
+  // Hero-foto's. Twee dingen:
+  //
+  // 1. Bij het eerste bezoek altijd de skyline (staat ook al in de HTML
+  //    hierboven, voor bezoekers zonder JavaScript). Bij een volgend bezoek
+  //    begint de hero met een willekeurige andere foto dan de vorige keer.
+  // 2. Daarna wisselt de foto om de paar seconden rustig door naar de
+  //    volgende (overvloeien). De volgende foto wordt pas opgehaald als de
+  //    pagina klaar is met laden, dus de laadsnelheid van de eerste foto
+  //    verandert niet. Met de pauzeknop zet de bezoeker het wisselen stil.
+  //    Wie op zijn apparaat "minder beweging" heeft ingesteld, of
+  //    databesparing aan heeft staan, krijgt geen automatische wissel (de
+  //    knop staat dan op pauze en kan zelf aangezet worden).
+  //
   // Nieuwe foto toevoegen? Zet het bestand in assets/img, draai
   // maak-mobiele-fotos.ps1 (voor de kleine -mobiel-variant) en voeg hieronder
-  // één regel toe aan de lijst (bestandsnaam + breedte in pixels + korte
-  // omschrijving voor screenreaders; die omschrijving wisselt mee als
-  // alt-tekst van de foto).
+  // één regel toe aan de lijst: bestandsnaam + breedte in pixels + korte
+  // omschrijving voor screenreaders (wisselt mee als alt-tekst). Hoort de
+  // foto bij een verhaal, zet er dan plek (de naam op het label) en post
+  // (de link naar het verhaal) bij; dan verschijnt het label op de foto.
   (function () {
     var heroFotos = [
       { bestand: "hero-skyline-euromast.jpg", breedte: 1600, label: "Skyline van Rotterdam vanaf de Euromast" },
@@ -1355,28 +1455,140 @@ body:has(.artikel) .site-footer .inner {
       { bestand: "hero-willemsbrug.jpg", breedte: 1600, label: "De Willemsbrug bij avond" },
       { bestand: "hero-erasmusbrug-winter.jpg", breedte: 1600, label: "De Erasmusbrug onder een dreigende winterlucht" },
       { bestand: "hero-centraal-station.jpg", breedte: 1600, label: "Rotterdam Centraal en de Delftse Poort op een zonnige dag" },
-      { bestand: "hero-laurenskerk.jpg", breedte: 1080, label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" }
+      { bestand: "hero-laurenskerk.jpg", breedte: 1080, label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" },
+      { bestand: "hero-balkon-van-europa.jpg", breedte: 1400, label: "Het terras van het Balkon van Europa op de Maasvlakte, met een containerschip dat langsvaart", plek: "Balkon van Europa", post: "posts/balkon-van-europa.html" },
+      { bestand: "hero-containerschip-one.jpg", breedte: 1400, label: "Het roze containerschip van ONE aan de kade op de Maasvlakte", plek: "Portlantis", post: "posts/portlantis.html" },
+      { bestand: "hero-pleinbios.jpg", breedte: 1400, label: "Publiek bij Pleinbios voor Hotel New York op de Wilhelminapier", plek: "Pleinbios", post: "posts/pleinbios.html" },
+      { bestand: "hero-rif010.jpg", breedte: 1600, label: "Surfers in de Steigersgracht bij RiF010, met publiek op de kade", plek: "RiF010", post: "posts/rif010.html" },
+      { bestand: "hero-vijgeboom.jpg", breedte: 1600, label: "Het terras van Tapperij De Vijgeboom bij avond", plek: "De Vijgeboom", post: "posts/vijgeboom.html" },
+      { bestand: "hero-due-tonino.jpg", breedte: 1600, label: "De neonreclame van Due Tonino aan de Goudsesingel", plek: "Due Tonino", post: "posts/due-tonino.html" }
     ];
     var standaardFoto = "hero-skyline-euromast.jpg";
+    var wisseltijd = 6000; // milliseconden dat één foto blijft staan
+
+    var hero = document.getElementById("hero");
+    var actief = document.getElementById("hero-foto"); // de foto die nu te zien is
+    var plekLabel = document.getElementById("hero-plek");
+    var pauzeknop = document.getElementById("hero-pauze");
+    var pauzeTekst = document.getElementById("hero-pauze-tekst");
+    var huidige = heroFotos[0];
+
+    // Zet een foto uit de lijst in een fotolaag. Eerst srcset, dan pas src: zo
+    // laadt de browser niet per ongeluk eerst nog de grote variant.
+    function zetFoto(img, foto) {
+      img.srcset = "assets/img/" + foto.bestand.replace(/\.jpg$/, "-mobiel.jpg") + " 800w, " +
+                   "assets/img/" + foto.bestand + " " + foto.breedte + "w";
+      img.src = "assets/img/" + foto.bestand;
+    }
+
+    // Label rechts in de hero: alleen bij een foto die bij een verhaal hoort.
+    function zetLabel(foto) {
+      if (foto.plek && foto.post) {
+        plekLabel.textContent = foto.plek + " \u2192";
+        plekLabel.href = foto.post;
+        plekLabel.setAttribute("aria-label", foto.plek + ": lees het verhaal");
+        plekLabel.hidden = false;
+      } else {
+        plekLabel.hidden = true;
+      }
+    }
+
+    function onthoud(bestand) {
+      try { localStorage.setItem("heroFoto", bestand); } catch (e) { /* geen opslag: niet erg */ }
+    }
+
+    // 1. De eerste foto van dit bezoek.
     try {
       var laatst = localStorage.getItem("heroFoto");
-      var keuze = standaardFoto;
       if (laatst) {
         var kandidaten = heroFotos.filter(function (f) { return f.bestand !== laatst; });
         if (kandidaten.length > 0) {
-          var gekozen = kandidaten[Math.floor(Math.random() * kandidaten.length)];
-          keuze = gekozen.bestand;
-          var foto = document.getElementById("hero-foto");
-          // Eerst srcset aanpassen, dan pas src: zo laadt de browser niet
-          // per ongeluk eerst nog de grote standaardfoto.
-          foto.srcset = "assets/img/" + gekozen.bestand.replace(/\.jpg$/, "-mobiel.jpg") + " 800w, " +
-                        "assets/img/" + gekozen.bestand + " " + gekozen.breedte + "w";
-          foto.src = "assets/img/" + gekozen.bestand;
-          foto.alt = gekozen.label;
+          huidige = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+          zetFoto(actief, huidige);
+          actief.alt = huidige.label;
         }
       }
-      localStorage.setItem("heroFoto", keuze);
     } catch (e) { /* localStorage niet beschikbaar: dan gewoon de standaardfoto */ }
+    onthoud(huidige.bestand);
+    zetLabel(huidige);
+
+    // 2. Doorwisselen. De rij is: alle andere foto's in willekeurige
+    // volgorde; is de rij op, dan begint een nieuwe ronde.
+    var rij = [];
+    function volgendeFoto() {
+      if (rij.length === 0) {
+        rij = heroFotos.filter(function (f) { return f !== huidige; });
+        for (var i = rij.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = rij[i]; rij[i] = rij[j]; rij[j] = t;
+        }
+      }
+      return rij.shift();
+    }
+
+    // Tweede fotolaag, onzichtbaar boven op de eerste. Bij een wissel krijgt
+    // de onzichtbare laag de nieuwe foto en vloeien de twee in elkaar over.
+    var wachtlaag = document.createElement("img");
+    wachtlaag.className = "hero-foto is-weg";
+    wachtlaag.alt = "";
+    wachtlaag.sizes = "100vw";
+    wachtlaag.width = 1600;
+    wachtlaag.height = 900;
+    wachtlaag.decoding = "async";
+    wachtlaag.setAttribute("aria-hidden", "true");
+    hero.insertBefore(wachtlaag, actief.nextSibling);
+
+    var gepauzeerd = false;
+    var bezig = false; // er wordt op dit moment een foto opgehaald
+    var klok = null;
+
+    function wissel() {
+      if (gepauzeerd || bezig || document.hidden) return;
+      // Hero uit beeld gescrold: niets ophalen, later opnieuw proberen.
+      if (hero.getBoundingClientRect().bottom <= 0) return;
+      var foto = volgendeFoto();
+      var laag = wachtlaag;
+      bezig = true;
+      zetFoto(laag, foto);
+      var klaar = laag.decode ? laag.decode() : new Promise(function (ok, fout) { laag.onload = ok; laag.onerror = fout; });
+      klaar.then(function () {
+        bezig = false;
+        if (gepauzeerd) { rij.unshift(foto); return; }
+        laag.alt = foto.label;
+        laag.removeAttribute("aria-hidden");
+        laag.classList.remove("is-weg");
+        actief.classList.add("is-weg");
+        actief.alt = "";
+        actief.setAttribute("aria-hidden", "true");
+        wachtlaag = actief;
+        actief = laag;
+        huidige = foto;
+        zetLabel(foto);
+        onthoud(foto.bestand);
+      }, function () {
+        bezig = false; // foto niet opgehaald (verbinding weg?): bij de volgende tik verder
+      });
+    }
+
+    function zetPauze(aan) {
+      gepauzeerd = aan;
+      pauzeknop.setAttribute("aria-pressed", aan ? "true" : "false");
+      pauzeTekst.textContent = aan ? "Laat de foto's weer wisselen" : "Pauzeer het wisselen van de foto's";
+      if (klok) { clearInterval(klok); klok = null; }
+      if (!aan) klok = setInterval(wissel, wisseltijd);
+    }
+
+    pauzeknop.addEventListener("click", function () { zetPauze(!gepauzeerd); });
+
+    var minderBeweging = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var databesparing = navigator.connection && navigator.connection.saveData;
+
+    function start() {
+      pauzeknop.hidden = false;
+      zetPauze(Boolean(minderBeweging || databesparing));
+    }
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start);
   })();
 </script>
 
