@@ -51,7 +51,7 @@ Plak daaronder dit blokje en vul het in:
 ```html
 <article class="kaart" data-categorie="CATEGORIE" data-gebied="GEBIED">
   <a class="thumb" href="posts/BESTANDSNAAM.html" aria-hidden="true" tabindex="-1">
-    <img src="assets/img/BESTANDSNAAM-kaart.jpg" alt="" width="800" height="500" loading="lazy">
+    <img src="assets/img/BESTANDSNAAM-kaart.jpg" alt="WAT ER OP DE FOTO TE ZIEN IS, MET NAAM VAN DE ZAAK, STRAAT EN GEBIED" width="800" height="500" loading="lazy">
   </a>
   <div class="tags">
     <span class="tag">Categorie</span>
@@ -62,6 +62,11 @@ Plak daaronder dit blokje en vul het in:
   <a class="lees" href="posts/BESTANDSNAAM.html">Lees het verhaal &rarr;</a>
 </article>
 ```
+
+Vul bij `alt` in wat er op de foto te zien is, met de naam van de zaak,
+de straat en het gebied, zoals bij de andere kaarten (bijvoorbeeld "Terras
+van Italiaans restaurant Due Tonino aan de Goudsesingel in Rotterdam").
+Laat hem nooit leeg: de build geeft dan een ⚠-melding.
 
 Geen foto voor deze post? Laat dan het hele blokje met
 `<a class="thumb" ...>` tot en met `</a>` gewoon weg: de kaart werkt
@@ -168,7 +173,7 @@ om te kijken.
    <figure class="post-video">
      <div class="video-frame">
        <a class="video-facade" href="LINK NAAR DE VIDEO" data-titel="KORTE OMSCHRIJVING VAN DE VIDEO">
-         <img src="../assets/img/PLAATJE.jpg" alt="" width="BREEDTE" height="HOOGTE" loading="lazy">
+         <img src="../assets/img/PLAATJE.jpg" alt="Video: KORTE OMSCHRIJVING VAN DE VIDEO" width="BREEDTE" height="HOOGTE" loading="lazy">
          <span class="video-facade-knop">Speel af</span>
        </a>
      </div>
@@ -183,6 +188,11 @@ om te kijken.
    - **data-titel**: een paar woorden over de video, bijvoorbeeld
      "Broodjestester bij Station Bergweg". Die wordt voorgelezen aan
      bezoekers die een screenreader gebruiken.
+   - **alt** van het plaatje: zet daar `Video: ` met dezelfde paar
+     woorden achter, bijvoorbeeld "Video: de Broodjestester bij Station
+     Bergweg". Laat hem nooit leeg: anders heet de knop voor een
+     screenreader alleen "Speel af". Een lege alt geeft bij de build een
+     ⚠-melding.
    - Een **staande video** (zoals bijna elke TikTok)? Schrijf dan
      `class="post-video staand"` in plaats van `class="post-video"`.
 3. Zet onderaan de post, direct onder de regel met `header.js`:

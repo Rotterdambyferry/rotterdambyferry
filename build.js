@@ -11,8 +11,9 @@
 // de inhoud van /partials/naam.html. In een partial wordt {{root}} vervangen
 // door het juiste padvoorvoegsel ("" in de root, "../" in posts/), zodat
 // links als {{root}}index.html overal kloppen. Daarnaast wordt {{deel-url}}
-// vervangen door het URL-gecodeerde webadres van de pagina zelf (voor de
-// WhatsApp-deelknop in de footer, als reserve zonder JavaScript).
+// vervangen door het URL-gecodeerde webadres van de pagina zelf, en
+// {{deel-tekst}} door titel plus webadres (voor de WhatsApp-deelknop in de
+// footer, als reserve zonder JavaScript).
 //
 // Voorbereide posts: een post in src/posts kan in de <head> een regel
 // <meta name="publicatiedatum" content="JJJJ-MM-DD"> krijgen. Staat die
@@ -120,21 +121,54 @@ function hoortBijVerborgenPost(stuk) {
   return false;
 }
 
-// Datum van de laatste git-commit die dit bronbestand raakte (voor
-// <lastmod> in de sitemap) — valt terug op vandaag als het bestand nog niet
-// gecommit is, of als git om wat voor reden dan ook niet beschikbaar is.
-// Gememoized zodat git per bestand maar één keer hoeft te draaien.
+// Commits die de hele site tegelijk raakten zonder dat de inhoud van een
+// pagina echt veranderde (opmaak, techniek, audit-sweeps). Die staan in
+// .lastmod-negeer (één commit-hash per regel, # = toelichting) en tellen
+// niet mee voor <lastmod> en dateModified: Google wil daar alleen de datum
+// van een echte inhoudswijziging zien. Vergelijkbaar met git's eigen
+// .git-blame-ignore-revs. Korte en lange hashes werken allebei.
+const negeerCommits = (() => {
+  const bestand = path.join(__dirname, ".lastmod-negeer");
+  if (!fs.existsSync(bestand)) return [];
+  return leesTekst(bestand)
+    .split("\n")
+    .map((regel) => regel.replace(/#.*/, "").trim().toLowerCase())
+    .filter(Boolean);
+})();
+function isNegeerCommit(hash) {
+  return negeerCommits.some((n) => hash.startsWith(n) || n.startsWith(hash));
+}
+
+// Datum van de laatste git-commit die dit bronbestand echt inhoudelijk
+// raakte (voor <lastmod> in de sitemap en dateModified in de JSON-LD):
+// commits uit .lastmod-negeer worden overgeslagen. Raakten alleen zulke
+// commits het bestand, dan telt de oudste commit (het ontstaan van het
+// bestand). --follow zodat ook commits van vóór een verhuizing (zoals naar
+// src/) meetellen. Valt terug op vandaag als het bestand nog niet gecommit
+// is, of als git om wat voor reden dan ook niet beschikbaar is. Regels
+// splitsen op \r?\n, zodat een Windows-regeleinde (\r) nooit aan een datum
+// blijft plakken. Gememoized zodat git per bestand maar één keer draait.
 const laatsteWijzigingCache = new Map();
-function laatsteWijziging(bronbestand) {
+function laatsteGitWijziging(bronbestand) {
   if (laatsteWijzigingCache.has(bronbestand)) return laatsteWijzigingCache.get(bronbestand);
-  let datum;
+  let datum = vandaag;
   try {
-    datum =
-      execFileSync(
-        "git",
-        ["log", "-1", "--date=format:%Y-%m-%d", "--format=%cd", "--", bronbestand],
-        { cwd: __dirname, encoding: "utf8" }
-      ).trim() || vandaag;
+    const regels = execFileSync(
+      "git",
+      ["log", "--follow", "--date=format:%Y-%m-%d", "--format=%H %cd", "--", bronbestand],
+      { cwd: __dirname, encoding: "utf8" }
+    )
+      .split(/\r?\n/)
+      .map((regel) => regel.trim())
+      .filter(Boolean)
+      .map((regel) => {
+        const [hash, dag] = regel.split(" ");
+        return { hash, dag };
+      });
+    if (regels.length) {
+      const echt = regels.find(({ hash }) => !isNegeerCommit(hash));
+      datum = (echt || regels[regels.length - 1]).dag;
+    }
   } catch {
     datum = vandaag;
   }
@@ -142,25 +176,58 @@ function laatsteWijziging(bronbestand) {
   return datum;
 }
 
-// Datum van de vróégste git-commit die dit bronbestand raakte — voor
-// datePublished in de JSON-LD, als de post zelf geen publicatiedatum-meta
-// heeft. Gememoized, zelfde principe als laatsteWijziging hierboven.
-// Let op: --follow (nodig om ook de commit van vóór een hernoem/verplaats-
-// actie te vinden, zoals de verhuizing naar src/) en --reverse samen geven
-// bij git een bekende bug (--follow stopt dan bij de eerste hernoeming) —
-// daarom hier de gewone (nieuw-naar-oud) volgorde en de láátste regel pakken
-// in plaats van --reverse plus de eerste regel.
+// Wijzigingsdatum van een pagina: de laatste echte git-wijziging, maar nooit
+// eerder dan de publicatiedatum (de eigen publicatiedatum-meta, of anders
+// de datum waarop de post aan git is toegevoegd). Een voorbereide post die
+// op 1 oktober is gecommit en op 10 oktober verschijnt, krijgt dus 10
+// oktober en niet een datum van vóór zijn eigen verschijning.
+function laatsteWijziging(bronbestand) {
+  const gitDatum = laatsteGitWijziging(bronbestand);
+  if (path.relative(bronmap, bronbestand).split(path.sep)[0] !== "posts") return gitDatum;
+  const publicatie = publicatiedatum(bronbestand);
+  return publicatie > gitDatum ? publicatie : gitDatum;
+}
+
+// Publicatiedatum van een post: de eigen publicatiedatum-meta, of anders de
+// vroegste git-commit (eersteWijziging hieronder). Zelfde regel als
+// datePublished in de JSON-LD en de volgorde van de Leestips.
+function publicatiedatum(bronbestand) {
+  const naam = path.basename(bronbestand, ".html");
+  return publicatiedatums[naam] || eersteWijziging(bronbestand);
+}
+
+// Datum waarop dit bronbestand voor het eerst aan git is toegevoegd: voor
+// datePublished in de JSON-LD, de Leestips-volgorde en de lastmod van de
+// homepage, als de post zelf geen publicatiedatum-meta heeft. Gememoized,
+// zelfde principe als laatsteWijziging hierboven. git log geeft nieuw naar
+// oud, dus de laatste regel is de oudste.
 const eersteWijzigingCache = new Map();
 function eersteWijziging(bronbestand) {
   if (eersteWijzigingCache.has(bronbestand)) return eersteWijzigingCache.get(bronbestand);
   let datum;
   try {
+    // Niet met --follow: dat zoekt ook naar kopieën, en ziet een nieuwe post
+    // (een kopie van _template.html of van een andere post) dan als
+    // voortzetting van dat bestand, met diens oude datum. In plaats daarvan:
+    // de commits die het bestand toevoegden (--diff-filter=A), zowel op de
+    // plek in src/ als op de oude plek in de repo-root (van vóór de
+    // verhuizing naar src/ in juli 2026), en daarvan de oudste.
+    // Met schuine strepen, ook op Windows, zodat git het pad zeker herkent.
+    const relatief = path.relative(bronmap, bronbestand).split(path.sep).join("/");
     const regels = execFileSync(
       "git",
-      ["log", "--format=%cd", "--date=format:%Y-%m-%d", "--follow", "--", bronbestand],
+      [
+        "log",
+        "--diff-filter=A",
+        "--format=%cd",
+        "--date=format:%Y-%m-%d",
+        "--",
+        "src/" + relatief,
+        relatief,
+      ],
       { cwd: __dirname, encoding: "utf8" }
     ).trim();
-    const lijst = regels ? regels.split("\n") : [];
+    const lijst = regels ? regels.split(/\r?\n/).map((regel) => regel.trim()) : [];
     datum = lijst.length ? lijst[lijst.length - 1] : vandaag;
   } catch {
     datum = vandaag;
@@ -375,7 +442,7 @@ function leestipsHtml(root) {
     .filter((plek) => plek.post)
     .map((plek) => {
       const naam = path.basename(plek.post, ".html");
-      const datum = publicatiedatums[naam] || eersteWijziging(path.join(bronmap, plek.post));
+      const datum = publicatiedatum(path.join(bronmap, plek.post));
       return { plek, datum };
     })
     .sort((a, b) => (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0))
@@ -608,7 +675,7 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
     headline: ogTitel,
     description: beschrijving,
     image: [ogAfbeelding],
-    datePublished: publicatiedatums[naam] || eersteWijziging(bronbestand),
+    datePublished: publicatiedatum(bronbestand),
     dateModified: laatsteWijziging(bronbestand),
     author: { "@type": "Person", name: "Ferry", url: SITE + "over.html" },
     publisher: {
@@ -704,6 +771,27 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 
   const inhoud = leesTekst(bronbestand);
 
+  // Waarschuwing (geen stop) voor foto's zonder alt-tekst in de bron: een
+  // homepagekaart, postfoto of videoplaatje met alt="" of zonder alt. Zo
+  // valt het meteen op in de terminal als een kopieerblokje niet is
+  // ingevuld (zo ontstonden de lege alts bij Warung Melatie en Simit and
+  // Cheese). De fotootjes van "Misschien vind je dit ook leuk" en de
+  // Leestips maakt de build zelf pas verderop, met een bewust lege alt (de
+  // naam staat er als linktekst naast): die vallen hier dus buiten.
+  // Ook een niet-ingevulde invulplek telt als lege alt: tekst tussen
+  // [blokhaken] (zoals in _template.html) of drie of meer woorden in
+  // hoofdletters achter elkaar (zoals in de blokjes uit NIEUWE-POST.md).
+  for (const img of inhoud.match(/<img\b[^>]*>/g) || []) {
+    const alt = img.match(/\balt="([^"]*)"/);
+    const tekst = alt ? alt[1].trim() : "";
+    const invulplek = /\[|\b[A-Z]{2,}(?:[ ,]+[A-Z]{2,}){2,}/.test(tekst);
+    if (!tekst || invulplek) {
+      const bron = (img.match(/\bsrc="([^"]*)"/) || [, "(onbekend)"])[1];
+      const wat = invulplek ? "alt-tekst nog niet ingevuld" : "foto zonder alt-tekst";
+      console.warn(`⚠ ${relatief}: ${wat}: ${bron}`);
+    }
+  }
+
   // og/twitter/canonical genereren uit de eigen <title>/meta description en
   // vervangen (of, bij een post zonder eigen og-blok in de bron, voor het
   // eerst invoegen na de meta-description-regel).
@@ -747,6 +835,9 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     return partials[naam]
       .replace(/\{\{root\}\}/g, root)
       .replace(/\{\{deel-url\}\}/g, encodeURIComponent(paginaUrl))
+      // Zelfde bericht als assets/deel.js maakt (titel, nieuwe regel, URL),
+      // zodat de WhatsApp-knop ook zonder JavaScript de titel meestuurt.
+      .replace(/\{\{deel-tekst\}\}/g, encodeURIComponent(ogTitel + "\n" + paginaUrl))
       .replace(/\{\{instagram-knop\}\}/g, instagramKnop);
   });
 
@@ -832,11 +923,31 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 // gebouwd zijn (voorbereide posts met een toekomstige datum zijn dus al
 // vanzelf geen onderdeel van sitemapPaginas). Geen handmatig bij te houden
 // bestand meer.
+//
+// <lastmod> per pagina: posts, kaart.html en over.html krijgen
+// laatsteWijziging() (laatste echte git-wijziging, nooit vóór de
+// publicatiedatum). De homepage krijgt de publicatiedatum van de nieuwste
+// live post: daar verandert de homepage inhoudelijk door (een nieuwe kaart
+// bovenaan). Nooit de builddatum: de dagelijkse build zou dan elke dag alle
+// datums verversen.
 {
+  const livePostBestanden = sitemapPaginas
+    .map(({ bronbestand }) => bronbestand)
+    .filter((bestand) => path.relative(bronmap, bestand).split(path.sep)[0] === "posts");
+  const nieuwstePostDatum = livePostBestanden
+    .map((bestand) => publicatiedatum(bestand))
+    .sort()
+    .pop();
+
+  const lastmodVoor = (bronbestand) =>
+    path.relative(bronmap, bronbestand) === "index.html" && nieuwstePostDatum
+      ? nieuwstePostDatum
+      : laatsteWijziging(bronbestand);
+
   const urls = sitemapPaginas
     .map(
       ({ url, bronbestand }) =>
-        `  <url>\n    <loc>${url}</loc>\n    <lastmod>${laatsteWijziging(bronbestand)}</lastmod>\n  </url>\n`
+        `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmodVoor(bronbestand)}</lastmod>\n  </url>\n`
     )
     .join("");
   const resultaat =
