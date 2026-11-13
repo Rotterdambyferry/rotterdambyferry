@@ -213,6 +213,33 @@ vanzelf een knop "Pauzeer" (dat is een toegankelijkheidsregel:
 bewegend beeld moet je kunnen stilzetten). Ook hiervoor is de regel
 met `video.js` onderaan de post nodig.
 
+## Snapshots uit 010 (je Instagram op de site)
+
+De pagina `instagram.html` laat steeds je laatste 6 Instagram-posts zien.
+Daar hoef je niets voor te doen: bij elke publicatie (en elke ochtend)
+worden ze vanzelf opgehaald. Wil je toch iets aanpassen, dan doe je dat
+in `src\instagram-uitzonderingen.json`, per post met de code uit de
+Instagram-link (bij `instagram.com/p/DeLpySNuRcr/` is dat `DeLpySNuRcr`):
+
+```json
+"DeLpySNuRcr": { "onderschrift": "Nog één keer naar buiten voor de laatste zon" },
+"DfrK2LCuyD6": { "verbergen": true },
+"DcA_yGauElb": { "verhaal": "posts/vijgeboom.html" }
+```
+
+- **onderschrift**: een eigen zinnetje in plaats van de eerste zin van je
+  caption. Gebruik dit ook als je caption met een songtekst of gedicht
+  begint: die mag niet zomaar op de site.
+- **verbergen**: de post niet tonen; de volgende schuift erbij.
+- **verhaal**: het blogverhaal dat bij de post hoort. Meestal hoeft dit
+  niet: heeft de post in `<head>` een `instagram_url`-regel met de link
+  naar deze Instagram-post, dan staat "Lees het verhaal →" er vanzelf
+  onder.
+
+Let op de komma's tussen de regels (behalve na de laatste). Daarna gewoon
+publiceren zoals altijd. Lokaal bekijken met voorbeeldfoto's: vraag het
+Claude Code.
+
 ## Tips
 
 - Bekijk je post eerst lokaal: dubbelklik op `start-preview.bat` in de
