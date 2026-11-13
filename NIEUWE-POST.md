@@ -240,10 +240,12 @@ Let op de komma's tussen de regels (behalve na de laatste). Daarna gewoon
 publiceren zoals altijd. Lokaal bekijken met voorbeeldfoto's: vraag het
 Claude Code.
 
-Staan er ineens geen foto's meer op de pagina, dan is meestal de
-Instagram-sleutel verlopen (die is 60 dagen geldig). Op GitHub zie je dat
-op het tabblad Actions als gele melding "Snapshots uit 010". Vraag Claude
-Code dan om de sleutel te verlengen.
+De foto's komen via Behold (behold.so), waar @rotterdambyferry aan
+gekoppeld is. Staan er ineens geen foto's meer op de pagina, kijk dan op
+GitHub op het tabblad Actions: daar staat dan een gele melding "Snapshots
+uit 010". Meestal is de koppeling in Behold verbroken (in Behold onder
+Sources staat dan "Disconnected"): koppel Instagram daar opnieuw, of vraag
+Claude om te helpen.
 
 ## Tips
 

@@ -2,14 +2,22 @@
 // "Snapshots uit 010" (instagram.html). Draait in de publicatie op GitHub
 // vlak vóór node build.js (zie .github/workflows/publiceer.yml).
 //
-// Gebruik:  node haal-instagram.js             (echt ophalen, met de sleutel
-//                                               uit INSTAGRAM_TOKEN)
+// Gebruik:  node haal-instagram.js             (echt ophalen, zie Bronnen)
 //           node haal-instagram.js --voorbeeld  (6 voorbeeldposts met foto's
 //                                               die al op de site staan, om
 //                                               de pagina lokaal te bekijken)
 //           node haal-instagram.js --wis        (gegevens weg: de pagina
 //                                               toont weer de lege stand)
 // Daarna altijd: npm run build.
+//
+// Bronnen (de eerste die ingesteld is, wint):
+//  1. BEHOLD_FEED_URL: de JSON-feed van Behold (behold.so, gratis plan: de
+//     laatste 6 posts, één keer per dag ververst). Behold regelt zelf de
+//     koppeling met Instagram en het verlengen ervan; hier hoeft niets te
+//     verlopen. Dit is de bron die sinds november 2026 gebruikt wordt.
+//  2. INSTAGRAM_TOKEN: rechtstreeks via de officiële Instagram API (vereist
+//     een Meta-ontwikkelaarsaccount; sleutel verloopt na 60 dagen). Blijft
+//     bestaan voor als we later overstappen.
 //
 // Resultaat: instagram.json in de projectmap en een eigen kopie van elke
 // foto in assets/img/instagram/. Beide staan in .gitignore: ze worden bij
@@ -97,7 +105,35 @@ function waarschuw(tekst) {
   if (process.env.GITHUB_ACTIONS) console.log(`::warning title=Snapshots uit 010::${tekst}`);
 }
 
-async function haalOp(token) {
+// Posts uit de JSON-feed van Behold, in dezelfde vorm als hieronder bij de
+// Instagram API: { permalink, caption, timestamp, fotoUrl }. Behold levert
+// verkleinde foto's (sizes: small 400, medium 700, large 1000, full 2000px
+// breed, als WebP); medium is ruim genoeg voor de tegels, ook op een
+// scherp scherm.
+async function postsVanBehold(feedUrl) {
+  const antwoord = await fetch(feedUrl, { signal: AbortSignal.timeout(20000) });
+  const json = await antwoord.json().catch(() => ({}));
+  if (!antwoord.ok || !Array.isArray(json.posts)) {
+    // Nooit het feedadres in de melding.
+    const tekst = [json && json.message, json && json.error, json && json.error && json.error.message]
+      .find((waarde) => typeof waarde === "string" && waarde);
+    const melding = tekst || (antwoord.ok ? `onverwacht antwoord (HTTP ${antwoord.status})` : `HTTP ${antwoord.status}`);
+    throw new Error(`Behold gaf een fout: ${melding}`);
+  }
+  return json.posts.filter(Boolean).map((post) => {
+    const maten = post.sizes || {};
+    const foto = maten.medium || maten.large || maten.small || maten.full || {};
+    return {
+      permalink: post.permalink,
+      caption: post.caption || "",
+      timestamp: post.timestamp,
+      fotoUrl: foto.mediaUrl || (post.mediaType === "VIDEO" ? post.thumbnailUrl : post.mediaUrl),
+    };
+  });
+}
+
+// Posts rechtstreeks via de officiële Instagram API.
+async function postsVanInstagram(token) {
   // children: bij een carrousel de losse onderdelen, zodat een carrousel
   // die met een video begint toch een foto (of het stilstaande beeld) krijgt.
   const velden =
@@ -111,16 +147,25 @@ async function haalOp(token) {
     const melding = (json.error && json.error.message) || `HTTP ${antwoord.status}`;
     throw new Error(`Instagram gaf een fout: ${melding}`);
   }
+  return json.data.map((item) => ({
+    permalink: item.permalink,
+    caption: item.caption || "",
+    timestamp: item.timestamp,
+    fotoUrl: fotoVan(item),
+  }));
+}
 
+// Foto's downloaden (eigen kopie op de site) en instagram.json schrijven.
+async function bewaar(items, bron) {
   // Pas nu (antwoord is goed) de oude kopieën weghalen.
   fs.rmSync(FOTOMAP, { recursive: true, force: true });
   fs.mkdirSync(FOTOMAP, { recursive: true });
 
   const posts = [];
-  for (const item of json.data) {
+  for (const item of items) {
     // Alleen echte Instagram-links (de build controleert dit ook).
     const c = /^https:\/\/www\.instagram\.com\//.test(String(item.permalink || "")) ? code(item.permalink) : null;
-    const fotoUrl = fotoVan(item);
+    const fotoUrl = item.fotoUrl;
     if (!c || !fotoUrl) continue;
     try {
       const foto = await fetch(fotoUrl, { signal: AbortSignal.timeout(20000) });
@@ -141,8 +186,14 @@ async function haalOp(token) {
     }
   }
 
-  schrijfData({ bron: "instagram", opgehaald: new Date().toISOString(), posts });
-  console.log(`✓ instagram.json: ${posts.length} posts opgehaald`);
+  // Geen enkele post over (lege feed, of alle foto's mislukt): melden, want
+  // de pagina toont dan de lege stand.
+  if (posts.length === 0) waarschuw(`geen posts ontvangen via ${bron}: de pagina toont de lege stand`);
+
+  // "bron" blijft "instagram": voor de build zijn dit echte posts (geen
+  // voorbeeldgegevens), ongeacht of ze via Behold of de API kwamen.
+  schrijfData({ bron: "instagram", via: bron, opgehaald: new Date().toISOString(), posts });
+  console.log(`✓ instagram.json: ${posts.length} posts opgehaald (via ${bron})`);
 }
 
 (async () => {
@@ -155,14 +206,18 @@ async function haalOp(token) {
     return;
   }
 
+  const feedUrl = (process.env.BEHOLD_FEED_URL || "").trim();
   const token = (process.env.INSTAGRAM_TOKEN || "").trim();
-  if (!token) {
-    waarschuw("geen INSTAGRAM_TOKEN: snapshots niet opgehaald (de pagina toont de lege stand)");
-    return;
-  }
   try {
-    await haalOp(token);
+    if (feedUrl) {
+      if (!/^https:\/\/feeds\.behold\.so\//.test(feedUrl)) throw new Error("BEHOLD_FEED_URL is geen feeds.behold.so-adres");
+      await bewaar(await postsVanBehold(feedUrl), "behold");
+    } else if (token) {
+      await bewaar(await postsVanInstagram(token), "instagram-api");
+    } else {
+      waarschuw("geen BEHOLD_FEED_URL of INSTAGRAM_TOKEN: snapshots niet opgehaald (de pagina toont de lege stand)");
+    }
   } catch (fout) {
-    waarschuw(`snapshots niet opgehaald: ${fout.message}. Is de sleutel verlopen? Zie CLAUDE.md, Snapshots uit 010.`);
+    waarschuw(`snapshots niet opgehaald: ${fout.message}. Zie CLAUDE.md, Snapshots uit 010.`);
   }
 })();

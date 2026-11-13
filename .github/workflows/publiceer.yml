@@ -51,10 +51,13 @@ jobs:
           node-version: 24
 
       # Laatste Instagram-posts voor de pagina Snapshots uit 010
-      # (instagram.html). Zonder sleutel of bij een fout van Instagram gaat
-      # de publicatie gewoon door: de pagina toont dan de lege stand.
+      # (instagram.html), via de JSON-feed van Behold (secret BEHOLD_FEED_URL;
+      # INSTAGRAM_TOKEN is de reserve voor de officiële API). Zonder bron of
+      # bij een fout gaat de publicatie gewoon door: de pagina toont dan de
+      # lege stand.
       - name: Instagram ophalen
         env:
+          BEHOLD_FEED_URL: ${{ secrets.BEHOLD_FEED_URL }}
           INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
         run: node haal-instagram.js
 
