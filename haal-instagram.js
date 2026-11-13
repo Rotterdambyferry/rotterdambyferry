@@ -115,10 +115,12 @@ async function postsVanBehold(feedUrl) {
   const json = await antwoord.json().catch(() => ({}));
   if (!antwoord.ok || !Array.isArray(json.posts)) {
     // Nooit het feedadres in de melding.
-    const melding = (json && (json.message || json.error)) || `HTTP ${antwoord.status}`;
+    const tekst = [json && json.message, json && json.error, json && json.error && json.error.message]
+      .find((waarde) => typeof waarde === "string" && waarde);
+    const melding = tekst || (antwoord.ok ? `onverwacht antwoord (HTTP ${antwoord.status})` : `HTTP ${antwoord.status}`);
     throw new Error(`Behold gaf een fout: ${melding}`);
   }
-  return json.posts.map((post) => {
+  return json.posts.filter(Boolean).map((post) => {
     const maten = post.sizes || {};
     const foto = maten.medium || maten.large || maten.small || maten.full || {};
     return {
@@ -183,6 +185,10 @@ async function bewaar(items, bron) {
       waarschuw(`foto van post ${c} niet opgehaald (${fout.message}): overgeslagen`);
     }
   }
+
+  // Geen enkele post over (lege feed, of alle foto's mislukt): melden, want
+  // de pagina toont dan de lege stand.
+  if (posts.length === 0) waarschuw(`geen posts ontvangen via ${bron}: de pagina toont de lege stand`);
 
   // "bron" blijft "instagram": voor de build zijn dit echte posts (geen
   // voorbeeldgegevens), ongeacht of ze via Behold of de API kwamen.
