@@ -982,6 +982,24 @@ a.tag.gebied:focus-visible {
   color: #fff;
 }
 .deelknop.instagram:hover { background: var(--ink); border-color: var(--ink); }
+/* Gewone knop-link in de pagina zelf (nu alleen op 404.html): .hoofd is de
+   groene hoofdknop, .lijn de knop met alleen een rand. */
+.deelknop.hoofd {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.deelknop.hoofd:hover { background: var(--ink); border-color: var(--ink); }
+.deelknop.lijn:hover { border-color: var(--groen); color: var(--groen); }
+.knoppenrij {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0 2.5rem;
+}
+/* 404.html: geen deelblok ("Iemand die dit moet weten?") onder een pagina
+   die niet bestaat. */
+.pagina-404 .footer-delen { display: none; }
 
 /* ---------- Footer ---------- */
 .site-footer {

@@ -946,8 +946,13 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   }
 
   // Hoe dieper het bestand zit, hoe meer "../" er in de links moet.
+  // Uitzondering: 404.html. Die pagina toont GitHub Pages bij elk adres dat
+  // niet bestaat, dus ook bij /posts/bestaat-niet.html of nog dieper. Een
+  // relatief pad klopt daar niet; daarom beginnen alle paden op die pagina
+  // met "/" (vanaf de hoofdmap van de site).
+  const is404 = relatief === "404.html";
   const diepte = delen.length - 1;
-  const root = "../".repeat(diepte);
+  const root = is404 ? "/" : "../".repeat(diepte);
 
   // Het echte webadres van deze pagina (de homepage is gewoon de site-root).
   const relatiefUrl = delen.join("/");
@@ -1108,12 +1113,21 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     }
   }
 
+  // 404.html hoort niet in Google: noindex, en verderop ook geen regel in
+  // de sitemap.
+  if (is404) {
+    resultaat = resultaat.replace("</head>", '  <meta name="robots" content="noindex">\n</head>');
+    // Geen canonical: deze pagina verschijnt op elk niet-bestaand adres en
+    // heeft dus geen eigen "echt" webadres om naar te verwijzen.
+    resultaat = resultaat.replace(/\r?\n  <link rel="canonical" href="[^"]*">/, "");
+  }
+
   fs.mkdirSync(path.dirname(doel), { recursive: true });
   schrijfTekst(doel, resultaat);
   console.log(`✓ ${relatief}`);
   aantal++;
 
-  if (!isSnapshotsPagina || snapshotsEcht) sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  if (!is404 && (!isSnapshotsPagina || snapshotsEcht)) sitemapPaginas.push({ url: paginaUrl, bronbestand });
 }
 
 // sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht

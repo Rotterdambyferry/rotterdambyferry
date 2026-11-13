@@ -67,7 +67,7 @@ jobs:
       - name: Publiceerbare bestanden verzamelen
         run: |
           mkdir _site
-          cp index.html over.html kaart.html instagram.html sitemap.xml robots.txt places.json google943d5d50987785df.html _site/
+          cp index.html over.html kaart.html instagram.html 404.html sitemap.xml robots.txt places.json google943d5d50987785df.html _site/
           [ -f CNAME ] && cp CNAME _site/
           cp -r posts assets _site/
 
