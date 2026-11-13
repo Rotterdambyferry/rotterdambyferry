@@ -177,16 +177,15 @@ function laatsteGitWijziging(bronbestand) {
 }
 
 // Wijzigingsdatum van een pagina: de laatste echte git-wijziging, maar nooit
-// eerder dan de publicatiedatum. Een voorbereide post die op 1 oktober is
-// gecommit en op 10 oktober verschijnt, krijgt dus 10 oktober en niet een
-// datum van vóór zijn eigen verschijning.
+// eerder dan de publicatiedatum (de eigen publicatiedatum-meta, of anders
+// de datum waarop de post aan git is toegevoegd). Een voorbereide post die
+// op 1 oktober is gecommit en op 10 oktober verschijnt, krijgt dus 10
+// oktober en niet een datum van vóór zijn eigen verschijning.
 function laatsteWijziging(bronbestand) {
   const gitDatum = laatsteGitWijziging(bronbestand);
-  const relatief = path.relative(bronmap, bronbestand).split(path.sep);
-  if (relatief[0] !== "posts") return gitDatum;
-  const naam = relatief[1].slice(0, -".html".length);
-  const publicatie = publicatiedatums[naam];
-  return publicatie && publicatie > gitDatum ? publicatie : gitDatum;
+  if (path.relative(bronmap, bronbestand).split(path.sep)[0] !== "posts") return gitDatum;
+  const publicatie = publicatiedatum(bronbestand);
+  return publicatie > gitDatum ? publicatie : gitDatum;
 }
 
 // Publicatiedatum van een post: de eigen publicatiedatum-meta, of anders de
@@ -197,22 +196,35 @@ function publicatiedatum(bronbestand) {
   return publicatiedatums[naam] || eersteWijziging(bronbestand);
 }
 
-// Datum van de vróégste git-commit die dit bronbestand raakte — voor
-// datePublished in de JSON-LD, als de post zelf geen publicatiedatum-meta
-// heeft. Gememoized, zelfde principe als laatsteWijziging hierboven.
-// Let op: --follow (nodig om ook de commit van vóór een hernoem/verplaats-
-// actie te vinden, zoals de verhuizing naar src/) en --reverse samen geven
-// bij git een bekende bug (--follow stopt dan bij de eerste hernoeming) —
-// daarom hier de gewone (nieuw-naar-oud) volgorde en de láátste regel pakken
-// in plaats van --reverse plus de eerste regel.
+// Datum waarop dit bronbestand voor het eerst aan git is toegevoegd: voor
+// datePublished in de JSON-LD, de Leestips-volgorde en de lastmod van de
+// homepage, als de post zelf geen publicatiedatum-meta heeft. Gememoized,
+// zelfde principe als laatsteWijziging hierboven. git log geeft nieuw naar
+// oud, dus de laatste regel is de oudste.
 const eersteWijzigingCache = new Map();
 function eersteWijziging(bronbestand) {
   if (eersteWijzigingCache.has(bronbestand)) return eersteWijzigingCache.get(bronbestand);
   let datum;
   try {
+    // Niet met --follow: dat zoekt ook naar kopieën, en ziet een nieuwe post
+    // (een kopie van _template.html of van een andere post) dan als
+    // voortzetting van dat bestand, met diens oude datum. In plaats daarvan:
+    // de commits die het bestand toevoegden (--diff-filter=A), zowel op de
+    // plek in src/ als op de oude plek in de repo-root (van vóór de
+    // verhuizing naar src/ in juli 2026), en daarvan de oudste.
+    // Met schuine strepen, ook op Windows, zodat git het pad zeker herkent.
+    const relatief = path.relative(bronmap, bronbestand).split(path.sep).join("/");
     const regels = execFileSync(
       "git",
-      ["log", "--format=%cd", "--date=format:%Y-%m-%d", "--follow", "--", bronbestand],
+      [
+        "log",
+        "--diff-filter=A",
+        "--format=%cd",
+        "--date=format:%Y-%m-%d",
+        "--",
+        "src/" + relatief,
+        relatief,
+      ],
       { cwd: __dirname, encoding: "utf8" }
     ).trim();
     const lijst = regels ? regels.split(/\r?\n/).map((regel) => regel.trim()) : [];
