@@ -20,6 +20,9 @@ onderaan.
    `places.json`: kies een komma, dubbele punt, haakjes of een nieuwe
    zin. Tijden schrijf je als "11.45 tot 12.00". Koppeltekens binnen
    een woord (Rotterdam-West) mogen gewoon.
+   Zet je een link in je tekst, ook naar een andere post op je eigen
+   site? Geef hem dan `target="_blank" rel="noopener"` mee, zodat hij
+   in een nieuw tabblad opent en de lezer in je artikel blijft.
 4. Deelknoppen (WhatsApp + link kopiëren) hoef je niets meer aan te
    doen: die staan automatisch in de footer van elke pagina.
 5. Moet de post pas later verschijnen (bijvoorbeeld een post die je nu
