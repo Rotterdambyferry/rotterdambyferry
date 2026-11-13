@@ -291,6 +291,31 @@ h2.kop { line-height: 1.7; }
   color: var(--groen);
   background: var(--groen-licht);
 }
+/* Klikbare labels boven een post (de build maakt er links van, zie
+   klikbareLabels in build.js): zelfde uiterlijk, bij hover of focus vult het
+   label zich met de randkleur, zodat je ziet dat je kunt klikken. */
+a.tag { text-decoration: none; }
+a.tag:hover,
+a.tag:focus-visible {
+  background: var(--ink);
+  color: var(--papier);
+}
+a.tag.gebied:hover,
+a.tag.gebied:focus-visible {
+  background: var(--groen);
+  color: var(--papier);
+}
+/* Mobiel: groter tikvlak (± 44px hoog) via een onzichtbaar vlak om het
+   label heen, zonder dat het label zelf groter wordt. Iets meer naar onder
+   dan naar boven, zodat het niet over het broodkruimelpad valt. */
+@media (max-width: 640px) {
+  a.tag { position: relative; }
+  a.tag::after {
+    content: "";
+    position: absolute;
+    inset: -6px -3px -12px;
+  }
+}
 
 /* ---------- Filters ---------- */
 .filters {
@@ -1376,9 +1401,9 @@ body:has(.artikel) .site-footer .inner {
     <a href="/">Home</a> <span aria-hidden="true">&rsaquo;</span> <a href="/?gebied=maasvlakte">Maasvlakte</a> <span aria-hidden="true">&rsaquo;</span> <span aria-current="page">Portlantis op de Maasvlakte: havenmuseum met kids</span>
   </nav>
   <div class="tags">
-    <span class="tag">Kidsproof</span>
-    <span class="tag">Dagje uit</span>
-    <span class="tag gebied">Maasvlakte</span>
+    <a class="tag" href="/?categorie=kidsproof">Kidsproof<span class="visueel-verborgen">, meer verhalen</span></a>
+    <a class="tag" href="/?categorie=dagje-uit">Dagje uit<span class="visueel-verborgen">, meer verhalen</span></a>
+    <a class="tag gebied" href="/?gebied=maasvlakte">Maasvlakte<span class="visueel-verborgen">, meer verhalen</span></a>
   </div>
 
   <h1>Portlantis: de hele Rotterdamse haven in één dagje Maasvlakte</h1>

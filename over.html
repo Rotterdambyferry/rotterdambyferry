@@ -290,6 +290,31 @@ h2.kop { line-height: 1.7; }
   color: var(--groen);
   background: var(--groen-licht);
 }
+/* Klikbare labels boven een post (de build maakt er links van, zie
+   klikbareLabels in build.js): zelfde uiterlijk, bij hover of focus vult het
+   label zich met de randkleur, zodat je ziet dat je kunt klikken. */
+a.tag { text-decoration: none; }
+a.tag:hover,
+a.tag:focus-visible {
+  background: var(--ink);
+  color: var(--papier);
+}
+a.tag.gebied:hover,
+a.tag.gebied:focus-visible {
+  background: var(--groen);
+  color: var(--papier);
+}
+/* Mobiel: groter tikvlak (± 44px hoog) via een onzichtbaar vlak om het
+   label heen, zonder dat het label zelf groter wordt. Iets meer naar onder
+   dan naar boven, zodat het niet over het broodkruimelpad valt. */
+@media (max-width: 640px) {
+  a.tag { position: relative; }
+  a.tag::after {
+    content: "";
+    position: absolute;
+    inset: -6px -3px -12px;
+  }
+}
 
 /* ---------- Filters ---------- */
 .filters {

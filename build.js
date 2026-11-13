@@ -487,6 +487,34 @@ const CATEGORIE_LABELS = {
 };
 const GEBIED_VOLGORDE = ["centrum", "noord", "oost", "zuid", "west", "maasvlakte"];
 
+// De labels boven een post (categorie en gebied) als link naar de homepage,
+// alvast gefilterd: "Kidsproof" gaat naar /?categorie=kidsproof en het
+// groene gebiedlabel naar /?gebied=maasvlakte (net als het broodkruimelpad).
+// In src/ blijven het gewone <span class="tag">-labels; de build maakt er
+// links van, zodat oude en nieuwe posts vanzelf meedoen. Een label dat niet
+// als categorie of gebied bestaat (tikfout) blijft een gewoon label, met een
+// waarschuwing; een niet-ingevulde [invulplek] uit het sjabloon wordt
+// stilzwijgend overgeslagen.
+const CATEGORIE_SLUGS = Object.fromEntries(
+  Object.entries(CATEGORIE_LABELS).map(([slug, label]) => [label.toLowerCase(), slug])
+);
+
+function klikbareLabels(inhoud, relatief) {
+  return inhoud.replace(/<div class="tags">[\s\S]*?<\/div>/, (blok) =>
+    blok.replace(/<span class="tag( gebied)?">([^<]+)<\/span>/g, (label, isGebied, tekst) => {
+      const sleutel = tekst.trim().toLowerCase();
+      if (sleutel.startsWith("[")) return label;
+      const soort = isGebied ? "gebied" : "categorie";
+      const waarde = isGebied ? (GEBIED_VOLGORDE.includes(sleutel) ? sleutel : null) : CATEGORIE_SLUGS[sleutel];
+      if (!waarde) {
+        console.warn(`⚠ ${relatief}: label "${tekst.trim()}" is geen bekende ${soort}, blijft een gewoon label`);
+        return label;
+      }
+      return `<a class="tag${isGebied || ""}" href="/?${soort}=${waarde}">${tekst}<span class="visueel-verborgen">, meer verhalen</span></a>`;
+    })
+  );
+}
+
 // Tekst veilig in HTML zetten: een & of aanhalingsteken in een plaatsnaam
 // kan zo de pagina niet breken.
 function htmlTekst(tekst) {
@@ -1024,6 +1052,9 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     // september 2026 weggehaald: het broodkruimelpad en de footer doen hetzelfde.)
     const broodkruimel = broodkruimelHtml(relatiefUrl, ogTitel);
     resultaat = resultaat.replace('<main class="artikel">\n', `<main class="artikel">\n${broodkruimel}`);
+
+    // Labels boven het artikel klikbaar maken (zie klikbareLabels hierboven).
+    resultaat = klikbareLabels(resultaat, relatief);
   }
 
   // Op de homepage: kaartjes van nog niet gepubliceerde posts eruit filteren.
