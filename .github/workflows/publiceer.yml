@@ -50,13 +50,21 @@ jobs:
         with:
           node-version: 24
 
+      # Laatste Instagram-posts voor de pagina Snapshots uit 010
+      # (instagram.html). Zonder sleutel of bij een fout van Instagram gaat
+      # de publicatie gewoon door: de pagina toont dan de lege stand.
+      - name: Instagram ophalen
+        env:
+          INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+        run: node haal-instagram.js
+
       - name: Site bouwen
         run: node build.js
 
       - name: Publiceerbare bestanden verzamelen
         run: |
           mkdir _site
-          cp index.html over.html kaart.html sitemap.xml robots.txt places.json google943d5d50987785df.html _site/
+          cp index.html over.html kaart.html instagram.html sitemap.xml robots.txt places.json google943d5d50987785df.html _site/
           [ -f CNAME ] && cp CNAME _site/
           cp -r posts assets _site/
 

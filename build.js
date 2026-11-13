@@ -786,7 +786,7 @@ for (const bestand of fs.readdirSync(path.join(bronmap, "posts"))) {
 }
 
 // Kort onderschrift uit een Instagram-caption: de eerste regel, daarvan de
-// eerste zin, zonder hashtags, maximaal ± 110 tekens. Gedachtestreepjes
+// eerste zin, zonder hashtags, maximaal ± 130 tekens. Gedachtestreepjes
 // worden komma's (huisstijl: geen streepjes in zichtbare tekst).
 function snapshotOnderschrift(caption) {
   let tekst = String(caption || "")
@@ -796,7 +796,7 @@ function snapshotOnderschrift(caption) {
   tekst = tekst.replace(/\s*[—–]\s*/g, ", ");
   const zin = tekst.match(/^.+?[.!?](?=\s|$)/);
   if (zin && zin[0].length >= 20) tekst = zin[0];
-  if (tekst.length > 110) tekst = tekst.slice(0, 110).replace(/\s+\S*$/, "") + "…";
+  if (tekst.length > 130) tekst = tekst.slice(0, 130).replace(/\s+\S*$/, "") + "…";
   return tekst || "Snapshot uit 010";
 }
 
