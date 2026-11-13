@@ -23,3 +23,11 @@ Simit restaurant Zuid/
 
 # Aanlevermap met foto's voor de Warung Melatie-post (kopieën staan in assets/img en assets/video)
 warung-melatie-fotos/
+
+# Snapshots uit 010: instagram.html hangt af van de Instagram-posts die bij
+# elke publicatie opnieuw worden opgehaald (haal-instagram.js), dus de
+# gebouwde pagina wordt niet gecommit; de bron staat in src/instagram.html.
+/instagram.html
+# De opgehaalde Instagram-gegevens en de kopieën van de foto's (haal-instagram.js).
+/instagram.json
+/assets/img/instagram/

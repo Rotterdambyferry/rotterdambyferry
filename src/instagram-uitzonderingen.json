@@ -1,0 +1,6 @@
+{
+  "_uitleg": "Per Instagram-post (de code uit de link, bv. instagram.com/p/DeLpySNuRcr/) kun je hier iets aanpassen voor de pagina Snapshots uit 010: een eigen onderschrift, de post verbergen met verbergen: true, of een verhaal (bv. posts/vijgeboom.html) als de koppeling met een blogpost niet vanzelf lukt. Daarna npm run build.",
+  "DeLpySNuRcr": {
+    "onderschrift": "Nog één keer naar buiten voor de laatste zon"
+  }
+}
