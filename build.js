@@ -120,26 +120,80 @@ function hoortBijVerborgenPost(stuk) {
   return false;
 }
 
-// Datum van de laatste git-commit die dit bronbestand raakte (voor
-// <lastmod> in de sitemap) — valt terug op vandaag als het bestand nog niet
-// gecommit is, of als git om wat voor reden dan ook niet beschikbaar is.
-// Gememoized zodat git per bestand maar één keer hoeft te draaien.
+// Commits die de hele site tegelijk raakten zonder dat de inhoud van een
+// pagina echt veranderde (opmaak, techniek, audit-sweeps). Die staan in
+// .lastmod-negeer (één commit-hash per regel, # = toelichting) en tellen
+// niet mee voor <lastmod> en dateModified: Google wil daar alleen de datum
+// van een echte inhoudswijziging zien. Vergelijkbaar met git's eigen
+// .git-blame-ignore-revs. Korte en lange hashes werken allebei.
+const negeerCommits = (() => {
+  const bestand = path.join(__dirname, ".lastmod-negeer");
+  if (!fs.existsSync(bestand)) return [];
+  return leesTekst(bestand)
+    .split("\n")
+    .map((regel) => regel.replace(/#.*/, "").trim().toLowerCase())
+    .filter(Boolean);
+})();
+function isNegeerCommit(hash) {
+  return negeerCommits.some((n) => hash.startsWith(n) || n.startsWith(hash));
+}
+
+// Datum van de laatste git-commit die dit bronbestand echt inhoudelijk
+// raakte (voor <lastmod> in de sitemap en dateModified in de JSON-LD):
+// commits uit .lastmod-negeer worden overgeslagen. Raakten alleen zulke
+// commits het bestand, dan telt de oudste commit (het ontstaan van het
+// bestand). --follow zodat ook commits van vóór een verhuizing (zoals naar
+// src/) meetellen. Valt terug op vandaag als het bestand nog niet gecommit
+// is, of als git om wat voor reden dan ook niet beschikbaar is. Regels
+// splitsen op \r?\n, zodat een Windows-regeleinde (\r) nooit aan een datum
+// blijft plakken. Gememoized zodat git per bestand maar één keer draait.
 const laatsteWijzigingCache = new Map();
-function laatsteWijziging(bronbestand) {
+function laatsteGitWijziging(bronbestand) {
   if (laatsteWijzigingCache.has(bronbestand)) return laatsteWijzigingCache.get(bronbestand);
-  let datum;
+  let datum = vandaag;
   try {
-    datum =
-      execFileSync(
-        "git",
-        ["log", "-1", "--date=format:%Y-%m-%d", "--format=%cd", "--", bronbestand],
-        { cwd: __dirname, encoding: "utf8" }
-      ).trim() || vandaag;
+    const regels = execFileSync(
+      "git",
+      ["log", "--follow", "--date=format:%Y-%m-%d", "--format=%H %cd", "--", bronbestand],
+      { cwd: __dirname, encoding: "utf8" }
+    )
+      .split(/\r?\n/)
+      .map((regel) => regel.trim())
+      .filter(Boolean)
+      .map((regel) => {
+        const [hash, dag] = regel.split(" ");
+        return { hash, dag };
+      });
+    if (regels.length) {
+      const echt = regels.find(({ hash }) => !isNegeerCommit(hash));
+      datum = (echt || regels[regels.length - 1]).dag;
+    }
   } catch {
     datum = vandaag;
   }
   laatsteWijzigingCache.set(bronbestand, datum);
   return datum;
+}
+
+// Wijzigingsdatum van een pagina: de laatste echte git-wijziging, maar nooit
+// eerder dan de publicatiedatum. Een voorbereide post die op 1 oktober is
+// gecommit en op 10 oktober verschijnt, krijgt dus 10 oktober en niet een
+// datum van vóór zijn eigen verschijning.
+function laatsteWijziging(bronbestand) {
+  const gitDatum = laatsteGitWijziging(bronbestand);
+  const relatief = path.relative(bronmap, bronbestand).split(path.sep);
+  if (relatief[0] !== "posts") return gitDatum;
+  const naam = relatief[1].slice(0, -".html".length);
+  const publicatie = publicatiedatums[naam];
+  return publicatie && publicatie > gitDatum ? publicatie : gitDatum;
+}
+
+// Publicatiedatum van een post: de eigen publicatiedatum-meta, of anders de
+// vroegste git-commit (eersteWijziging hieronder). Zelfde regel als
+// datePublished in de JSON-LD en de volgorde van de Leestips.
+function publicatiedatum(bronbestand) {
+  const naam = path.basename(bronbestand, ".html");
+  return publicatiedatums[naam] || eersteWijziging(bronbestand);
 }
 
 // Datum van de vróégste git-commit die dit bronbestand raakte — voor
@@ -160,7 +214,7 @@ function eersteWijziging(bronbestand) {
       ["log", "--format=%cd", "--date=format:%Y-%m-%d", "--follow", "--", bronbestand],
       { cwd: __dirname, encoding: "utf8" }
     ).trim();
-    const lijst = regels ? regels.split("\n") : [];
+    const lijst = regels ? regels.split(/\r?\n/).map((regel) => regel.trim()) : [];
     datum = lijst.length ? lijst[lijst.length - 1] : vandaag;
   } catch {
     datum = vandaag;
@@ -375,7 +429,7 @@ function leestipsHtml(root) {
     .filter((plek) => plek.post)
     .map((plek) => {
       const naam = path.basename(plek.post, ".html");
-      const datum = publicatiedatums[naam] || eersteWijziging(path.join(bronmap, plek.post));
+      const datum = publicatiedatum(path.join(bronmap, plek.post));
       return { plek, datum };
     })
     .sort((a, b) => (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0))
@@ -608,7 +662,7 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
     headline: ogTitel,
     description: beschrijving,
     image: [ogAfbeelding],
-    datePublished: publicatiedatums[naam] || eersteWijziging(bronbestand),
+    datePublished: publicatiedatum(bronbestand),
     dateModified: laatsteWijziging(bronbestand),
     author: { "@type": "Person", name: "Ferry", url: SITE + "over.html" },
     publisher: {
@@ -832,11 +886,31 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 // gebouwd zijn (voorbereide posts met een toekomstige datum zijn dus al
 // vanzelf geen onderdeel van sitemapPaginas). Geen handmatig bij te houden
 // bestand meer.
+//
+// <lastmod> per pagina: posts, kaart.html en over.html krijgen
+// laatsteWijziging() (laatste echte git-wijziging, nooit vóór de
+// publicatiedatum). De homepage krijgt de publicatiedatum van de nieuwste
+// live post: daar verandert de homepage inhoudelijk door (een nieuwe kaart
+// bovenaan). Nooit de builddatum: de dagelijkse build zou dan elke dag alle
+// datums verversen.
 {
+  const livePostBestanden = sitemapPaginas
+    .map(({ bronbestand }) => bronbestand)
+    .filter((bestand) => path.relative(bronmap, bestand).split(path.sep)[0] === "posts");
+  const nieuwstePostDatum = livePostBestanden
+    .map((bestand) => publicatiedatum(bestand))
+    .sort()
+    .pop();
+
+  const lastmodVoor = (bronbestand) =>
+    path.relative(bronmap, bronbestand) === "index.html" && nieuwstePostDatum
+      ? nieuwstePostDatum
+      : laatsteWijziging(bronbestand);
+
   const urls = sitemapPaginas
     .map(
       ({ url, bronbestand }) =>
-        `  <url>\n    <loc>${url}</loc>\n    <lastmod>${laatsteWijziging(bronbestand)}</lastmod>\n  </url>\n`
+        `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmodVoor(bronbestand)}</lastmod>\n  </url>\n`
     )
     .join("");
   const resultaat =

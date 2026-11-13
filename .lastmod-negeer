@@ -1,0 +1,23 @@
+# Commits die build.js NIET meetelt voor <lastmod> in sitemap.xml en
+# dateModified in de JSON-LD van een post.
+#
+# Waarom: deze commits raakten (bijna) alle pagina's tegelijk, maar
+# veranderden niets aan wat er inhoudelijk in een verhaal staat (opmaak,
+# techniek, toegankelijkheid). Google wil bij lastmod alleen de datum van een
+# echte inhoudswijziging zien; anders staat elke post op dezelfde dag.
+#
+# Wel blijven meetellen: nieuwe tekst, nieuwe foto's, een nieuwe titel. Een
+# titelwijziging is zichtbaar in Google en telt dus gewoon als wijziging.
+#
+# Toevoegen: één volledige commit-hash per regel (git log laat hem zien),
+# met daarachter na een # een korte toelichting.
+
+85d5067e41a07f77c0069582d36fcc1dd19193c6  # 2026-07-19 gedeelde header/footer via partials, verhuizing naar src/
+9da017246abfa2b17796961957a92a9dfd35307e  # 2026-07-19 deelknoppen centraal in de footer
+4896d3e0a9db0ab6ff6349cc0fcaf1e4cdfe5563  # 2026-07-19 interne home-links naar /
+82e34f59b028849f076bdf5bd200b6b3786a88f8  # 2026-08-10 mobiele fotovarianten, srcset en lazy loading
+d05f9eb4ea6dd9b7270e6cca776e0442811af6d0  # 2026-08-10 fonts zelf gehost, CSS inline
+a8681821b76ad2bf35f393e67a70121fc1ee65a8  # 2026-08-26 Instagram-linkje in het deelblok
+713b547e10a7a83d0b28f1e9fbf8284f64170ccd  # 2026-09-25 gedachtestreepjes verwijderd uit alle zichtbare tekst
+747756ebd3f6749f98231cbb3c86932ca5cf38e4  # 2026-09-26 losse terug-link boven artikelen weggehaald
+5b3a5481349ec01715b92a803f6446059279729d  # 2026-09-27 echte kopjes, Ga naar inhoud, voorlezen filterresultaat
