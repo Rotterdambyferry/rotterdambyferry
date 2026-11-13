@@ -1,5 +1,19 @@
 [
   {
+    "naam": "Portlantis",
+    "lat": 51.9354,
+    "lon": 3.9779,
+    "categorie": [
+      "kidsproof",
+      "dagje-uit"
+    ],
+    "gebied": "maasvlakte",
+    "post": "posts/portlantis.html",
+    "image": "assets/img/portlantis-duinpad-mobiel.jpg",
+    "alt": "Kinderen op een zandpad door de duinen naar havenmuseum Portlantis op Maasvlakte 2, met de rode trappen langs het gebouw en een roze containerschip op de achtergrond",
+    "teaser": "Doe-museum over de haven, met boottocht en strand voor de deur."
+  },
+  {
     "naam": "Warung Melatie",
     "lat": 51.9163222,
     "lon": 4.4492634,

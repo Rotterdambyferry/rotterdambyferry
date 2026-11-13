@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/archivo-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/source-serif-4-latin.woff2" crossorigin>
+  <link rel="preload" as="image" href="../assets/img/portlantis-duinpad.jpg" imagesrcset="../assets/img/portlantis-duinpad-mobiel.jpg 800w, ../assets/img/portlantis-duinpad.jpg 1400w" imagesizes="(max-width: 720px) 100vw, 640px" fetchpriority="high">
+  <title>Portlantis op de Maasvlakte: havenmuseum met kids | Rotterdam by Ferry</title>
+  <meta name="description" content="Kidsproof doe-museum over de Rotterdamse haven op de Maasvlakte, met de Helios Experience, een boottocht langs de grootste schepen en het strand voor de deur.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Rotterdam by Ferry">
+  <meta property="og:title" content="Portlantis op de Maasvlakte: havenmuseum met kids">
+  <meta property="og:description" content="Kidsproof doe-museum over de Rotterdamse haven op de Maasvlakte, met de Helios Experience, een boottocht langs de grootste schepen en het strand voor de deur.">
+  <meta property="og:url" content="https://rotterdambyferry.nl/posts/portlantis.html">
+  <meta property="og:image" content="https://rotterdambyferry.nl/assets/img/portlantis-duinpad.jpg">
+  <meta property="og:locale" content="nl_NL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Portlantis op de Maasvlakte: havenmuseum met kids">
+  <meta name="twitter:description" content="Kidsproof doe-museum over de Rotterdamse haven op de Maasvlakte, met de Helios Experience, een boottocht langs de grootste schepen en het strand voor de deur.">
+  <meta name="twitter:image" content="https://rotterdambyferry.nl/assets/img/portlantis-duinpad.jpg">
+  <link rel="canonical" href="https://rotterdambyferry.nl/posts/portlantis.html">
+  <link rel="icon" href="../assets/img/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/img/favicon-192x192.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <style>
+/* Rotterdam by Ferry — huisstijl
+   Palet: licht beton, havenstaal-zwart, Rotterdams groen */
+
+/* ---------- Fonts (zelf gehost, sinds aug 2026 niet meer via Google Fonts:
+   scheelt twee externe domeinen in het kritieke laadpad). Variabele fonts:
+   één bestand per familie dekt alle gebruikte gewichten. De paden beginnen
+   met / omdat deze CSS bij de build in elke pagina wordt geplakt (ook in
+   posts/) en dan altijd vanaf de siteroot moet verwijzen. ---------- */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 600 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(/assets/fonts/archivo-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(/assets/fonts/source-serif-4-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/source-serif-4-italic-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --papier: #FAF9F5;
+  --ink: #15191B;
+  --staal: #5C666B;
+  --groen: #1D7A46;
+  --groen-licht: #E7F2EB;
+  --lijn: #E3E1D9;
+  --breedte: 1080px;
+  --leesbreedte: 680px;
+}
+
+* { box-sizing: border-box; }
+
+/* Bij springen naar een anker niet onder de sticky header belanden */
+html { scroll-padding-top: 5rem; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+h1, h2, h3, .display {
+  font-family: "Archivo", "Arial Black", sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+}
+
+a { color: var(--groen); }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--groen);
+  outline-offset: 2px;
+}
+
+/* "Ga naar inhoud": de eerste link op elke pagina (partials/header.html),
+   alleen zichtbaar als hij met het toetsenbord focus krijgt (Tab). Springt
+   over het logo en het menu heen naar #inhoud, direct onder de header. */
+.naar-inhoud {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1300; /* boven de sticky header (1200) */
+  padding: 0.7rem 1.1rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: var(--ink);
+  color: var(--papier);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.naar-inhoud:focus { transform: none; }
+#inhoud:focus { outline: none; }
+
+/* De kopjes met class="kop" ("Praktisch", "Misschien vind je dit ook leuk",
+   "Leestips", "Iemand die dit moet weten?") zijn sinds september 2026 echte
+   h2-kopjes, zodat screenreadergebruikers ze kunnen vinden. Ze moeten er
+   precies zo uitzien als de alinea's die ze eerst waren: dezelfde
+   regelafstand als lopende tekst in plaats van die van koppen, en in de
+   footer dezelfde ruimte erboven als een alinea had. */
+h2.kop { line-height: 1.7; }
+.footer-delen h2.kop { margin-top: 1em; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1200; /* boven de Leaflet-knoppen op de kaartpagina (z-index 1000) */
+  border-bottom: 3px solid var(--ink);
+  background: var(--papier);
+}
+/* Subtiele schaduw zodra er gescrold is (klasse gezet door assets/header.js) */
+.site-header.is-gescrold {
+  box-shadow: 0 4px 10px rgba(21, 25, 27, 0.12);
+}
+.site-header .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.wordmark {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+.wordmark .hart { color: var(--groen); }
+.site-header nav a {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--ink);
+  margin-left: 1.25rem;
+}
+.site-header nav a:hover { color: var(--groen); }
+/* Mobiel: compacte sticky header, zodat hij weinig leesruimte inneemt.
+   De menulinks zijn wel elk minimaal 44px hoog als tikdoel (de tekst zelf
+   blijft even klein): de ruimte tussen de links zit nu in hun eigen padding
+   in plaats van in een marge, en de negatieve marge op de nav houdt
+   "Verhalen" netjes recht onder het logo. */
+@media (max-width: 640px) {
+  .site-header .inner {
+    padding: 0.3rem 1rem 0;
+    row-gap: 0;
+  }
+  /* line-height 1.5: het logo zelf is zo ook een tikdoel van minimaal 24px */
+  .wordmark {
+    font-size: 1.02rem;
+    line-height: 1.5;
+  }
+  .site-header nav {
+    display: flex;
+    margin-left: -0.45rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  .site-header nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0.45rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-left: 0;
+  }
+}
+
+/* ---------- Hero met achtergrondfoto ---------- */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(300px, 42vw, 440px);
+  background-color: var(--ink);
+  overflow: hidden;
+}
+/* De foto is een echt <img> (geen CSS-achtergrond) zodat de browser via
+   srcset op mobiel de kleine variant kan laden. Hij vult de hele hero. */
+.hero-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(21, 25, 27, 0.78) 0%,
+    rgba(21, 25, 27, 0.35) 45%,
+    rgba(21, 25, 27, 0) 75%);
+}
+.hero .inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--breedte);
+  margin: 0 auto;
+  width: 100%;
+  padding: 5rem 1.25rem 1.9rem;
+}
+.hero h1 {
+  font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 0.75rem;
+}
+.hero p {
+  max-width: 52ch;
+  font-size: clamp(1.15rem, 2vw, 1.3rem);
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+}
+/* Mobiel (tot 600px breed): een lagere hero van ongeveer 200px, zodat het
+   eerste verhaal zonder scrollen in beeld komt. Minder lucht boven de
+   tekst, een iets kleinere ondertitel, en een wat sterkere donkere laag: de
+   tekst beslaat nu een groter deel van de foto en moet op elke herofoto
+   leesbaar blijven. Op de computer verandert er niets. */
+@media (max-width: 600px) {
+  .hero { min-height: 200px; }
+  .hero .inner { padding: 1.5rem 1.25rem 1.1rem; }
+  .hero h1 { margin-bottom: 0.35rem; }
+  .hero p {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    /* Altijd ruimte voor 3 regels: zo schuift de tekst niet als het
+       lettertype binnenkomt en de zin net anders afbreekt */
+    min-height: 4.35em;
+  }
+  .hero::after {
+    background: linear-gradient(to top,
+      rgba(21, 25, 27, 0.82) 0%,
+      rgba(21, 25, 27, 0.55) 55%,
+      rgba(21, 25, 27, 0.2) 100%);
+  }
+}
+
+/* ---------- Havenlabels (categorie & gebied) ---------- */
+.tag {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+}
+.tag.gebied {
+  border-color: var(--groen);
+  color: var(--groen);
+  background: var(--groen-licht);
+}
+
+/* ---------- Filters ---------- */
+.filters {
+  border-top: 1px solid var(--lijn);
+  border-bottom: 1px solid var(--lijn);
+  padding: 1.4rem 0 1.5rem;
+  margin-bottom: 2rem;
+  background: var(--papier);
+}
+.filters .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+.filters .groep {
+  margin-bottom: 1rem;
+}
+.filters .groep:last-child { margin-bottom: 0; }
+.filters .label {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--staal);
+  margin-bottom: 0.5rem;
+}
+.filters .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+/* Op mobiel niet wrappen maar horizontaal scrollen, met een fade rechts */
+@media (max-width: 640px) {
+  .filters .groep { position: relative; }
+  .filters .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: 2.5rem;
+  }
+  .filters .chips::-webkit-scrollbar { display: none; }
+  .filterknop {
+    flex-shrink: 0;
+    /* Groter tikdoel op touchscreens (PageSpeed-advies): minimaal 44px
+       hoog. Zelfde pilvorm, alleen wat meer lucht. */
+    min-height: 44px;
+    padding: 0.35rem 1rem;
+  }
+  .filters .groep::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -1.25rem;
+    bottom: 0;
+    width: 3rem;
+    background: linear-gradient(to right, rgba(250, 249, 245, 0), var(--papier));
+    pointer-events: none;
+  }
+}
+.filterknop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 999px;
+}
+.filterknop[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--papier);
+}
+.filterknop:hover { border-color: var(--groen); color: var(--groen); }
+.filterknop[aria-pressed="true"]:hover { color: var(--papier); }
+
+/* Tekst die alleen voor screenreaders bedoeld is (wel voorgelezen, niet te zien) */
+.visueel-verborgen {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Mobiel: alle filters in één rij ----------
+   Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
+   (gemaakt door assets/filterrij.js), daarachter de categorieknoppen,
+   horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
+   de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
+   pagina precies hetzelfde blijft. Op de computer verandert er niets. */
+.gebiedkeuze { display: none; }
+@media (max-width: 640px) {
+  .filters {
+    padding: 0.75rem 0;
+    margin-bottom: 1.25rem;
+  }
+  .filters .inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .filters .groep-categorie {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+  .filters .groep-gebied { display: none; }
+  /* Het woord "Categorie" blijft er voor screenreaders, maar neemt geen ruimte in */
+  .filters .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .gebiedkeuze {
+    display: block;
+    position: relative;
+    flex: none;
+  }
+  .gebiedkeuze-knop {
+    min-height: 44px;
+    padding: 0.35rem 0.9rem;
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  /* Een gekozen gebied (dus niet "Heel Rotterdam"): donker, net als een
+     ingedrukt filterknopje */
+  .gebiedkeuze-knop.is-gekozen {
+    background: var(--ink);
+    color: var(--papier);
+  }
+  .gebiedkeuze-lijst {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    z-index: 1100; /* boven de kaart en de Leaflet-knoppen (1000), onder de header (1200) */
+    min-width: 12.5rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem;
+    background: var(--papier);
+    border: 2px solid var(--ink);
+  }
+  .gebiedkeuze-lijst[hidden] { display: none; }
+  .gebiedkeuze-optie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    min-height: 44px;
+    padding: 0 0.8rem;
+    font-family: "Archivo", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .gebiedkeuze-optie[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--papier);
+  }
+  /* Gebied zonder verhalen (bij de gekozen categorie): grijs */
+  .gebiedkeuze-optie.is-leeg { color: var(--staal); }
+  .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
+  .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+}
+/* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
+   gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
+   op te tikken (assets/filterrij.js). */
+@media (max-width: 600px) {
+  .filters .groep-categorie .filterknop[data-waarde="alles"] { display: none; }
+}
+@media (max-width: 640px) and (hover: hover) and (pointer: fine) {
+  .gebiedkeuze-knop:hover { border-color: var(--groen); }
+  .gebiedkeuze-optie:hover { background: var(--groen-licht); }
+  .gebiedkeuze-optie[aria-pressed="true"]:hover { background: var(--ink); }
+}
+
+/* ---------- Postkaarten ---------- */
+.grid {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.kaart[hidden] { display: none; }
+.kaart {
+  border: 2px solid var(--ink);
+  background: #fff;
+  padding: 1.4rem 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.kaart .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.kaart h2 { font-size: 1.45rem; margin: 0; }
+.kaart h2 a { color: var(--ink); text-decoration: none; }
+.kaart h2 a:hover { color: var(--groen); }
+.kaart p { margin: 0; color: var(--staal); font-size: 1rem; }
+.kaart .lees {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-top: auto;
+}
+.kaart .thumb {
+  display: block;
+  margin: -1.4rem -1.4rem 0;
+  border-bottom: 2px solid var(--ink);
+}
+.kaart .thumb img {
+  display: block;
+  width: 100%;
+  /* height: auto is nodig omdat de img-tags een vast width/height-attribuut
+     hebben (tegen layoutverspringing): zonder deze regel zou dat attribuut
+     de hoogte bepalen en wint het van de aspect-ratio hieronder. */
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.kaart.binnenkort { border-style: dashed; background: transparent; }
+.kaart.binnenkort .status {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
+.leeg {
+  grid-column: 1 / -1;
+  color: var(--staal);
+  font-style: italic;
+}
+
+/* ---------- Artikel ---------- */
+.artikel {
+  max-width: var(--leesbreedte);
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+.broodkruimel {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+  margin-bottom: 1rem;
+}
+.broodkruimel a { color: var(--staal); text-decoration: none; }
+.broodkruimel a:hover { color: var(--groen); }
+.broodkruimel [aria-current="page"] { color: var(--ink); }
+/* Mobiel: groter tikdoel (minimaal 44px hoog) voor de broodkruimellinks,
+   zonder dat de regel zelf hoger wordt of de tekst groter: de padding
+   vergroot het tikvlak, de even grote negatieve marge houdt de opmaak gelijk. */
+@media (max-width: 640px) {
+  .broodkruimel a {
+    display: inline-block;
+    padding: 0.7rem 0.3rem;
+    margin: -0.7rem -0.3rem;
+  }
+}
+.artikel .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.artikel h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  max-width: 20ch;
+}
+.artikel .intro { font-size: 1.25rem; }
+.artikel .meta {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.85rem;
+  color: var(--staal);
+  margin-bottom: 2rem;
+}
+.artikel p { margin: 0 0 1.3em; }
+.artikel .foto {
+  margin: 0 0 2rem;
+}
+.artikel .foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+}
+.artikel .foto figcaption {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+  margin-top: 0.5rem;
+}
+/* ---------- Post-foto & post-video (volle artikelbreedte, met onderschrift) ---------- */
+.post-foto,
+.post-video {
+  margin: 2rem 0;
+}
+.post-foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+}
+/* Staande foto's op desktop begrenzen tot driekwart van de schermhoogte:
+   de breedte schaalt mee, er wordt niets uitgerekt of bijgesneden. */
+@media (min-width: 721px) {
+  .post-foto img {
+    max-height: 75vh;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  /* Staande/vierkante post-foto's die door de regel hierboven smaller
+     uitvallen dan de leeskolom (klasse door build.js gezet, zie
+     markeerSmallePostFotos): een rustig kadertje eromheen in plaats van
+     kale witruimte. Liggende foto's die de kolom al vullen krijgen deze
+     klasse niet en blijven dus ongewijzigd. */
+  .post-foto.smal {
+    background: var(--lijn);
+    padding: 1.75rem;
+  }
+}
+.post-video .video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+}
+.post-video iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+/* Video van YouTube of TikTok: eerst alleen een stilstaand plaatje met een
+   afspeelknop; pas na een tik laadt assets/video.js de echte video in
+   hetzelfde kader. Zonder JavaScript is het een gewone link naar de video. */
+.video-facade {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  text-decoration: none;
+}
+.video-facade img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Lichte donkere laag, zodat de knop op elk plaatje goed opvalt */
+.video-facade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(21, 25, 27, 0.25);
+}
+.video-facade:focus-visible { outline-offset: -3px; }
+.video-facade-knop {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0.7rem 1.3rem;
+  background: var(--groen);
+  border: 2px solid var(--papier);
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Het afspeeldriehoekje, getekend met CSS (geen extra bestand nodig) */
+.video-facade-knop::before {
+  content: "";
+  border-style: solid;
+  border-width: 0.55em 0 0.55em 0.9em;
+  border-color: transparent transparent transparent currentColor;
+}
+.video-facade:hover .video-facade-knop,
+.video-facade:focus-visible .video-facade-knop { background: var(--ink); }
+/* Klein label linksboven ("YouTube" of "TikTok"), gezet door video.js */
+.video-facade-bron {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border: 1.5px solid var(--ink);
+  background: var(--papier);
+  color: var(--ink);
+  pointer-events: none; /* een tik op het label telt gewoon als tik op de video */
+}
+/* De TikTok-embed die na een tik op "Speel af" in de plaats van het plaatje
+   komt: gecentreerd (TikToks eigen stijl zet er anders een marge op). */
+.post-video blockquote.tiktok-embed {
+  margin: 0 auto !important;
+}
+/* Pauzeknop op een eigen video (gezet door assets/video.js) */
+.video-pauze {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 0.85rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--papier);
+  border: 2px solid var(--papier);
+  cursor: pointer;
+}
+.video-pauze svg { flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .video-pauze:hover { background: var(--groen); }
+}
+/* Staande video (9:16, bijv. een telefoonfilmpje of een TikTok): eigen video
+   geladen via assets/video.js zodra hij in beeld komt, of een TikTok achter
+   een afspeelknop. Het vaste 9:16-kader houdt de ruimte vooraf vrij, zodat
+   er niets verspringt. Net als staande post-foto's niet hoger dan driekwart
+   van het scherm, en op desktop met hetzelfde rustige kadertje als
+   .post-foto.smal. */
+.post-video.staand .video-frame {
+  aspect-ratio: 9 / 16;
+  width: min(100%, calc(75vh * 9 / 16));
+  margin: 0 auto;
+}
+.post-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (min-width: 721px) {
+  .post-video.staand {
+    background: var(--lijn);
+    padding: 1.75rem;
+  }
+}
+.post-foto figcaption,
+.post-video figcaption {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--staal);
+  padding: 0.55rem 0 0.9rem;
+  border-bottom: 1px solid var(--lijn);
+}
+.praktisch {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+  font-size: 1rem;
+}
+.praktisch .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+/* ---------- "Misschien vind je dit ook leuk" (onderaan elke post, door build.js gegenereerd) ---------- */
+.verwant {
+  border-top: 3px solid var(--ink);
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+}
+.verwant .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.verwant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.2rem;
+}
+.verwant-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+.verwant-item .thumb {
+  display: block;
+  border: 2px solid var(--ink);
+}
+.verwant-item .thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.verwant-item .titel {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.verwant-item:hover .titel { color: var(--groen); }
+.verwant-item .teaser {
+  color: var(--staal);
+  font-size: 0.9rem;
+}
+@media (max-width: 640px) {
+  .verwant-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Deelknoppen (staan in de footer, zie partials/footer.html) ---------- */
+.deelknop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  /* Groter tikdoel op touchscreens (PageSpeed-advies): minimaal 44px hoog.
+     Zonder dit valt een <button> (zoals "Kopieer de link", geen svg-icoon)
+     korter uit dan een <a> met icoon, omdat knop-elementen de site-brede
+     line-height niet op dezelfde manier erven. */
+  min-height: 44px;
+}
+.deelknop svg { flex-shrink: 0; }
+.deelknop.whatsapp {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.deelknop.whatsapp:hover { background: var(--ink); border-color: var(--ink); }
+.deelknop.kopieer:hover { border-color: var(--groen); color: var(--groen); }
+.deelknop.instagram {
+  background: #CC3560;
+  border-color: #CC3560;
+  color: #fff;
+}
+.deelknop.instagram:hover { background: var(--ink); border-color: var(--ink); }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--papier);
+}
+.site-footer .inner {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+}
+.site-footer a { color: var(--papier); }
+
+/* Deelknoppen + terug-link bovenin de footer */
+.footer-delen {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 1.6rem;
+  border-bottom: 1px solid var(--staal);
+}
+.footer-delen .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.footer-delen .knoppen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.site-footer .deelknop {
+  border-color: var(--papier);
+  color: var(--papier);
+}
+.site-footer .deelknop.whatsapp {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: #fff;
+}
+.site-footer .deelknop.whatsapp:hover {
+  background: transparent;
+  border-color: var(--papier);
+}
+.site-footer .deelknop.kopieer:hover {
+  border-color: var(--groen);
+  color: var(--papier);
+}
+/* Instagram-knop: zowel de post-specifieke "Reageer op Instagram" (alleen
+   aanwezig bij een instagram_url, zie {{instagram-knop}} in
+   partials/footer.html en build.js) als de vaste "Volg op Instagram"
+   onderaan elke pagina — bewust exact dezelfde stijl, zodat het overal op
+   de site hetzelfde herkenbare knopje is. */
+.site-footer .deelknop.instagram {
+  background: #CC3560;
+  border-color: #CC3560;
+  color: #fff;
+}
+.site-footer .deelknop.instagram:hover {
+  background: var(--ink);
+  border-color: var(--papier);
+}
+.footer-terug {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-left: auto;
+}
+/* Op artikelpagina's (posts + over) lijnt de footer-inhoud uit met de smalle
+   leeskolom; de donkere achtergrond blijft wel de volle schermbreedte vullen.
+   Op de homepage en kaartpagina is de content zelf 1080px, daar klopt het al. */
+body:has(.artikel) .footer-delen,
+body:has(.artikel) .site-footer .inner {
+  max-width: var(--leesbreedte);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kaart { transition: transform 0.15s ease; }
+  .kaart:hover { transform: translateY(-3px); }
+}
+
+/* ---------- Kaartpagina (kaart.html) ---------- */
+.kaart-kop {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+.kaart-kop h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); }
+.kaart-kop p {
+  color: var(--staal);
+  margin: 0 0 0.5rem;
+  max-width: 60ch;
+}
+.kaart-sectie {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+#plattegrond {
+  height: 62vh;
+  min-height: 380px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+}
+.kaart-sectie .leeg { margin-top: 1rem; }
+/* "Alle plekken op een rij" onder de kaart (door build.js gemaakt uit
+   places.json): gewone links naar de posts, ook zonder JavaScript. Kolommen
+   balanceren vanzelf uit; onder ±560px breed één kolom. Elke regel is ruim
+   44px hoog, dus goed aan te tikken. */
+.plekkenlijst {
+  border-top: 3px solid var(--ink);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+}
+.plekkenlijst .kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.plekkenlijst-groepen { columns: 3 240px; column-gap: 2.5rem; }
+.plekkenlijst-groep { break-inside: avoid; margin-bottom: 1.8rem; }
+.plekkenlijst-groep h3 {
+  font-size: 1.15rem;
+  margin: 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--ink);
+}
+.plekkenlijst-groep ul { list-style: none; margin: 0; padding: 0; }
+.plekkenlijst-groep a {
+  display: block;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--lijn);
+  color: inherit;
+  text-decoration: none;
+}
+.plekkenlijst-groep .naam {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.plekkenlijst-groep a:hover .naam { color: var(--groen); text-decoration: underline; }
+.plekkenlijst-groep .soort {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
+/* Zoomknoppen (+ en -) 44x44 in plaats van Leaflets eigen 30x30: groter
+   tikdoel op touchscreens. #plattegrond erbij zodat dit wint van leaflet.css. */
+#plattegrond .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 24px;
+}
+/* Clustericoon: grotere versie van de losse pin, met het aantal erin */
+.cluster-pin {
+  background: var(--groen);
+  border: 2px solid #FAF9F5;
+  border-radius: 50%;
+  color: #FAF9F5;
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Leaflet-popup in huisstijl: harde randen, geen afronding of schaduw */
+.leaflet-popup-content-wrapper {
+  background: var(--papier);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+.leaflet-popup-tip {
+  background: var(--ink);
+  box-shadow: none;
+}
+.leaflet-popup-content { margin: 0; line-height: 1.45; }
+/* Sluitkruisje: eigen ronde knop met donkere achtergrond — het kale kruisje
+   van Leaflet zelf is bovenop een lichte of drukke popup-foto bijna onzichtbaar */
+.leaflet-container a.leaflet-popup-close-button {
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 20px;
+  line-height: 32px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.leaflet-container a.leaflet-popup-close-button:focus,
+.leaflet-container a.leaflet-popup-close-button:active {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+.popup-tekst { padding: 0.8rem 1rem; }
+.popup-foto {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-bottom: 2px solid var(--ink);
+}
+.popup-naam {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+.popup-tags {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--staal);
+  margin: 0 0 0.35rem;
+}
+.popup-teaser {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--staal);
+  margin: 0 0 0.6rem;
+}
+/* .leaflet-container erbij: anders wint Leaflets eigen linkkleur (blauw) */
+.leaflet-container a.popup-link {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--groen);
+  text-decoration: none;
+}
+.leaflet-container a.popup-link:hover { text-decoration: underline; }
+.leaflet-container a.popup-knop {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--ink);
+  color: var(--papier);
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  margin-top: 0.15rem;
+}
+/* Hover alleen op apparaten die echt kunnen hoveren (muis/trackpad) —
+   op touchscreens blijft een hover-state anders "hangen" na een tik */
+@media (hover: hover) and (pointer: fine) {
+  .leaflet-container a.popup-knop:hover { background: var(--groen); color: var(--papier); }
+  .leaflet-container a.leaflet-popup-close-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+  }
+}
+/* Korte visuele feedback tijdens de tik zelf, verdwijnt bij loslaten */
+.leaflet-container a.popup-knop:active { background: var(--groen); color: var(--papier); }
+
+/* ---------- Snapshots uit 010 (instagram.html) ----------
+   Raster met de laatste Instagram-posts (door build.js gemaakt uit
+   instagram.json). Staande 4:5-tegels zoals op Instagram; de foto vult de
+   tegel met object-fit: cover, dus nooit uitgerekt. Op de computer drie
+   naast elkaar, tot 720px breed twee. */
+.snapshots-kop {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+.snapshots-label {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #B02A51;
+  margin: 0 0 0.5rem;
+}
+.snapshots-kop h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); margin-top: 0; }
+.snapshots-kop p:not(.snapshots-label) {
+  color: var(--staal);
+  margin: 0 0 1.25rem;
+  max-width: 60ch;
+}
+.snapshots-uitleg,
+.snapshots-leeg {
+  max-width: var(--breedte);
+  margin: 2rem auto 0;
+  padding: 0 1.25rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+}
+.snapshots-leeg { color: var(--staal); font-weight: 600; margin-bottom: 2rem; }
+.snapshots {
+  list-style: none;
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.snapshot {
+  border: 2px solid var(--ink);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.snapshot-foto {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-bottom: 2px solid var(--ink);
+}
+.snapshot-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.snapshot-tekst { padding: 0.8rem 0.9rem 1rem; }
+.snapshot-tekst time {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
+.snapshot-tekst p {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  margin: 0.35rem 0 0;
+}
+.snapshot-verhaal {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 0.25rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--groen);
+}
+.snapshots-slot {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 3.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+}
+.snapshots-verhalen {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0.7rem 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .snapshot-foto img { transition: transform 0.3s ease; }
+  .snapshot-foto:hover img { transform: scale(1.03); }
+}
+@media (max-width: 720px) {
+  .snapshots { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding-top: 0.75rem; }
+  .snapshot-tekst { padding: 0.55rem 0.6rem 0.6rem; }
+  .snapshot-tekst p { font-size: 0.82rem; }
+  .snapshot-verhaal { font-size: 0.8rem; }
+  .snapshots-kop { padding-top: 1.5rem; }
+}
+  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQS8RQWBE9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZQS8RQWBE9');
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://rotterdambyferry.nl/posts/portlantis.html"
+    },
+    "headline": "Portlantis op de Maasvlakte: havenmuseum met kids",
+    "description": "Kidsproof doe-museum over de Rotterdamse haven op de Maasvlakte, met de Helios Experience, een boottocht langs de grootste schepen en het strand voor de deur.",
+    "image": [
+      "https://rotterdambyferry.nl/assets/img/portlantis-duinpad.jpg"
+    ],
+    "datePublished": "2026-11-13",
+    "dateModified": "2026-11-13",
+    "author": {
+      "@type": "Person",
+      "name": "Ferry",
+      "url": "https://rotterdambyferry.nl/over.html"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Rotterdam by Ferry",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://rotterdambyferry.nl/assets/img/favicon-192x192.png"
+      }
+    },
+    "contentLocation": {
+      "@type": "Place",
+      "name": "Portlantis",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 51.9354,
+        "longitude": 3.9779
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Rotterdam",
+        "addressCountry": "NL"
+      }
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://rotterdambyferry.nl/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Maasvlakte",
+        "item": "https://rotterdambyferry.nl/?gebied=maasvlakte"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Portlantis op de Maasvlakte: havenmuseum met kids",
+        "item": "https://rotterdambyferry.nl/posts/portlantis.html"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<a class="naar-inhoud" href="#inhoud">Ga naar inhoud</a>
+<header class="site-header">
+  <div class="inner">
+    <a class="wordmark" href="/">Rotterdam by Ferry <span class="hart">&#10084;</span></a>
+    <nav>
+      <a href="/">Verhalen</a>
+      <a href="../kaart.html">Kaart</a>
+      <a href="../over.html">Over Ferry</a>
+      <a href="../instagram.html">Instagram</a>
+    </nav>
+  </div>
+</header>
+<div id="inhoud" tabindex="-1"></div>
+
+<main class="artikel">
+  <nav class="broodkruimel" aria-label="Kruimelpad">
+    <a href="/">Home</a> <span aria-hidden="true">&rsaquo;</span> <a href="/?gebied=maasvlakte">Maasvlakte</a> <span aria-hidden="true">&rsaquo;</span> <span aria-current="page">Portlantis op de Maasvlakte: havenmuseum met kids</span>
+  </nav>
+  <div class="tags">
+    <span class="tag">Kidsproof</span>
+    <span class="tag">Dagje uit</span>
+    <span class="tag gebied">Maasvlakte</span>
+  </div>
+
+  <h1>Portlantis: de hele Rotterdamse haven in één dagje Maasvlakte</h1>
+  <p class="meta">Door Ferry &middot; november 2026</p>
+
+  <figure class="foto">
+    <img src="../assets/img/portlantis-duinpad.jpg" srcset="../assets/img/portlantis-duinpad-mobiel.jpg 800w, ../assets/img/portlantis-duinpad.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Kinderen op een zandpad door de duinen naar havenmuseum Portlantis op Maasvlakte 2, met de rode trappen langs het gebouw en een roze containerschip op de achtergrond" width="1400" height="1867" loading="eager" fetchpriority="high">
+  </figure>
+
+  <p class="intro">Een museum over de haven, midden in de haven, met het strand gewoon voor de deur. Portlantis op de Maasvlakte is echt een doe-museum en helemaal kidsproof. Wij maakten er een complete dag van: patatje bij het Balkon van Europa, het museum in, naar boven voor het uitzicht, een boottocht langs de grootste schepen en tot slot uitwaaien op het strand.</p>
+
+  <p>Je ziet Portlantis al van ver liggen. Het is een stapel witte blokken die allemaal een andere kant op gedraaid zijn, met een knalrode trap die eromheen slingert. Het gebouw staat op het puntje van Maasvlakte 2, tussen de duinen en de containerterminals. Daarmee weet je eigenlijk al wat je binnen gaat zien.</p>
+
+  <p>Voor mij is de Maasvlakte ook een stukje jeugdsentiment. Vroeger gingen we er altijd naartoe met mijn ouders en vriendjes, naar het strand van Rotterdam. Vanuit Rotterdam-Zuid was het een half uurtje rijden, dwars door de haven en door een stuk niemandsland. Je kon je auto er altijd kwijt, boven stond vaak een patatkraam, en dan liep je naar beneden en lag daar het strand. De ouders zaten op de ligstoelen die ze hadden meegenomen, en wij sprongen met z’n allen van boven naar beneden door de duinen. Daar kon je uren mee bezig zijn. Daarna lekker afkoelen in de zee. Het was gewoon één groot strand, zonder strandtenten en zonder entertainment. Dat is het eigenlijk nog steeds: grote zee, grote stranden, lekker spelen en voetballen.</p>
+
+  <p>Bijzonder om te bedenken dat dit hele gebied ooit gewoon zee was. De Maasvlakte is helemaal opgespoten land. De eerste Maasvlakte was begin jaren zeventig klaar, en tussen 2008 en 2013 kwam daar Maasvlakte 2 voor, gemaakt van zo’n 240 miljoen kuub zand. Portlantis staat op dat nieuwste stukje Nederland. Leuk weetje voor de kids: omdat dat zand zo oud is, kun je op het strand <a href="https://www.rijkswaterstaat.nl/nieuws/archief/2024/10/graven-naar-het-verleden-op-de-tweede-maasvlakte" target="_blank" rel="noopener">fossielen vinden</a>.</p>
+
+  <p>We begonnen de dag een stukje verderop bij het <a href="balkon-van-europa.html">Balkon van Europa</a>. Daar schreef ik al eerder over: de snackbar op de Maasvlakte waar je met je patatje de schepen voorbij ziet varen. Het zit er vlakbij en het is gewoon een hele leuke combinatie. Eerst even buiten zitten met uitzicht, dan door naar het museum.</p>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-balkon-van-europa.jpg" srcset="../assets/img/portlantis-balkon-van-europa-mobiel.jpg 800w, ../assets/img/portlantis-balkon-van-europa.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Het terras van snackbar Balkon van Europa op de Maasvlakte met Nederlandse vlaggen, terwijl een tanker de haven uit vaart" width="1400" height="1867" loading="lazy">
+    <figcaption>Eerst een patatje bij het Balkon van Europa, met de schepen op de voorgrond.</figcaption>
+  </figure>
+
+  <p>Binnen kom je in een hoog atrium dat door alle verdiepingen loopt. Overal hangen gele objecten in de lucht: een container, een anker met ketting, een scheepsschroef, moleculen. Kijk vooral even recht omhoog, het is een van de mooiste plekken van het gebouw.</p>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-atrium.jpg" srcset="../assets/img/portlantis-atrium-mobiel.jpg 800w, ../assets/img/portlantis-atrium.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Het atrium van Portlantis van onderaf gezien, met gele objecten zoals een container, ankerketting, scheepsschroef en moleculen tussen de trappen" width="1400" height="1867" loading="lazy">
+    <figcaption>Even recht omhoog kijken in het atrium.</figcaption>
+  </figure>
+
+  <p>Het museum zelf is echt een doe-museum. Alles is interactief en verdeeld over verschillende zalen, elk met een eigen thema. Je laadt en lost containers met een virtuele kraan, je bestuurt schepen en in de zaal over energie lopen de kinderen met een tablet rond terwijl buiten de windmolens draaien. Dat is het mooie hier: je leert over de haven en je kijkt er tegelijk naar. Wat er precies allemaal te doen is, kun je het beste even checken op de website. In de vakanties zijn er vaak ook extra activiteiten.</p>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-containerspel.jpg" srcset="../assets/img/portlantis-containerspel-mobiel.jpg 800w, ../assets/img/portlantis-containerspel.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Een kind bedient het containerspel in Portlantis, met drie schermen waarop een kraan containers laadt en lost" width="1400" height="1867" loading="lazy">
+    <figcaption>Zelf containers laden en lossen, met drie schermen tegelijk.</figcaption>
+  </figure>
+
+  <p>Het nieuwste onderdeel is de Helios Experience, en die is echt een aanrader. Je gaat met een klein groepje naar binnen, ik geloof met acht tot tien man tegelijk, en dan gaat de deur op slot. Vijf minuten lang zit je helemaal opgesloten in een soort videocabine. Een gastheer op het scherm neemt je mee in zijn verhaal, en daarna gaat het los: stoelen die bewegen, wind, waternevel en beelden die je van het land naar de zee en de lucht boven de haven brengen. Het is echt een belevenis en voegt echt iets toe aan het museum. Voor mij een van de leukste dingen om hier met het gezin te doen. Hij zit gewoon bij je kaartje inbegrepen.</p>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-helios-experience.jpg" srcset="../assets/img/portlantis-helios-experience-mobiel.jpg 800w, ../assets/img/portlantis-helios-experience.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Een kind in de blauw verlichte ruimte van de Helios Experience in Portlantis, voor een scherm met een gastheer in uniform" width="1400" height="1867" loading="lazy">
+    <figcaption>Wachten op de gastheer van de Helios Experience.</figcaption>
+  </figure>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-energiezaal.jpg" srcset="../assets/img/portlantis-energiezaal-mobiel.jpg 800w, ../assets/img/portlantis-energiezaal.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Een kind met een tablet in de energiezaal van Portlantis, tussen gekleurde panelen met het bord Warmte, en buiten de windmolens en de haven" width="1400" height="1867" loading="lazy">
+    <figcaption>In de energiezaal kijk je naar buiten, recht op de haven.</figcaption>
+  </figure>
+
+  <p>Daarna gingen we naar boven. Op de vierde verdieping zit het restaurant, met grote ramen die uitkijken over het strand, de zee en de windmolens. Via de rode trap kom je op het panoramadek op het dak. Daar kijk je echt over alles heen: aan de ene kant de Noordzee, aan de andere kant de kranen en de containerterminals. Handig om te weten: het restaurant en het panoramadek kun je ook bezoeken zonder entreekaartje.</p>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-restaurant.jpg" srcset="../assets/img/portlantis-restaurant-mobiel.jpg 800w, ../assets/img/portlantis-restaurant.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Het restaurant op de vierde verdieping van Portlantis, met grote ramen en uitzicht op het strand, de Noordzee en windmolens" width="1400" height="1867" loading="lazy">
+    <figcaption>Het restaurant op de vierde verdieping, met de zee als uitzicht.</figcaption>
+  </figure>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-panoramadek.jpg" srcset="../assets/img/portlantis-panoramadek-mobiel.jpg 800w, ../assets/img/portlantis-panoramadek.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Een kind loopt over het rode panoramadek op het dak van Portlantis, met de Noordzee en een blauwe lucht" width="1400" height="1867" loading="lazy">
+    <figcaption>Op het panoramadek kijk je over de zee en de hele haven.</figcaption>
+  </figure>
+
+  <p>Het echte hoogtepunt was voor ons de boottocht. Die boek je erbij bij Portlantis. Vanaf de parkeerplaats brengt een pendelbus je naar de opstapplek, en dan vaar je zo’n vijf kwartier door de haven. Boek wel op tijd, want er is maar een beperkt aantal plekken. Als je de boottocht samen met je entreekaartje boekt, krijg je korting. Heb je een <a href="https://www.rotterdampas.nl" target="_blank" rel="noopener">Rotterdampas</a>, dan krijg je ook nog eens 25% korting op de entree en een activiteit. We zijn in Rotterdam ook wel eens met de Spido geweest, maar dan begin je in de stad en duurt het even voordat je echt in de haven bent. Hier zit je meteen middenin. De kinderen vonden het tof om die enorme schepen zo dichtbij te zien, maar eerlijk gezegd vond ik het zelf ook heel erg leuk. Je vaart onder de kranen door, langs containerschepen van Evergreen, Hapag-Lloyd en dat felroze schip van ONE. Toen wij er waren, lag ook de Pioneering Spirit er, het grootste bouwschip ter wereld. Pas als je er met zo’n bootje langs vaart, zie je hoe gigantisch die dingen zijn.</p>
+
+  <figure class="post-foto">
+    <img src="../assets/img/portlantis-boottocht-one.jpg" srcset="../assets/img/portlantis-boottocht-one-mobiel.jpg 800w, ../assets/img/portlantis-boottocht-one.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Een roze containerschip van rederij ONE, hoog volgeladen met containers, aan de kade onder grote kranen op Maasvlakte 2, gezien vanaf de boottocht" width="1400" height="1050" loading="lazy">
+    <figcaption>Het felroze schip van ONE, van dichtbij gezien vanaf de boot.</figcaption>
+  </figure>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-pioneering-spirit.jpg" srcset="../assets/img/portlantis-pioneering-spirit-mobiel.jpg 800w, ../assets/img/portlantis-pioneering-spirit.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Het bouwschip Pioneering Spirit op het water bij Maasvlakte 2, met windmolens aan de horizon en het kielzog van de rondvaartboot op de voorgrond" width="1400" height="1867" loading="lazy">
+    <figcaption>De Pioneering Spirit, het grootste bouwschip ter wereld.</figcaption>
+  </figure>
+
+  <p>En dan het strand. Vanaf Portlantis loop je zo de duinen in, en het is nog steeds dat grote, lege strand van vroeger. In de zomer is dat natuurlijk heerlijk, maar ook in de herfst en de winter is het hartstikke leuk. Lekker uitwaaien, wind om je oren, en de kinderen kunnen nog even hun energie kwijt. Toen wij aan het eind van de middag naar de zee keken, was de lucht helemaal dichtgetrokken en stonden er flinke golven. Ook mooi.</p>
+
+  <figure class="post-foto smal">
+    <img src="../assets/img/portlantis-strand.jpg" srcset="../assets/img/portlantis-strand-mobiel.jpg 800w, ../assets/img/portlantis-strand.jpg 1400w" sizes="(max-width: 720px) 100vw, 640px" alt="Een kind staat bij een houten duinhek en kijkt uit over het strand van Maasvlakte 2 en een woelige Noordzee onder een grijze wolkenlucht" width="1400" height="1867" loading="lazy">
+    <figcaption>Uitwaaien op het strand van de Maasvlakte, ook buiten de zomer.</figcaption>
+  </figure>
+
+  <p>Patatje bij het Balkon, het museum, het uitzicht vanaf het dak, de boottocht en het strand. Voor mij is dat het complete plaatje, en het zit allemaal op één plek.</p>
+
+  <div class="praktisch">
+    <h2 class="kop">Praktisch</h2>
+    <p>Portlantis, Prinses Máximaweg 301, 3199 KG Maasvlakte Rotterdam. Open van dinsdag tot en met zondag van 10.00 tot 17.00 uur, op maandag gesloten. Het restaurant en het panoramadek zijn ook zonder entreekaartje toegankelijk.</p>
+    <p>De boottocht vaart van dinsdag tot en met zondag en duurt ongeveer 75 minuten. De pendelbus naar de opstapplek vertrekt vanaf de parkeerplaats van Portlantis: zorg dat je er een half uur voor vertrek bent. In 2026 kost de boottocht €16,00 vanaf 13 jaar en €12,50 voor kinderen van 3 tot en met 12 jaar. Kinderen tot en met 2 jaar varen gratis mee, maar hebben wel een ticket nodig. Boek je de boottocht samen met een entreekaartje, dan krijg je 15% korting.</p>
+    <p>Met de <a href="https://www.rotterdampas.nl" target="_blank" rel="noopener">Rotterdampas</a> krijg je 1x 25% korting op de entree en een activiteit (geldig tot en met 28 februari 2027). Koop je online, vraag dan via Mijn Pas een kortingscode aan, één per pas.</p>
+    <p>Kaartjes en actuele tijden vind je op <a href="https://www.portlantis.nl/" target="_blank" rel="noopener">portlantis.nl</a>.</p>
+  </div>
+
+  <section class="verwant">
+    <h2 class="kop">Misschien vind je dit ook leuk</h2>
+    <div class="verwant-grid">
+      <a class="verwant-item" href="../posts/balkon-van-europa.html">
+        <span class="thumb"><img src="../assets/img/balkon-van-europa-terras-mobiel.jpg" alt="" loading="lazy"></span>
+        <span class="titel">Smickel Inn (Balkon van Europa)</span>
+        <span class="teaser">Waar het land ophoudt en de zeeschepen vlak langs het terras varen.</span>
+      </a>
+      <a class="verwant-item" href="../posts/simit-and-cheese.html">
+        <span class="thumb"><img src="../assets/img/simit-and-cheese-menemen-mobiel.jpg" alt="" loading="lazy"></span>
+        <span class="titel">Simit and Cheese</span>
+        <span class="teaser">De menemen met sucuk die naar verluidt de favoriet is van Feyenoordspelers.</span>
+      </a>
+      <a class="verwant-item" href="../posts/warung-melatie.html">
+        <span class="thumb"><img src="../assets/img/warung-melatie-saoto-soep-hero-mobiel.jpg" alt="" loading="lazy"></span>
+        <span class="titel">Warung Melatie</span>
+        <span class="teaser">Volgens Per de Man de beste saoto soep van Rotterdam.</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-delen">
+    <h2 class="kop">Iemand die dit moet weten?</h2>
+    <div class="knoppen">
+      <a class="deelknop whatsapp" href="https://wa.me/?text=Portlantis%20op%20de%20Maasvlakte%3A%20havenmuseum%20met%20kids%0Ahttps%3A%2F%2Frotterdambyferry.nl%2Fposts%2Fportlantis.html" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Deel het via WhatsApp
+      </a>
+      <button class="deelknop kopieer" type="button">Kopieer de link</button>
+      <a class="footer-terug" href="/">&larr; Alle verhalen</a>
+    </div>
+  </div>
+  <div class="inner">
+    <span>Rotterdam by Ferry: van Zuid tot Noord, gewoon door een Rotterdammer</span>
+    <a class="deelknop instagram" href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 2 7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3.17L15 2H9Zm3 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+      Volg op Instagram
+    </a>
+  </div>
+</footer>
+
+<script src="../assets/deel.js" defer></script>
+
+<script src="../assets/header.js" defer></script>
+
+</body>
+</html>
