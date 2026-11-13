@@ -766,11 +766,17 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // Cheese). De fotootjes van "Misschien vind je dit ook leuk" en de
   // Leestips maakt de build zelf pas verderop, met een bewust lege alt (de
   // naam staat er als linktekst naast): die vallen hier dus buiten.
+  // Ook een niet-ingevulde invulplek telt als lege alt: tekst tussen
+  // [blokhaken] (zoals in _template.html) of drie of meer woorden in
+  // hoofdletters achter elkaar (zoals in de blokjes uit NIEUWE-POST.md).
   for (const img of inhoud.match(/<img\b[^>]*>/g) || []) {
     const alt = img.match(/\balt="([^"]*)"/);
-    if (!alt || !alt[1].trim()) {
+    const tekst = alt ? alt[1].trim() : "";
+    const invulplek = /\[|\b[A-Z]{2,}(?:[ ,]+[A-Z]{2,}){2,}/.test(tekst);
+    if (!tekst || invulplek) {
       const bron = (img.match(/\bsrc="([^"]*)"/) || [, "(onbekend)"])[1];
-      console.warn(`⚠ ${relatief}: foto zonder alt-tekst: ${bron}`);
+      const wat = invulplek ? "alt-tekst nog niet ingevuld" : "foto zonder alt-tekst";
+      console.warn(`⚠ ${relatief}: ${wat}: ${bron}`);
     }
   }
 
