@@ -11,8 +11,9 @@
 // de inhoud van /partials/naam.html. In een partial wordt {{root}} vervangen
 // door het juiste padvoorvoegsel ("" in de root, "../" in posts/), zodat
 // links als {{root}}index.html overal kloppen. Daarnaast wordt {{deel-url}}
-// vervangen door het URL-gecodeerde webadres van de pagina zelf (voor de
-// WhatsApp-deelknop in de footer, als reserve zonder JavaScript).
+// vervangen door het URL-gecodeerde webadres van de pagina zelf, en
+// {{deel-tekst}} door titel plus webadres (voor de WhatsApp-deelknop in de
+// footer, als reserve zonder JavaScript).
 //
 // Voorbereide posts: een post in src/posts kan in de <head> een regel
 // <meta name="publicatiedatum" content="JJJJ-MM-DD"> krijgen. Staat die
@@ -816,6 +817,9 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     return partials[naam]
       .replace(/\{\{root\}\}/g, root)
       .replace(/\{\{deel-url\}\}/g, encodeURIComponent(paginaUrl))
+      // Zelfde bericht als assets/deel.js maakt (titel, nieuwe regel, URL),
+      // zodat de WhatsApp-knop ook zonder JavaScript de titel meestuurt.
+      .replace(/\{\{deel-tekst\}\}/g, encodeURIComponent(ogTitel + "\n" + paginaUrl))
       .replace(/\{\{instagram-knop\}\}/g, instagramKnop);
   });
 

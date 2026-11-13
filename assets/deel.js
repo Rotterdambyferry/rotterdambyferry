@@ -10,11 +10,11 @@
   var whatsapp = document.querySelector(".deelknop.whatsapp");
   if (whatsapp) {
     var bericht = encodeURIComponent(titel + "\n" + url);
-    var mobiel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    // Mobiel: wa.me opent de WhatsApp-app. Desktop: rechtstreeks WhatsApp Web.
-    whatsapp.href = mobiel
-      ? "https://wa.me/?text=" + bericht
-      : "https://web.whatsapp.com/send?text=" + bericht;
+    // Altijd wa.me: op een telefoon (ook een iPad, die zich als Mac voordoet)
+    // opent dat direct de WhatsApp-app, op een computer kiest WhatsApp zelf
+    // tussen de desktop-app en WhatsApp Web. Geen web.whatsapp.com meer: dat
+    // werkte slecht op mobiel.
+    whatsapp.href = "https://wa.me/?text=" + bericht;
   }
 
   var kopieer = document.querySelector(".deelknop.kopieer");
