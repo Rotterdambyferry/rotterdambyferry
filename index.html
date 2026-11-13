@@ -291,6 +291,31 @@ h2.kop { line-height: 1.7; }
   color: var(--groen);
   background: var(--groen-licht);
 }
+/* Klikbare labels boven een post (de build maakt er links van, zie
+   klikbareLabels in build.js): zelfde uiterlijk, bij hover of focus vult het
+   label zich met de randkleur, zodat je ziet dat je kunt klikken. */
+a.tag { text-decoration: none; }
+a.tag:hover,
+a.tag:focus-visible {
+  background: var(--ink);
+  color: var(--papier);
+}
+a.tag.gebied:hover,
+a.tag.gebied:focus-visible {
+  background: var(--groen);
+  color: var(--papier);
+}
+/* Mobiel: groter tikvlak (± 44px hoog) via een onzichtbaar vlak om het
+   label heen, zonder dat het label zelf groter wordt. Iets meer naar onder
+   dan naar boven, zodat het niet over het broodkruimelpad valt. */
+@media (max-width: 640px) {
+  a.tag { position: relative; }
+  a.tag::after {
+    content: "";
+    position: absolute;
+    inset: -6px -3px -12px;
+  }
+}
 
 /* ---------- Filters ---------- */
 .filters {
@@ -1622,13 +1647,37 @@ body:has(.artikel) .site-footer .inner {
   }
   telPerGebied();
 
-  // Komt een bezoeker binnen via ?gebied=centrum (bijv. het broodkruimelpad
-  // op een postpagina), dan simuleren we een klik op dat filterknopje zodat
-  // de homepage meteen gefilterd opent. Geen aparte filterlogica nodig.
-  const gebiedUitUrl = new URLSearchParams(location.search).get("gebied");
-  const gebiedKnop =
-    gebiedUitUrl && document.querySelector('.filterknop[data-filter="gebied"][data-waarde="' + gebiedUitUrl + '"]');
-  if (gebiedKnop) gebiedKnop.click();
+  // Komt een bezoeker binnen via ?gebied=centrum (het broodkruimelpad of het
+  // gebiedlabel op een postpagina) of ?categorie=kidsproof (de labels boven
+  // een post), dan simuleren we een klik op dat filterknopje zodat de
+  // homepage meteen gefilterd opent. Geen aparte filterlogica nodig. Daarna
+  // springt de pagina naar de filterbalk, zodat de bezoeker direct ziet welk
+  // filter aan staat en de verhalen eronder (zonder eerst langs de hero te
+  // moeten scrollen).
+  const filterUitUrl = new URLSearchParams(location.search);
+  let gekozenKnop = null;
+  ["categorie", "gebied"].forEach(function (soort) {
+    const waarde = filterUitUrl.get(soort);
+    if (!waarde) return;
+    const knop = document.querySelector(
+      '.filterknop[data-filter="' + soort + '"][data-waarde="' + CSS.escape(waarde) + '"]'
+    );
+    if (knop) {
+      knop.click();
+      if (!gekozenKnop || soort === "categorie") gekozenKnop = knop;
+    }
+  });
+  if (gekozenKnop) {
+    // Op mobiel staan de categorieknoppen in een veegbare rij: schuif de
+    // gekozen knop daarin in beeld (alleen horizontaal), daarna de filterbalk
+    // bovenaan het scherm. html heeft scroll-padding-top, dus de vaste
+    // header valt er niet overheen.
+    const rij = gekozenKnop.parentElement;
+    if (rij && rij.scrollWidth > rij.clientWidth) {
+      rij.scrollLeft = gekozenKnop.offsetLeft - rij.offsetLeft - (rij.clientWidth - gekozenKnop.offsetWidth) / 2;
+    }
+    document.querySelector(".filters").scrollIntoView({ block: "start" });
+  }
 </script>
 
 <script src="assets/header.js" defer></script>
