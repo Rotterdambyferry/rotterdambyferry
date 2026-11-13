@@ -1,5 +1,15 @@
 [
   {
+    "naam": "Portlantis",
+    "lat": 51.9354,
+    "lon": 3.9779,
+    "categorie": ["kidsproof", "dagje-uit"],
+    "gebied": "maasvlakte",
+    "post": "posts/portlantis.html",
+    "image": "assets/img/portlantis-duinpad-mobiel.jpg",
+    "teaser": "Doe-museum over de haven, met boottocht en strand voor de deur."
+  },
+  {
     "naam": "Warung Melatie",
     "lat": 51.9163222,
     "lon": 4.4492634,
