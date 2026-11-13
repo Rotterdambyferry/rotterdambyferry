@@ -730,6 +730,133 @@ function broodkruimelHtml(relatiefUrl, ogTitel) {
   </nav>\n`;
 }
 
+// ---------- Snapshots uit 010 (instagram.html) ----------
+// De pagina toont de laatste Instagram-posts. Die haalt haal-instagram.js
+// vóór de build op (in de publicatie op GitHub) en zet ze in instagram.json
+// in de repo-root, met een eigen kopie van elke foto in
+// assets/img/instagram/. Beide worden niet gecommit (.gitignore): ze worden
+// bij elke publicatie opnieuw gemaakt. Ontbreekt instagram.json (lokaal, of
+// als Instagram niet reageerde), dan toont de pagina alleen de intro en de
+// knoppen, met noindex en zonder regel in de sitemap.
+//
+// src/instagram-uitzonderingen.json: per post (de code uit de Instagram-
+// link, bv. "DeLpySNuRcr") een eigen "onderschrift", "verbergen": true, of
+// een "verhaal" (pad naar een post) als de koppeling niet vanzelf lukt.
+const SNAPSHOTS_AANTAL = 6;
+
+const instagramData = (() => {
+  const bestand = path.join(__dirname, "instagram.json");
+  if (!fs.existsSync(bestand)) return null;
+  try {
+    return JSON.parse(leesTekst(bestand));
+  } catch (fout) {
+    console.warn(`⚠ instagram.json is geen geldige JSON (${fout.message}): snapshots overgeslagen`);
+    return null;
+  }
+})();
+
+const instagramUitzonderingen = (() => {
+  const bestand = path.join(bronmap, "instagram-uitzonderingen.json");
+  if (!fs.existsSync(bestand)) return {};
+  try {
+    return JSON.parse(leesTekst(bestand));
+  } catch (fout) {
+    throw new Error(`src/instagram-uitzonderingen.json is geen geldige JSON: ${fout.message}`);
+  }
+})();
+
+// De code van een Instagram-post uit een link: .../p/DeLpySNuRcr/ of
+// .../reel/DeLpySNuRcr/ (met of zonder accountnaam ervoor).
+function instagramCode(link) {
+  const match = String(link || "").match(/\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
+// Welke live post hoort bij welke Instagram-post? Via de
+// <meta name="instagram_url"> die posts al hebben (voor de knop "Reageer op
+// Instagram"). Posts met een publicatiedatum in de toekomst tellen niet mee.
+const postPerInstagramCode = new Map();
+for (const bestand of fs.readdirSync(path.join(bronmap, "posts"))) {
+  if (!bestand.endsWith(".html") || bestand === "_template.html") continue;
+  const naam = bestand.slice(0, -".html".length);
+  if (verborgenPosts.has(naam)) continue;
+  const match = leesTekst(path.join(bronmap, "posts", bestand)).match(/<meta name="instagram_url" content="([^"]*)">/);
+  const code = match && instagramCode(match[1]);
+  if (code) postPerInstagramCode.set(code, `posts/${bestand}`);
+}
+
+// Kort onderschrift uit een Instagram-caption: de eerste regel, daarvan de
+// eerste zin, zonder hashtags, maximaal ± 110 tekens. Gedachtestreepjes
+// worden komma's (huisstijl: geen streepjes in zichtbare tekst).
+function snapshotOnderschrift(caption) {
+  let tekst = String(caption || "")
+    .split(/\r?\n/)
+    .map((regel) => regel.replace(/#[^\s#]+/g, "").replace(/\s+/g, " ").trim())
+    .find((regel) => regel.replace(/[^\p{L}\p{N}]/gu, "").length > 0) || "";
+  tekst = tekst.replace(/\s*[—–]\s*/g, ", ");
+  const zin = tekst.match(/^.+?[.!?](?=\s|$)/);
+  if (zin && zin[0].length >= 20) tekst = zin[0];
+  if (tekst.length > 110) tekst = tekst.slice(0, 110).replace(/\s+\S*$/, "") + "…";
+  return tekst || "Snapshot uit 010";
+}
+
+function snapshotDatum(iso) {
+  const datum = new Date(iso);
+  if (isNaN(datum)) return "";
+  return new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Amsterdam" }).format(datum);
+}
+
+// De snapshots die echt getoond worden: verborgen posts eruit, foto moet
+// bestaan, maximaal SNAPSHOTS_AANTAL.
+const snapshots = (() => {
+  if (!instagramData || !Array.isArray(instagramData.posts)) return [];
+  return instagramData.posts
+    .map((post) => ({ ...post, code: post.code || instagramCode(post.permalink) }))
+    .filter((post) => post.code && !(instagramUitzonderingen[post.code] || {}).verbergen)
+    .filter((post) => post.afbeelding && fs.existsSync(path.join(__dirname, post.afbeelding)))
+    .slice(0, SNAPSHOTS_AANTAL)
+    .map((post) => {
+      const uitzondering = instagramUitzonderingen[post.code] || {};
+      return {
+        ...post,
+        onderschrift: uitzondering.onderschrift || snapshotOnderschrift(post.caption),
+        verhaal: uitzondering.verhaal || postPerInstagramCode.get(post.code) || null,
+      };
+    });
+})();
+// Alleen echte Instagram-gegevens maken de pagina vindbaar (sitemap, geen
+// noindex). Voorbeeldgegevens (node haal-instagram.js --voorbeeld) zijn
+// puur om lokaal te bekijken.
+const snapshotsEcht = snapshots.length > 0 && instagramData && instagramData.bron === "instagram";
+const nieuwsteSnapshotDatum = snapshotsEcht
+  ? snapshots.map((post) => String(post.datum || "").slice(0, 10)).filter(Boolean).sort().pop()
+  : null;
+
+function snapshotsHtml(root) {
+  if (snapshots.length === 0) {
+    return `<p class="snapshots-leeg">De nieuwste foto's staan hier binnenkort. Tot die tijd vind je ze direct op Instagram.</p>\n\n`;
+  }
+  const items = snapshots
+    .map((post) => {
+      const tekst = htmlTekst(post.onderschrift);
+      const datum = snapshotDatum(post.datum);
+      const verhaal = post.verhaal
+        ? `\n      <a class="snapshot-verhaal" href="${root}${post.verhaal}">Lees het verhaal &rarr;</a>`
+        : "";
+      return `  <li class="snapshot">
+    <a class="snapshot-foto" href="${htmlTekst(post.permalink)}" target="_blank" rel="noopener noreferrer">
+      <img src="${root}${post.afbeelding}" alt="${tekst}" width="1080" height="1350" loading="lazy">
+    </a>
+    <div class="snapshot-tekst">${datum ? `\n      <time datetime="${htmlTekst(String(post.datum).slice(0, 10))}">${datum}</time>` : ""}
+      <p>${tekst}</p>${verhaal}
+    </div>
+  </li>
+`;
+    })
+    .join("");
+  return `<p class="snapshots-uitleg">Hier zie je steeds mijn laatste ${snapshots.length}:</p>\n<ul class="snapshots">\n${items}</ul>\n\n`;
+}
+
 // Verzamelt de pagina's die in sitemap.xml moeten komen: alle echt gebouwde
 // pagina's (het kopieersjabloon wordt niet gebouwd, zie hieronder).
 const sitemapPaginas = [];
@@ -911,12 +1038,22 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     resultaat = resultaat.replace(/[ \t]*<!-- PLEKKENLIJST -->\n\n?/, () => plekkenlijstHtml(root));
   }
 
+  // Op instagram.html: de snapshots (laatste Instagram-posts). Zonder echte
+  // Instagram-gegevens: noindex, en verderop ook geen regel in de sitemap.
+  const isSnapshotsPagina = resultaat.includes("<!-- SNAPSHOTS -->");
+  if (isSnapshotsPagina) {
+    resultaat = resultaat.replace(/[ \t]*<!-- SNAPSHOTS -->\n\n?/, () => snapshotsHtml(root));
+    if (!snapshotsEcht) {
+      resultaat = resultaat.replace("</head>", '  <meta name="robots" content="noindex">\n</head>');
+    }
+  }
+
   fs.mkdirSync(path.dirname(doel), { recursive: true });
   schrijfTekst(doel, resultaat);
   console.log(`✓ ${relatief}`);
   aantal++;
 
-  sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  if (!isSnapshotsPagina || snapshotsEcht) sitemapPaginas.push({ url: paginaUrl, bronbestand });
 }
 
 // sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht
@@ -939,10 +1076,17 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     .sort()
     .pop();
 
-  const lastmodVoor = (bronbestand) =>
-    path.relative(bronmap, bronbestand) === "index.html" && nieuwstePostDatum
-      ? nieuwstePostDatum
-      : laatsteWijziging(bronbestand);
+  // instagram.html: de nieuwste getoonde snapshot, of de eigen git-datum als
+  // die later is (de pagina verandert inhoudelijk door een nieuwe foto).
+  const lastmodVoor = (bronbestand) => {
+    const relatief = path.relative(bronmap, bronbestand);
+    if (relatief === "index.html" && nieuwstePostDatum) return nieuwstePostDatum;
+    const gitDatum = laatsteWijziging(bronbestand);
+    if (relatief === "instagram.html" && nieuwsteSnapshotDatum && nieuwsteSnapshotDatum > gitDatum) {
+      return nieuwsteSnapshotDatum;
+    }
+    return gitDatum;
+  };
 
   const urls = sitemapPaginas
     .map(

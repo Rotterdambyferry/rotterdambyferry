@@ -1132,3 +1132,117 @@ body:has(.artikel) .site-footer .inner {
 }
 /* Korte visuele feedback tijdens de tik zelf, verdwijnt bij loslaten */
 .leaflet-container a.popup-knop:active { background: var(--groen); color: var(--papier); }
+
+/* ---------- Snapshots uit 010 (instagram.html) ----------
+   Raster met de laatste Instagram-posts (door build.js gemaakt uit
+   instagram.json). Staande 4:5-tegels zoals op Instagram; de foto vult de
+   tegel met object-fit: cover, dus nooit uitgerekt. Op de computer drie
+   naast elkaar, tot 720px breed twee. */
+.snapshots-kop {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+.snapshots-label {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #B02A51;
+  margin: 0 0 0.5rem;
+}
+.snapshots-kop h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); margin-top: 0; }
+.snapshots-kop p:not(.snapshots-label) {
+  color: var(--staal);
+  margin: 0 0 1.25rem;
+  max-width: 60ch;
+}
+.snapshots-uitleg,
+.snapshots-leeg {
+  max-width: var(--breedte);
+  margin: 2rem auto 0;
+  padding: 0 1.25rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+}
+.snapshots-leeg { color: var(--staal); font-weight: 600; margin-bottom: 2rem; }
+.snapshots {
+  list-style: none;
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.snapshot {
+  border: 2px solid var(--ink);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.snapshot-foto {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-bottom: 2px solid var(--ink);
+}
+.snapshot-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.snapshot-tekst { padding: 0.8rem 0.9rem 1rem; }
+.snapshot-tekst time {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--staal);
+}
+.snapshot-tekst p {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  margin: 0.35rem 0 0;
+}
+.snapshot-verhaal {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--groen);
+}
+.snapshots-slot {
+  max-width: var(--breedte);
+  margin: 0 auto;
+  padding: 0 1.25rem 3.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+}
+.snapshots-verhalen {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0.7rem 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .snapshot-foto img { transition: transform 0.3s ease; }
+  .snapshot-foto:hover img { transform: scale(1.03); }
+}
+@media (max-width: 720px) {
+  .snapshots { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding-top: 0.75rem; }
+  .snapshot-tekst { padding: 0.55rem 0.6rem 0.6rem; }
+  .snapshot-tekst p { font-size: 0.82rem; }
+  .snapshot-verhaal { font-size: 0.8rem; }
+  .snapshots-kop { padding-top: 1.5rem; }
+}
