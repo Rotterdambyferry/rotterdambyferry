@@ -758,6 +758,21 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 
   const inhoud = leesTekst(bronbestand);
 
+  // Waarschuwing (geen stop) voor foto's zonder alt-tekst in de bron: een
+  // homepagekaart, postfoto of videoplaatje met alt="" of zonder alt. Zo
+  // valt het meteen op in de terminal als een kopieerblokje niet is
+  // ingevuld (zo ontstonden de lege alts bij Warung Melatie en Simit and
+  // Cheese). De fotootjes van "Misschien vind je dit ook leuk" en de
+  // Leestips maakt de build zelf pas verderop, met een bewust lege alt (de
+  // naam staat er als linktekst naast): die vallen hier dus buiten.
+  for (const img of inhoud.match(/<img\b[^>]*>/g) || []) {
+    const alt = img.match(/\balt="([^"]*)"/);
+    if (!alt || !alt[1].trim()) {
+      const bron = (img.match(/\bsrc="([^"]*)"/) || [, "(onbekend)"])[1];
+      console.warn(`⚠ ${relatief}: foto zonder alt-tekst: ${bron}`);
+    }
+  }
+
   // og/twitter/canonical genereren uit de eigen <title>/meta description en
   // vervangen (of, bij een post zonder eigen og-blok in de bron, voor het
   // eerst invoegen na de meta-description-regel).
