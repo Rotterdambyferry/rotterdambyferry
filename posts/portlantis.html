@@ -225,9 +225,13 @@ h2.kop { line-height: 1.7; }
    de twee in elkaar over. Wie "minder beweging" heeft ingesteld krijgt geen
    overvloeier (en ook geen automatische wissel, dat regelt het script). */
 .hero-foto { transition: opacity 1.2s ease; }
-.hero-foto.is-weg { opacity: 0; }
+/* De laag die weggaat blijft nog 1,2 seconde staan (tot de nieuwe foto er
+   bovenop helemaal zichtbaar is) en verdwijnt dan in één keer. Zo is er
+   halverwege geen donkere dip. */
+.hero-foto.is-weg { opacity: 0; transition: opacity 0s linear 1.2s; }
 @media (prefers-reduced-motion: reduce) {
-  .hero-foto { transition: none; }
+  .hero-foto,
+  .hero-foto.is-weg { transition: none; }
 }
 .hero::after {
   content: "";
@@ -305,8 +309,25 @@ h2.kop { line-height: 1.7; }
   .hero-plek:hover,
   .hero-pauze:hover { background: var(--groen); border-color: #fff; }
 }
+/* Focusring: wit met een donkere rand eromheen, zodat hij ook op een
+   lichte foto (lucht, wolken) goed te zien is. */
 .hero-plek:focus-visible,
-.hero-pauze:focus-visible { outline-color: #fff; }
+.hero-pauze:focus-visible {
+  outline-color: #fff;
+  box-shadow: 0 0 0 7px var(--ink);
+}
+/* Aanraakschermen (ook tablets): het tikvlak is rondom 6px groter dan de
+   knop zelf, dus 44px. */
+@media (pointer: coarse) {
+  .hero-plek,
+  .hero-pauze { position: relative; }
+  .hero-plek::before,
+  .hero-pauze::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+  }
+}
 /* Pauzeknop: het pauze-icoon zolang de foto's wisselen, het afspeel-icoon
    als het wisselen stilstaat. */
 .hero-pauze .icoon-speel { display: none; }
@@ -337,7 +358,8 @@ h2.kop { line-height: 1.7; }
   }
   /* Op de telefoon staat de tekst over bijna de hele foto: label en
      pauzeknop daarom rechtsboven. Ze ogen klein (32px hoog), maar het
-     tikvlak is via ::before rondom 8px groter, dus 48px. */
+     tikvlak is via ::before groter: 8px vanaf de binnenkant van de rand,
+     dus 44px. */
   .hero-bediening { top: 0.75rem; bottom: auto; right: 1rem; gap: 0.75rem; }
   .hero-plek,
   .hero-pauze { position: relative; min-height: 2rem; }

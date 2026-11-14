@@ -1121,9 +1121,10 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   // de sitemap.
   if (is404) {
     resultaat = resultaat.replace("</head>", '  <meta name="robots" content="noindex">\n</head>');
-    // Geen canonical: deze pagina verschijnt op elk niet-bestaand adres en
-    // heeft dus geen eigen "echt" webadres om naar te verwijzen.
-    resultaat = resultaat.replace(/\r?\n  <link rel="canonical" href="[^"]*">/, "");
+    // Geen canonical en geen og-/twitter-tags: deze pagina verschijnt op elk
+    // niet-bestaand adres en heeft dus geen eigen "echt" webadres om naar te
+    // verwijzen of te delen.
+    resultaat = resultaat.replace(new RegExp(bestaandMetaBlok.source + "\\r?\\n"), "");
   }
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });
