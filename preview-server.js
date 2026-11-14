@@ -34,8 +34,17 @@ http
     }
     fs.readFile(bestand, (fout, data) => {
       if (fout) {
-        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-        res.end("Niet gevonden: " + p);
+        // Net als op de echte site: bij een adres dat niet bestaat de eigen
+        // 404-pagina tonen (als die gebouwd is).
+        fs.readFile(path.join(__dirname, "404.html"), (fout404, pagina) => {
+          if (fout404) {
+            res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+            res.end("Niet gevonden: " + p);
+            return;
+          }
+          res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+          res.end(pagina);
+        });
         return;
       }
       res.writeHead(200, { "Content-Type": types[path.extname(bestand).toLowerCase()] || "application/octet-stream" });

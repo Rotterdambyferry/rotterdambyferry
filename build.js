@@ -640,14 +640,18 @@ function metaBlok({ inhoud, paginaUrl, ogType }) {
   // Bij een post: de eerste artikelfoto proberen als og:image (zowel de
   // bovenste hero-foto met class="foto" als een post-foto verderop in
   // oudere posts die daarmee beginnen), maar alleen als die ook echt groot
-  // genoeg is (Facebook/LinkedIn adviseren minimaal 1200x630) — anders
-  // terugvallen op de site-brede standaardfoto.
+  // genoeg is: minimaal 1000 pixels breed en 630 hoog — anders terugvallen
+  // op de site-brede standaardfoto. (Tot november 2026 was de grens 1200
+  // breed, het advies van Facebook/LinkedIn. Daardoor deelden DÂK (1080
+  // breed) en Simit and Cheese (1050 breed) met de algemene skylinefoto in
+  // plaats van hun eigen foto, terwijl WhatsApp en Facebook zulke foto's
+  // prima groot tonen.)
   let ogAfbeelding = standaardOgAfbeelding;
   const fotoMatch = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\ssrc="([^"]+)"/);
   if (fotoMatch) {
     const relatiefPad = fotoMatch[1].replace(/^(\.\.\/)+/, "");
     const afmeting = jpegAfmetingen(path.join(__dirname, relatiefPad));
-    if (afmeting && afmeting.breedte >= 1200 && afmeting.hoogte >= 630) {
+    if (afmeting && afmeting.breedte >= 1000 && afmeting.hoogte >= 630) {
       ogAfbeelding = SITE + relatiefPad.replace(/\\/g, "/");
     }
   }
@@ -946,8 +950,13 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   }
 
   // Hoe dieper het bestand zit, hoe meer "../" er in de links moet.
+  // Uitzondering: 404.html. Die pagina toont GitHub Pages bij elk adres dat
+  // niet bestaat, dus ook bij /posts/bestaat-niet.html of nog dieper. Een
+  // relatief pad klopt daar niet; daarom beginnen alle paden op die pagina
+  // met "/" (vanaf de hoofdmap van de site).
+  const is404 = relatief === "404.html";
   const diepte = delen.length - 1;
-  const root = "../".repeat(diepte);
+  const root = is404 ? "/" : "../".repeat(diepte);
 
   // Het echte webadres van deze pagina (de homepage is gewoon de site-root).
   const relatiefUrl = delen.join("/");
@@ -1108,12 +1117,22 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     }
   }
 
+  // 404.html hoort niet in Google: noindex, en verderop ook geen regel in
+  // de sitemap.
+  if (is404) {
+    resultaat = resultaat.replace("</head>", '  <meta name="robots" content="noindex">\n</head>');
+    // Geen canonical en geen og-/twitter-tags: deze pagina verschijnt op elk
+    // niet-bestaand adres en heeft dus geen eigen "echt" webadres om naar te
+    // verwijzen of te delen.
+    resultaat = resultaat.replace(new RegExp(bestaandMetaBlok.source + "\\r?\\n"), "");
+  }
+
   fs.mkdirSync(path.dirname(doel), { recursive: true });
   schrijfTekst(doel, resultaat);
   console.log(`✓ ${relatief}`);
   aantal++;
 
-  if (!isSnapshotsPagina || snapshotsEcht) sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  if (!is404 && (!isSnapshotsPagina || snapshotsEcht)) sitemapPaginas.push({ url: paginaUrl, bronbestand });
 }
 
 // sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht
