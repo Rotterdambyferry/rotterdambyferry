@@ -862,6 +862,7 @@ function leesTips() {
       noindex: /^(ja|true|1)$/i.test(velden.noindex || ""),
       alineas: tipAlineas(tekst),
       teaser: tipSamenvatting(platteTekst, 1, 110),
+      kaartTekst: tipSamenvatting(platteTekst, 3, 260),
       publicatie,
       verborgen: Boolean(publicatie && !alles && publicatie > vandaag),
     });
@@ -1009,6 +1010,69 @@ ${foto(tip.foto2, tip.alt2, 2, false)}
 </body>
 </html>
 `;
+}
+
+// ---------- Tipkaarten op de homepage ----------
+// Elke live tip krijgt op de homepage een compacte kaart tussen de
+// verhalen (opmaak: .kaart-tip in style.css). De verhaalkaarten blijven met
+// de hand in src/index.html staan, in hun eigen volgorde; een tip komt
+// vóór het eerste verhaal met een oudere publicatiedatum (bij een gelijke
+// datum eerst het verhaal), en anders achteraan. Dat sorteert alleen goed
+// zolang de verhaalkaarten zelf op datum staan (nieuwste bovenaan), zoals
+// NIEUWE-POST.md voorschrijft. Meerdere tips onderling: nieuwste eerst, dan
+// op naam. Alles wat uit het tipbestand komt, gaat door htmlTekst.
+function tipKaartHtml(tip) {
+  const foto = `assets/img/${tip.foto1.basis}-kaart.jpg`;
+  const maat = jpegAfmetingen(path.join(__dirname, foto)) || { breedte: 800, hoogte: 500 };
+  const labels = [
+    `      <span class="tag formaat-tip">Even langs</span>`,
+    ...tip.categorie.map((c) => `      <span class="tag">${CATEGORIE_LABELS[c]}</span>`),
+    `      <span class="tag gebied">${gebiedLabel(tip.gebied)}</span>`,
+  ].join("\n");
+  return `  <article class="kaart kaart-tip" data-formaat="tip" data-categorie="${tip.categorie.join(" ")}" data-gebied="${tip.gebied}">
+    <a class="thumb" href="${tip.post}" aria-hidden="true" tabindex="-1">
+      <img src="${foto}" alt="${htmlTekst(tip.alt1)}" width="${maat.breedte}" height="${maat.hoogte}" loading="lazy">
+    </a>
+    <h2><a href="${tip.post}">${htmlTekst(tip.titel)}</a></h2>
+    <div class="tags">
+${labels}
+    </div>
+    <p>${htmlTekst(tip.kaartTekst)}</p>
+    <a class="lees" href="${tip.post}">Lees de tip &rarr;</a>
+  </article>
+
+`;
+}
+
+function metTipkaarten(html) {
+  const datumVan = (post) => {
+    const bestand = path.join(bronmap, post);
+    return fs.existsSync(bestand) ? publicatiedatum(bestand) : null;
+  };
+  // [ \t]*: na het wegfilteren van de kaart van een voorbereid verhaal kan
+  // de volgende kaart dieper ingesprongen staan.
+  const verhaalkaarten = [...html.matchAll(/^[ \t]*<article class="kaart"[^>]*>[\s\S]*?<\/article>\n/gm)].map((m) => {
+    const link = m[0].match(/href="(posts\/[^"]+\.html)"/);
+    return { plek: m.index, datum: link ? datumVan(link[1]) : null };
+  });
+  const eind = html.search(/^  <p class="leeg"/m);
+  const achteraan = eind === -1 ? html.indexOf("</main>") : eind;
+  const tips = liveTips
+    .map((tip) => ({ tip, datum: publicatiedatum(tip.bestand) }))
+    .sort((a, b) => (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : alfabetisch(a.tip.naam, b.tip.naam)));
+  // Per invoegplek de tips in volgorde verzamelen, daarna van achter naar
+  // voren invoegen, zodat de eerdere plekken niet verschuiven.
+  const perPlek = new Map();
+  for (const { tip, datum } of tips) {
+    const ouder = verhaalkaarten.find((k) => k.datum && k.datum < datum);
+    const plek = ouder ? ouder.plek : achteraan;
+    if (!perPlek.has(plek)) perPlek.set(plek, []);
+    perPlek.get(plek).push(tipKaartHtml(tip));
+  }
+  for (const plek of [...perPlek.keys()].sort((a, b) => b - a)) {
+    html = html.slice(0, plek) + perPlek.get(plek).join("") + html.slice(plek);
+  }
+  return html;
 }
 
 // Leest de echte pixelafmetingen van een JPEG-bestand, puur door de
@@ -1569,17 +1633,42 @@ for (const { bronbestand, relatief, tip } of bronnen) {
     );
   }
 
-  // Op de homepage: de foto van het eerste (nieuwste) verhaal meteen laden in
-  // plaats van "lui". Sinds de lagere hero op telefoons (audit M2) staat dat
-  // verhaal daar direct in beeld en is die foto het grootste beeld (LCP); lui
-  // laden liet hem onnodig wachten. Hier in de build (ná het wegfilteren van
-  // nog niet gepubliceerde posts), zodat het vanzelf klopt als er een nieuwe
-  // post bovenaan komt. De andere foto's blijven gewoon lui laden.
+  // Op de homepage: de tipkaarten tussen de verhalen zetten. Pas ná het
+  // wegfilteren hierboven, zodat een tip met dezelfde naam als een nog
+  // verborgen verhaal niet mee weggefilterd wordt.
+  if (relatief === "index.html" && liveTips.length > 0) {
+    resultaat = metTipkaarten(resultaat);
+  }
+
+  // De rij Soort (Alles / Verhalen / Tips) op de homepage en de kaartpagina
+  // staat in de bron verborgen; pas als er een tip live staat, komt hij
+  // tevoorschijn. Zo ziet een bezoeker nooit een filter dat niets oplevert.
+  if (liveTips.length > 0) {
+    resultaat = resultaat.replace('<div class="groep groep-formaat" hidden>', '<div class="groep groep-formaat">');
+  }
+
+  // Op de homepage: de foto van de eerste kaart meteen laden in plaats van
+  // "lui". Sinds de lagere hero op telefoons (audit M2) staat die kaart daar
+  // direct in beeld en is die foto het grootste beeld (LCP); lui laden liet
+  // hem onnodig wachten. Is die eerste kaart een tip (met een klein
+  // fotootje), dan ook de foto van het eerste verhaal: dat staat op de
+  // computer in dezelfde eerste rij en is daar het grote beeld. Bewust
+  // zonder fetchpriority="high" (de herofoto gaat voor). Hier in de build
+  // (ná het wegfilteren en het invoegen van tipkaarten), zodat het vanzelf
+  // klopt als er een nieuwe kaart bovenaan komt. De andere foto's blijven
+  // gewoon lui laden.
   if (relatief === "index.html") {
-    resultaat = resultaat.replace(
-      /(<article class="kaart"[^>]*>\s*<a class="thumb"[^>]*>\s*<img\b[^>]*?) loading="lazy"/,
-      '$1 loading="eager"'
-    );
+    const fotos = [
+      ...resultaat.matchAll(/<article class="kaart[^"]*"[^>]*>\s*<a class="thumb"[^>]*>\s*<img\b[^>]*? loading="lazy"/g),
+    ].map((m) => ({ einde: m.index + m[0].length, tip: m[0].includes('data-formaat="tip"') }));
+    const eager = fotos.slice(0, 1);
+    if (eager.length && eager[0].tip) {
+      const verhaal = fotos.find((f) => !f.tip);
+      if (verhaal) eager.push(verhaal);
+    }
+    for (const { einde } of eager.sort((a, b) => b.einde - a.einde)) {
+      resultaat = resultaat.slice(0, einde - 'loading="lazy"'.length) + 'loading="eager"' + resultaat.slice(einde);
+    }
   }
 
   // Op elke post: "Misschien vind je dit ook leuk" vlak voor </main> plakken.
