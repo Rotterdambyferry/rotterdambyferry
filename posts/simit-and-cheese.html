@@ -989,6 +989,138 @@ a.tag.formaat-tip:focus-visible {
   .tip-foto-2 { margin-top: 0.4rem; }
 }
 
+/* Tipkaart op de homepage (gemaakt door build.js uit src/tips/*.md), tussen
+   de verhalen in hetzelfde raster. Op elke schermbreedte compact: klein
+   vierkant fotootje met de kop ernaast, daaronder over de volle breedte de
+   labels, de tekst en "Lees de tip". Staat bovenaan in zijn rij en rekt
+   niet mee met de verhalen ernaast. Groen randje van 2px, papierkleur. De
+   hele kaart is klikbaar via de kop-link (uitgerekt vlak); "Lees de tip"
+   ligt daarboven en blijft los klikbaar en focusbaar. */
+.kaart.kaart-tip {
+  position: relative;
+  align-self: start;
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  grid-template-areas:
+    "thumb titel"
+    "tags tags"
+    "tekst tekst"
+    "lees lees";
+  column-gap: 0.9rem;
+  row-gap: 0.7rem;
+  padding: 0.9rem 0.9rem 1.1rem;
+  background: var(--papier);
+  border: 2px solid var(--groen);
+}
+/* Nodig: display: grid hierboven zou anders winnen van .kaart[hidden] */
+.kaart.kaart-tip[hidden] { display: none; }
+.kaart.kaart-tip .thumb {
+  grid-area: thumb;
+  align-self: start;
+  margin: 0;
+  border: 2px solid var(--ink);
+}
+.kaart.kaart-tip .thumb img { aspect-ratio: 1; }
+.kaart.kaart-tip h2 {
+  grid-area: titel;
+  align-self: center;
+  font-size: 1.2rem;
+}
+.kaart.kaart-tip h2 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.kaart.kaart-tip .tags { grid-area: tags; }
+.kaart.kaart-tip p { grid-area: tekst; font-size: 0.95rem; }
+.kaart.kaart-tip .lees {
+  grid-area: lees;
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+}
+.kaart.kaart-tip:hover h2 a { color: var(--groen); }
+
+/* Formaatfilter Alles / Verhalen / Tips (homepage en kaartpagina): één
+   segmentknop met drie delen. Bewust geen .filterknop (die pakken de
+   filterscripts allemaal op). Geen overflow: hidden, anders valt de
+   focusrand weg: de buitenste knoppen krijgen zelf de ronde hoeken. De rij
+   staat verborgen zolang er geen tip live is (build.js). */
+.formaatkeuze {
+  display: inline-flex;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+}
+.formaatknop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.formaatknop:first-child { border-radius: 999px 0 0 999px; }
+.formaatknop:last-child { border-radius: 0 999px 999px 0; }
+.formaatknop + .formaatknop { border-left: 1.5px solid var(--ink); }
+.formaatknop[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--papier);
+}
+.formaatknop:focus-visible { position: relative; z-index: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .formaatknop:not([aria-pressed="true"]):hover { color: var(--groen); }
+}
+@media (max-width: 640px) {
+  /* Op de telefoon een eigen volle rij boven de bestaande filterrij, met
+     drie gelijke delen van minimaal 44px hoog. Deze rij veegt niet, dus
+     geen overloopvervaging. */
+  .filters .inner { flex-wrap: wrap; }
+  .filters .groep-formaat {
+    flex: 0 0 100%;
+    order: -1;
+    margin-bottom: 0;
+  }
+  .filters .groep-formaat::after { display: none; }
+  .formaatkeuze { display: flex; width: 100%; }
+  .formaatknop { flex: 1; min-height: 44px; }
+}
+
+/* Kaartpagina: een tip is een vierkante pin met harde hoeken (een verhaal
+   is rond). Zelfde kleuren, het verschil zit in de vorm, zodat het ook bij
+   kleurenblindheid werkt. Onzichtbaar groter tikvlak, en een papierkleurige
+   focusring die op de donkere kaart goed zichtbaar is. */
+.tip-pin {
+  box-sizing: border-box;
+  background: var(--groen);
+  border: 2px solid #FAF9F5;
+}
+.tip-pin::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+#plattegrond .tip-pin:focus-visible {
+  outline: 3px solid #FAF9F5;
+  outline-offset: 3px;
+}
+/* Popup van een tip: het label "Even langs" boven de naam */
+.popup-formaat {
+  display: inline-block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--papier);
+  padding: 0.15rem 0.45rem;
+  margin: 0 0 0.35rem;
+}
+/* Leaflet zet zelf marge op elke p in een popup; direct onder het label weg */
+.leaflet-container .popup-formaat + .popup-naam { margin-top: 0; }
+
 /* ---------- "Misschien vind je dit ook leuk" (onderaan elke post, door build.js gegenereerd) ---------- */
 .verwant {
   border-top: 3px solid var(--ink);
