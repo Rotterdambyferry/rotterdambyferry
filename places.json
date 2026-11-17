@@ -1,6 +1,7 @@
 [
   {
     "naam": "Portlantis",
+    "formaat": "verhaal",
     "lat": 51.9354,
     "lon": 3.9779,
     "categorie": [
@@ -15,6 +16,7 @@
   },
   {
     "naam": "Warung Melatie",
+    "formaat": "verhaal",
     "lat": 51.9163222,
     "lon": 4.4492634,
     "categorie": [
@@ -28,6 +30,7 @@
   },
   {
     "naam": "Simit and Cheese",
+    "formaat": "verhaal",
     "lat": 51.8980534,
     "lon": 4.5110595,
     "categorie": [
@@ -43,6 +46,7 @@
   },
   {
     "naam": "Little Italy",
+    "formaat": "verhaal",
     "lat": 51.9236,
     "lon": 4.4846,
     "categorie": [
@@ -57,6 +61,7 @@
   },
   {
     "naam": "RiF010",
+    "formaat": "verhaal",
     "lat": 51.9201,
     "lon": 4.4844,
     "categorie": [
@@ -70,6 +75,7 @@
   },
   {
     "naam": "Due Tonino",
+    "formaat": "verhaal",
     "lat": 51.9244,
     "lon": 4.4915,
     "categorie": [
@@ -83,6 +89,7 @@
   },
   {
     "naam": "Station Bergweg",
+    "formaat": "verhaal",
     "lat": 51.9321,
     "lon": 4.4709,
     "categorie": [
@@ -97,6 +104,7 @@
   },
   {
     "naam": "Smickel Inn (Balkon van Europa)",
+    "formaat": "verhaal",
     "lat": 51.9822,
     "lon": 4.0462,
     "categorie": [
@@ -110,6 +118,7 @@
   },
   {
     "naam": "Pleinbios",
+    "formaat": "verhaal",
     "lat": 51.9024,
     "lon": 4.4887,
     "categorie": [
@@ -123,6 +132,7 @@
   },
   {
     "naam": "De Vijgeboom",
+    "formaat": "verhaal",
     "lat": 51.9172,
     "lon": 4.4741,
     "categorie": [
@@ -136,6 +146,7 @@
   },
   {
     "naam": "DÂK Rotterdam",
+    "formaat": "verhaal",
     "lat": 51.9162,
     "lon": 4.4775,
     "categorie": [

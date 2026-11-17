@@ -921,6 +921,73 @@ a.tag.gebied:focus-visible {
   margin-bottom: 0.4rem;
 }
 
+/* ---------- Korte tips: "Even langs" (tippagina, gebouwd uit src/tips/*.md) ----------
+   Het formaatlabel is gevuld zwart, zodat het direct anders oogt dan de
+   omlijnde categorie- en gebiedlabels. Op de computer staan de twee foto's
+   naast elkaar boven de tekst (beide 3:4, of 4:3 als beide liggend zijn:
+   klasse "liggend"); op de telefoon foto, tekst, foto, in hun eigen
+   verhouding. */
+.tag.formaat-tip {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--papier);
+}
+a.tag.formaat-tip:hover,
+a.tag.formaat-tip:focus-visible {
+  background: var(--groen);
+  border-color: var(--groen);
+  color: var(--papier);
+}
+.tip-inhoud {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "foto1 foto2"
+    "tekst tekst"
+    "adres adres";
+  column-gap: 1rem;
+}
+.tip-foto { margin: 0 0 1.6rem; }
+.tip-foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+}
+.tip-inhoud.liggend .tip-foto img { aspect-ratio: 4 / 3; }
+.tip-foto-1 { grid-area: foto1; }
+.tip-foto-2 { grid-area: foto2; }
+.tip-tekst { grid-area: tekst; font-size: 1.15rem; }
+.tip-adres {
+  grid-area: adres;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.9rem;
+  color: var(--staal);
+  border-top: 1px solid var(--lijn);
+  padding-top: 0.9rem;
+}
+/* Tikvlak van minimaal 44px hoog, zonder dat de regel hoger wordt */
+.tip-adres a {
+  display: inline-block;
+  padding: 0.8rem 0.3rem;
+  margin: -0.8rem -0.3rem;
+}
+@media (max-width: 640px) {
+  .tip-inhoud {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "foto1"
+      "tekst"
+      "foto2"
+      "adres";
+  }
+  .tip-foto img,
+  .tip-inhoud.liggend .tip-foto img { aspect-ratio: auto; }
+  .tip-foto-2 { margin-top: 0.4rem; }
+}
+
 /* ---------- "Misschien vind je dit ook leuk" (onderaan elke post, door build.js gegenereerd) ---------- */
 .verwant {
   border-top: 3px solid var(--ink);
