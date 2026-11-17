@@ -619,13 +619,24 @@ function leesTipBestand(bestand) {
     );
   }
   const velden = {};
+  const dubbel = new Set();
   for (const regel of match[1].split("\n")) {
     if (!regel.trim() || regel.trim().startsWith("#")) continue;
     const dubbelepunt = regel.indexOf(":");
     if (dubbelepunt === -1) continue;
     const sleutel = regel.slice(0, dubbelepunt).trim().toLowerCase();
     const waarde = regel.slice(dubbelepunt + 1).trim();
-    if (waarde !== "") velden[sleutel] = waarde;
+    if (waarde === "") continue;
+    if (sleutel in velden) dubbel.add(sleutel);
+    velden[sleutel] = waarde;
+  }
+  // Een veld dat twee keer ingevuld is, wordt niet stilletjes overschreven:
+  // de onderste ingevulde waarde telt, met een melding. (Lege regels zoals
+  // "omschrijving:" uit het sjabloon tellen niet mee.)
+  for (const sleutel of dubbel) {
+    console.warn(
+      `⚠ ${path.relative(__dirname, bestand).split(path.sep).join("/")}: het veld "${sleutel}" is twee keer ingevuld; de onderste ingevulde waarde telt.`
+    );
   }
   for (const sleutel of Object.keys(velden)) {
     if (!TIP_VELDEN.includes(sleutel)) {
