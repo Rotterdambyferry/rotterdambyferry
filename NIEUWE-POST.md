@@ -52,7 +52,7 @@ Open `src\index.html` en zoek de regel `<main class="grid" id="verhalen">`.
 Plak daaronder dit blokje en vul het in:
 
 ```html
-<article class="kaart" data-categorie="CATEGORIE" data-gebied="GEBIED">
+<article class="kaart" data-formaat="verhaal" data-categorie="CATEGORIE" data-gebied="GEBIED">
   <a class="thumb" href="posts/BESTANDSNAAM.html" aria-hidden="true" tabindex="-1">
     <img src="assets/img/BESTANDSNAAM-kaart.jpg" alt="WAT ER OP DE FOTO TE ZIEN IS, MET NAAM VAN DE ZAAK, STRAAT EN GEBIED" width="800" height="500" loading="lazy">
   </a>
@@ -74,6 +74,10 @@ Laat hem nooit leeg: de build geeft dan een ⚠-melding.
 Geen foto voor deze post? Laat dan het hele blokje met
 `<a class="thumb" ...>` tot en met `</a>` gewoon weg: de kaart werkt
 ook prima zonder.
+
+`data-formaat="verhaal"` laat je gewoon staan: zo weet het filter
+Alles / Verhalen / Tips dat dit een verhaal is. (De kaartjes van korte
+tips maakt de build zelf, daar hoef je niets voor te doen.)
 
 Let op bij `data-categorie` en `data-gebied`: gebruik kleine letters en
 een streepje in plaats van een spatie. De keuzes die de filters kennen:
