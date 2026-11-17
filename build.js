@@ -588,12 +588,23 @@ const MAANDEN = [
   "januari", "februari", "maart", "april", "mei", "juni",
   "juli", "augustus", "september", "oktober", "november", "december",
 ];
-const GEDACHTESTREEPJE = /[–—]|&[mn]dash;/;
+const GEDACHTESTREEPJE = /[\u2013\u2014]|&[mn]dash;/;
+const TIP_VELDEN = [
+  "titel", "omschrijving", "gebied", "categorie", "bezocht", "straat", "postcode", "lat", "lon",
+  "foto1", "alt1", "foto2", "alt2", "deelfoto", "publicatiedatum", "website", "instagram_url", "noindex",
+];
+// Een link in de tekst: [linktekst](https://...). Het adres mag zelf één
+// paar haakjes bevatten (bv. Wikipedia-links).
+const TIP_LINK = /\[([^\]]+)\]\((https?:\/\/(?:[^()\s]|\([^()\s]*\))+)\)/;
+const TIP_LINK_ALLE = new RegExp(TIP_LINK.source, "g");
 
 // Leest de velden en de tekst uit een tipbestand. Geeft { velden, tekst }.
 function leesTipBestand(bestand) {
   const inhoud = leesTekst(bestand);
-  const match = inhoud.match(/^﻿?---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  // Ruim: een lege regel bovenaan of spaties achter "---" (gebeurt snel in
+  // Kladblok) mogen. Het BOM-teken (\uFEFF) dat sommige editors vooraan
+  // zetten, wordt overgeslagen.
+  const match = inhoud.match(/^\uFEFF?\s*---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)([\s\S]*)$/);
   if (!match) {
     throw new Error(
       `${path.relative(__dirname, bestand)}: bovenaan ontbreken de velden tussen twee regels "---". Kopieer src/tips/_sjabloon.md en vul dat in.`
@@ -607,6 +618,14 @@ function leesTipBestand(bestand) {
     const sleutel = regel.slice(0, dubbelepunt).trim().toLowerCase();
     const waarde = regel.slice(dubbelepunt + 1).trim();
     if (waarde !== "") velden[sleutel] = waarde;
+  }
+  for (const sleutel of Object.keys(velden)) {
+    if (!TIP_VELDEN.includes(sleutel)) {
+      const bedoeld = TIP_VELDEN.find((v) => v === sleutel.replace(/[- ]/g, "_"));
+      console.warn(
+        `⚠ ${path.relative(__dirname, bestand).split(path.sep).join("/")}: onbekend veld "${sleutel}" wordt genegeerd${bedoeld ? ` (bedoel je "${bedoeld}"?)` : ""}.`
+      );
+    }
   }
   return { velden, tekst: match[2].trim() };
 }
@@ -623,9 +642,8 @@ function tipAlineas(tekst) {
     .map((alinea) => {
       const delen = [];
       let rest = alinea;
-      const link = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/;
       let m;
-      while ((m = rest.match(link))) {
+      while ((m = rest.match(TIP_LINK))) {
         delen.push(htmlTekst(rest.slice(0, m.index)));
         delen.push(`<a href="${htmlTekst(m[2])}" target="_blank" rel="noopener">${htmlTekst(m[1])}</a>`);
         rest = rest.slice(m.index + m[0].length);
@@ -637,17 +655,21 @@ function tipAlineas(tekst) {
 
 // Gewone tekst zonder links (voor het tellen van woorden en de teaser).
 function tipPlatteTekst(tekst) {
-  return tekst.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, "$1").replace(/\s+/g, " ").trim();
+  return tekst.replace(TIP_LINK_ALLE, "$1").replace(/\s+/g, " ").trim();
 }
 
-// Eerste zin(nen) tot hooguit `max` tekens, afgekapt op een heel woord.
+// Automatische omschrijving of teaser: zoveel hele zinnen (hooguit
+// `aantalZinnen`) als er binnen `max` tekens passen. Past zelfs de eerste
+// zin niet, dan wordt die op een heel woord afgekapt met "…". Een
+// gedachtestreepje wordt een komma (geen streepjes in zichtbare tekst).
 function tipSamenvatting(platteTekst, aantalZinnen, max) {
-  const zinnen = platteTekst.match(/[^.!?]+[.!?]+(\s|$)/g) || [platteTekst];
-  let tekst = zinnen.slice(0, aantalZinnen).join("").trim();
-  if (tekst.length > max) {
-    tekst = tekst.slice(0, max - 1).replace(/\s+\S*$/, "") + "…";
+  const schoon = platteTekst.replace(/\s*[\u2013\u2014]\s*/g, ", ");
+  const zinnen = (schoon.match(/[^.!?]+[.!?]+(\s|$)/g) || [schoon]).map((zin) => zin.trim());
+  for (let aantal = Math.min(aantalZinnen, zinnen.length); aantal >= 1; aantal--) {
+    const tekst = zinnen.slice(0, aantal).join(" ");
+    if (tekst.length <= max) return tekst;
   }
-  return tekst;
+  return zinnen[0].slice(0, max - 1).replace(/\s+\S*$/, "") + "…";
 }
 
 // Een foto-veld (bv. "de-kleine-kapitein-gevel.jpg") controleren en de
@@ -748,6 +770,9 @@ function leesTips() {
     }
 
     if (!tekst) throw new Error(`${bron}: onder de velden staat nog geen tekst.`);
+    if (/\]\(/.test(tekst.replace(TIP_LINK_ALLE, ""))) {
+      console.warn(`⚠ ${bron}: een link in de tekst is niet herkend en staat er nu als gewone tekst. Schrijf hem als [linktekst](https://...).`);
+    }
     const platteTekst = tipPlatteTekst(tekst);
     const woorden = platteTekst.split(/\s+/).filter(Boolean).length;
     if (woorden > TIP_MAX_WOORDEN) {
@@ -986,10 +1011,18 @@ const entiteiten = {
   euml: "ë", uuml: "ü", ouml: "ö", iuml: "ï", agrave: "à", ccedil: "ç",
   rsquo: "’", lsquo: "‘", ldquo: "“", rdquo: "”",
   hellip: "…", amp: "&", nbsp: " ",
-  quot: '"',
+  quot: '"', lt: "<", gt: ">",
 };
 function ontleedEntiteiten(tekst) {
   return tekst.replace(/&([a-z]+);/g, (heel, naam) => entiteiten[naam] ?? heel);
+}
+
+// Voor tekst in een HTML-attribuut (content="...") en in het broodkruimelpad:
+// een aanhalingsteken of < > mag daar niet letterlijk staan, anders breekt de
+// tag (bv. een tip met de titel Bram & Co "De Zaak"). Een & blijft bewust
+// zoals hij is: zo blijven de bestaande pagina's precies gelijk.
+function attribuutTekst(tekst) {
+  return tekst.replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 // Alt-tekst voor de kaart-popup (kaart.html) hergebruiken uit de eigen
@@ -1042,14 +1075,14 @@ function metaBlok({ inhoud, paginaUrl, ogType, vasteOgAfbeelding }) {
 
   const blok = `  <meta property="og:type" content="${ogType}">
   <meta property="og:site_name" content="Rotterdam by Ferry">
-  <meta property="og:title" content="${ogTitel}">
-  <meta property="og:description" content="${beschrijving}">
+  <meta property="og:title" content="${attribuutTekst(ogTitel)}">
+  <meta property="og:description" content="${attribuutTekst(beschrijving)}">
   <meta property="og:url" content="${paginaUrl}">
   <meta property="og:image" content="${ogAfbeelding}">
   <meta property="og:locale" content="nl_NL">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${ogTitel}">
-  <meta name="twitter:description" content="${beschrijving}">
+  <meta name="twitter:title" content="${attribuutTekst(ogTitel)}">
+  <meta name="twitter:description" content="${attribuutTekst(beschrijving)}">
   <meta name="twitter:image" content="${ogAfbeelding}">
   <link rel="canonical" href="${paginaUrl}">`;
 
@@ -1142,7 +1175,7 @@ function broodkruimelHtml(relatiefUrl, ogTitel) {
   if (plek) {
     kruimels.push(`<a href="/?gebied=${plek.gebied}">${gebiedLabel(plek.gebied)}</a>`);
   }
-  kruimels.push(`<span aria-current="page">${ogTitel}</span>`);
+  kruimels.push(`<span aria-current="page">${attribuutTekst(ogTitel)}</span>`);
   return `  <nav class="broodkruimel" aria-label="Kruimelpad">
     ${kruimels.join(' <span aria-hidden="true">&rsaquo;</span> ')}
   </nav>\n`;
@@ -1551,6 +1584,25 @@ for (const { bronbestand, relatief, tip } of bronnen) {
 
   if (!is404 && (!isSnapshotsPagina || snapshotsEcht) && !(tip && tip.noindex)) {
     sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  }
+}
+
+// Opruimen: een gebouwde pagina in posts/ van een tip die niet meer bestaat
+// (tipbestand verwijderd of hernoemd naar _naam.md) wordt weggehaald. Alleen
+// pagina's die zelf als tippagina herkenbaar zijn (het blok "tip-inhoud") en
+// waarvoor geen verhaal in src/posts en geen live tip meer is. Een verhaal
+// wordt dus nooit verwijderd.
+{
+  const postsmap = path.join(__dirname, "posts");
+  const liveTipNamen = new Set(liveTips.map((tip) => tip.naam));
+  for (const bestandsnaam of fs.existsSync(postsmap) ? fs.readdirSync(postsmap).sort(alfabetisch) : []) {
+    if (!bestandsnaam.endsWith(".html")) continue;
+    const naam = bestandsnaam.slice(0, -".html".length);
+    if (liveTipNamen.has(naam) || fs.existsSync(path.join(bronmap, "posts", bestandsnaam))) continue;
+    const pad = path.join(postsmap, bestandsnaam);
+    if (!leesTekst(pad).includes('<div class="tip-inhoud')) continue;
+    fs.unlinkSync(pad);
+    console.log(`○ posts/${bestandsnaam}  (oude tippagina opgeruimd: geen tipbestand meer)`);
   }
 }
 
