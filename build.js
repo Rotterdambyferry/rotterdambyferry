@@ -526,8 +526,13 @@ function htmlTekst(tekst) {
   return String(tekst).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// Ook de live korte tips staan in de lijst, als gewone link tussen de
+// verhalen, met "Even langs" achter de categorieën in de grijze regel.
 function plekkenlijstHtml(root) {
-  const plekken = livePlekken.filter((plek) => plek.post && fs.existsSync(path.join(bronmap, plek.post)));
+  const plekken = [
+    ...livePlekken.filter((plek) => plek.post && fs.existsSync(path.join(bronmap, plek.post))),
+    ...liveTips.map((tip) => tipPlekPerPost.get(tip.post)),
+  ];
   if (plekken.length === 0) return "";
 
   // Onbekende gebieden (nog niet in GEBIED_VOLGORDE) komen achteraan, zodat
@@ -545,7 +550,7 @@ function plekkenlijstHtml(root) {
       const items = inGebied
         .map(
           (plek) =>
-            `          <li><a href="${root}${plek.post}"><span class="naam">${htmlTekst(plek.naam)}</span> <span class="soort">${plek.categorie.map(label).join(" &middot; ")}</span></a></li>\n`
+            `          <li><a href="${root}${plek.post}"><span class="naam">${htmlTekst(plek.naam)}</span> <span class="soort">${[...plek.categorie.map(label), ...(plek.formaat === "tip" ? ["Even langs"] : [])].join(" &middot; ")}</span></a></li>\n`
         )
         .join("");
       return `      <div class="plekkenlijst-groep">
