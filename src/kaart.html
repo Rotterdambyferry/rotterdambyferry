@@ -37,11 +37,23 @@
 
 <div class="kaart-kop">
   <h1>De kaart van mijn Rotterdam <span class="groen">&#128154;</span></h1>
-  <p>Op deze kaart staan de plekken in Rotterdam waar ik zelf ben geweest, van de bruine kroeg op de Oude Binnenweg tot de snackbar helemaal achteraan op de Maasvlakte. Bij elke pin hoort een verhaal, zoals ik het zelf beleefd heb. Filter op wat je zoekt, klik op een pin of kijk onder de kaart in de lijst per gebied.</p>
+  <p>Op deze kaart staan de plekken in Rotterdam waar ik zelf ben geweest, van de bruine kroeg op de Oude Binnenweg tot de snackbar helemaal achteraan op de Maasvlakte. Bij elke pin hoort een verhaal of een korte tip, zoals ik het zelf beleefd heb. Filter op wat je zoekt, klik op een pin of kijk onder de kaart in de lijst per gebied.</p>
 </div>
 
 <section class="filters" aria-label="Filter plekken">
   <div class="inner">
+    <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
+         Staat verborgen zolang er geen tip live is: build.js haalt het
+         hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
+         want die pakken de filterscripts allemaal op. -->
+    <div class="groep groep-formaat" hidden>
+      <span class="label" id="formaat-label">Soort</span>
+      <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
+        <button type="button" class="formaatknop" data-formaat="alles" aria-pressed="true">Alles</button>
+        <button type="button" class="formaatknop" data-formaat="verhaal" aria-pressed="false">Verhalen</button>
+        <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
+      </div>
+    </div>
     <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
          assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
          computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
@@ -81,7 +93,7 @@
 </section>
 
 <main class="kaart-sectie">
-  <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen"></div>
+  <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen en tips"></div>
   <p class="leeg" hidden>Nog geen plekken in deze combinatie. Die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">@rotterdambyferry</a> voor het laatste nieuws.</p>
 
   <!-- PLEKKENLIJST -->
@@ -94,7 +106,9 @@
 <script>
   // De kaart: donkere CARTO-ondergrond met groene pins in de huisstijl.
   // De plekken komen uit places.json; de filterchips werken hetzelfde als
-  // op de homepage (één actieve categorie + één actief gebied).
+  // op de homepage (één actieve categorie, één actief gebied en één soort:
+  // alles, alleen verhalen of alleen korte tips). Een plek zonder formaat
+  // telt als verhaal.
   // De Leaflet-scripts hierboven laden met defer (blokkeren het opbouwen
   // van de pagina niet); daarom wacht dit script op DOMContentLoaded —
   // op dat moment zijn defer-scripts gegarandeerd uitgevoerd.
@@ -150,9 +164,47 @@
     });
     map.addLayer(cluster);
 
-    var actief = { categorie: "alles", gebied: "alles" };
+    var actief = { categorie: "alles", gebied: "alles", formaat: "alles" };
     var plekken = []; // { data, marker }
     var leeg = document.querySelector(".leeg");
+    var formaatknoppen = document.querySelectorAll(".formaatknop");
+    // De rij Soort staat verborgen zolang er geen tip live is (build.js).
+    var formaatGroep = document.querySelector(".groep-formaat");
+    var metTips = Boolean(formaatGroep && !formaatGroep.hidden);
+
+    // Past deze plek bij de gekozen filters? Met `gebied` kan een ander
+    // gebied dan het gekozen worden nagerekend (voor de aantallen per gebied).
+    function past(p, gebied) {
+      var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
+      var gebOk = gebied === "alles" || p.gebied === gebied;
+      var formaatOk = actief.formaat === "alles" || (p.formaat || "verhaal") === actief.formaat;
+      return catOk && gebOk && formaatOk;
+    }
+
+    // Filters uit het webadres (?categorie=, ?gebied=, ?formaat=), zoals
+    // de labels en het broodkruimelpad op de homepage ze ook gebruiken.
+    // Rechtstreeks ingesteld, dus zonder een klik na te bootsen: zo staan
+    // ze goed vóór de plekken binnen zijn. Een onbekende waarde wordt
+    // genegeerd; ?formaat= alleen als de rij Soort er is.
+    var adres = new URLSearchParams(location.search);
+    ["categorie", "gebied"].forEach(function (soort) {
+      var knop = adres.get(soort) && document.querySelector(
+        '.filterknop[data-filter="' + soort + '"][data-waarde="' + CSS.escape(adres.get(soort)) + '"]'
+      );
+      if (!knop) return;
+      actief[soort] = knop.dataset.waarde;
+      document.querySelectorAll('.filterknop[data-filter="' + soort + '"]').forEach(function (k) {
+        k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+      });
+    });
+    var formaatUitAdres = metTips && adres.get("formaat") &&
+      document.querySelector('.formaatknop[data-formaat="' + CSS.escape(adres.get("formaat")) + '"]');
+    if (formaatUitAdres) {
+      actief.formaat = formaatUitAdres.dataset.formaat;
+      formaatknoppen.forEach(function (k) {
+        k.setAttribute("aria-pressed", k === formaatUitAdres ? "true" : "false");
+      });
+    }
 
     function popupHtml(p) {
       var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
@@ -188,26 +240,21 @@
       var zoomOp = [];
       plekken.forEach(function (plek) {
         var p = plek.data;
-        var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
-        var gebOk = actief.gebied === "alles" || p.gebied === actief.gebied;
-        if (catOk && gebOk) {
+        if (past(p, actief.gebied)) {
           zichtbaar.push(plek.marker);
           if (p.gebied !== "maasvlakte" || actief.gebied === "maasvlakte") {
             zoomOp.push(plek.marker.getLatLng());
           }
         }
       });
-      // Aantal plekken per gebied bij de gekozen categorie, als data-aantal
-      // op elk gebiedknopje. De keuzelijst op mobiel (assets/filterrij.js)
-      // toont die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het
-      // filteren of de zoom.
+      // Aantal plekken per gebied bij de gekozen categorie en soort, als
+      // data-aantal op elk gebiedknopje. De keuzelijst op mobiel
+      // (assets/filterrij.js) toont die aantallen, bijvoorbeeld "Oost (0)".
+      // Verandert niets aan het filteren of de zoom.
       document.querySelectorAll('.filterknop[data-filter="gebied"]').forEach(function (knop) {
         var aantal = 0;
         plekken.forEach(function (plek) {
-          var p = plek.data;
-          var catOk = actief.categorie === "alles" || p.categorie.indexOf(actief.categorie) !== -1;
-          var gebOk = knop.dataset.waarde === "alles" || p.gebied === knop.dataset.waarde;
-          if (catOk && gebOk) aantal++;
+          if (past(plek.data, knop.dataset.waarde)) aantal++;
         });
         knop.dataset.aantal = aantal;
       });
@@ -266,6 +313,14 @@
         leeg.innerHTML = "De plekken konden niet geladen worden. Probeer het later nog eens.";
       });
 
+    function naFilteren() {
+      var aantal = toonPlekken();
+      // Voor screenreaders: hoeveel plekken blijven er over?
+      document.getElementById("filter-uitkomst").textContent = aantal === 0
+        ? "Geen plekken in deze combinatie."
+        : aantal + (aantal === 1 ? " plek" : " plekken") + " op de kaart.";
+    }
+
     document.querySelectorAll(".filterknop").forEach(function (knop) {
       knop.addEventListener("click", function () {
         var soort = knop.dataset.filter;
@@ -275,11 +330,17 @@
             k.setAttribute("aria-pressed", k === knop ? "true" : "false");
           }
         });
-        var aantal = toonPlekken();
-        // Voor screenreaders: hoeveel plekken blijven er over?
-        document.getElementById("filter-uitkomst").textContent = aantal === 0
-          ? "Geen plekken in deze combinatie."
-          : aantal + (aantal === 1 ? " plek" : " plekken") + " op de kaart.";
+        naFilteren();
+      });
+    });
+
+    formaatknoppen.forEach(function (knop) {
+      knop.addEventListener("click", function () {
+        actief.formaat = knop.dataset.formaat;
+        formaatknoppen.forEach(function (k) {
+          k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+        });
+        naFilteren();
       });
     });
   });
