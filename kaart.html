@@ -1876,25 +1876,36 @@ body:has(.artikel) .site-footer .inner {
       });
     }
 
+    // Tekst veilig in de popup zetten: een aanhalingsteken in een
+    // alt-tekst of een < in een naam kan de popup zo niet breken.
+    function veilig(tekst) {
+      return String(tekst).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // Popup van een plek. Bij een korte tip staat het label "Even langs"
+    // boven de naam en heet de knop "Lees de tip".
     function popupHtml(p) {
-      var tags = p.categorie.map(function (c) { return LABELS[c] || c; }).join(" &middot; ");
-      tags += " &middot; " + (LABELS[p.gebied] || p.gebied);
-      var tekst = '<p class="popup-naam">' + p.naam + "</p>" +
+      var isTip = p.formaat === "tip";
+      var tags = p.categorie.map(function (c) { return veilig(LABELS[c] || c); }).join(" &middot; ");
+      tags += " &middot; " + veilig(LABELS[p.gebied] || p.gebied);
+      var lees = isTip ? "Lees de tip &rarr;" : "Lees het verhaal &rarr;";
+      var tekst = (isTip ? '<span class="popup-formaat">Even langs</span>' : "") +
+                  '<p class="popup-naam">' + veilig(p.naam) + "</p>" +
                   '<p class="popup-tags">' + tags + "</p>";
       if (p.teaser) {
-        tekst += '<p class="popup-teaser">' + p.teaser + "</p>";
+        tekst += '<p class="popup-teaser">' + veilig(p.teaser) + "</p>";
       }
       // Met foto: foto bovenin, knop onderaan. Zonder foto (oudere entries):
       // de gewone tekstweergave met een simpele link.
       if (p.image) {
         if (p.post) {
-          tekst += '<a class="popup-knop" href="' + p.post + '">Lees het verhaal &rarr;</a>';
+          tekst += '<a class="popup-knop" href="' + veilig(p.post) + '">' + lees + "</a>";
         }
-        return '<img class="popup-foto" src="' + p.image + '" alt="' + (p.alt || p.naam) + '">' +
+        return '<img class="popup-foto" src="' + veilig(p.image) + '" alt="' + veilig(p.alt || p.naam) + '">' +
                '<div class="popup-tekst">' + tekst + "</div>";
       }
       if (p.post) {
-        tekst += '<a class="popup-link" href="' + p.post + '">Lees het verhaal &rarr;</a>';
+        tekst += '<a class="popup-link" href="' + veilig(p.post) + '">' + lees + "</a>";
       }
       return '<div class="popup-tekst">' + tekst + "</div>";
     }
@@ -1951,14 +1962,33 @@ body:has(.artikel) .site-footer .inner {
       })
       .then(function (data) {
         data.forEach(function (p) {
-          var marker = L.circleMarker([p.lat, p.lon], {
-            radius: 9,
-            color: "#FAF9F5",
-            weight: 2,
-            fillColor: "#1D7A46",
-            fillOpacity: 1
+          // Een verhaal is een ronde pin, een korte tip een vierkante (zelfde
+          // kleuren, het verschil zit in de vorm; opmaak .tip-pin in
+          // style.css). De vierkante pin is met Tab te bereiken; title is
+          // de naam voor screenreaders.
+          var marker = p.formaat === "tip"
+            ? L.marker([p.lat, p.lon], {
+                icon: L.divIcon({ className: "tip-pin", iconSize: [20, 20] }),
+                title: p.naam + " (tip)"
+              })
+            : L.circleMarker([p.lat, p.lon], {
+                radius: 9,
+                color: "#FAF9F5",
+                weight: 2,
+                fillColor: "#1D7A46",
+                fillOpacity: 1
+              });
+          // Bij het openen schuift de kaart zo dat de popup onder de
+          // zoomknoppen valt (die lopen tot ongeveer 102px vanaf de
+          // bovenkant). Bewust alleen ruimte aan de bovenkant: ruimte aan de
+          // linkerkant zou de popup op een telefoon rechts buiten beeld
+          // duwen.
+          marker.bindPopup(popupHtml(p), {
+            maxWidth: 300,
+            minWidth: p.image ? 300 : 200,
+            autoPanPaddingTopLeft: [10, 110],
+            autoPanPaddingBottomRight: [10, 10]
           });
-          marker.bindPopup(popupHtml(p), { maxWidth: 300, minWidth: p.image ? 300 : 200 });
           plekken.push({ data: p, marker: marker });
         });
         toonPlekken();
