@@ -183,7 +183,7 @@ function laatsteGitWijziging(bronbestand) {
 // oktober en niet een datum van vóór zijn eigen verschijning.
 function laatsteWijziging(bronbestand) {
   const gitDatum = laatsteGitWijziging(bronbestand);
-  if (path.relative(bronmap, bronbestand).split(path.sep)[0] !== "posts") return gitDatum;
+  if (!["posts", "tips"].includes(path.relative(bronmap, bronbestand).split(path.sep)[0])) return gitDatum;
   const publicatie = publicatiedatum(bronbestand);
   return publicatie > gitDatum ? publicatie : gitDatum;
 }
@@ -192,7 +192,7 @@ function laatsteWijziging(bronbestand) {
 // vroegste git-commit (eersteWijziging hieronder). Zelfde regel als
 // datePublished in de JSON-LD en de volgorde van de Leestips.
 function publicatiedatum(bronbestand) {
-  const naam = path.basename(bronbestand, ".html");
+  const naam = path.basename(bronbestand).replace(/\.(html|md)$/, "");
   return publicatiedatums[naam] || eersteWijziging(bronbestand);
 }
 
@@ -391,7 +391,7 @@ function preloadHtml(root, relatief, inhoud) {
   if (relatief === "index.html") {
     afbeelding = eersteAfbeelding(inhoud, /<img class="hero-foto"[^>]*\bid="hero-foto"([^>]*)>/);
   } else if (relatief.startsWith("posts" + path.sep)) {
-    afbeelding = eersteAfbeelding(inhoud, /<figure class="(?:foto|post-foto)">\s*<img\b([^>]*)>/);
+    afbeelding = eersteAfbeelding(inhoud, /<figure class="(?:foto|post-foto|tip-foto tip-foto-1)">\s*<img\b([^>]*)>/);
   }
   if (afbeelding) {
     const srcsetAttr = afbeelding.srcset ? ` imagesrcset="${afbeelding.srcset}"` : "";
@@ -558,6 +558,383 @@ ${groepen}    </div>
   </section>\n`;
 }
 
+// ---------- Korte tips: "Even langs" (src/tips/*.md) ----------
+// Naast de verhalen (src/posts/*.html) kent de site korte tips: een plek die
+// het noemen waard is, maar geen volledig verhaal krijgt. Eén tip is één
+// tekstbestand in src/tips/, met bovenaan vaste velden tussen twee regels
+// "---" en daaronder de tekst (alinea's gescheiden door een lege regel).
+// Kopieer src/tips/_sjabloon.md om te beginnen. Bestanden die met "_"
+// beginnen worden nooit gebouwd.
+//
+// Uit dat ene bestand maakt de build: de tippagina op /posts/<naam>.html
+// (zelfde adres als een verhaal, zodat een tip later op dezelfde URL kan
+// uitgroeien tot een verhaal), de regel in sitemap.xml, de og-tags, het
+// JSON-LD (met adres en coördinaten), het broodkruimelpad, het blok
+// "Misschien vind je dit ook leuk" en de pin in places.json (met
+// formaat "tip"). Er hoeft dus niets met de hand in src/places.json.
+//
+// Bestaat er ook een verhaal met dezelfde naam (src/posts/<naam>.html), dan
+// wint het verhaal en wordt de tip overgeslagen, met een waarschuwing.
+//
+// Foutmeldingen die de build stoppen (anders komt er een kapotte pagina
+// online): ontbrekende of ongeldige titel, gebied, categorie, bezocht,
+// lat/lon, foto's of alt-teksten, een foto die niet in assets/img staat, een
+// ongeldige publicatiedatum. Waarschuwingen (de build gaat door): meer dan
+// TIP_MAX_WOORDEN woorden, een gedachtestreepje, een bezochtdatum in de
+// toekomst, geen straat.
+const tipsmap = path.join(bronmap, "tips");
+const TIP_MAX_WOORDEN = 150;
+const MAANDEN = [
+  "januari", "februari", "maart", "april", "mei", "juni",
+  "juli", "augustus", "september", "oktober", "november", "december",
+];
+const GEDACHTESTREEPJE = /[–—]|&[mn]dash;/;
+
+// Leest de velden en de tekst uit een tipbestand. Geeft { velden, tekst }.
+function leesTipBestand(bestand) {
+  const inhoud = leesTekst(bestand);
+  const match = inhoud.match(/^﻿?---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!match) {
+    throw new Error(
+      `${path.relative(__dirname, bestand)}: bovenaan ontbreken de velden tussen twee regels "---". Kopieer src/tips/_sjabloon.md en vul dat in.`
+    );
+  }
+  const velden = {};
+  for (const regel of match[1].split("\n")) {
+    if (!regel.trim() || regel.trim().startsWith("#")) continue;
+    const dubbelepunt = regel.indexOf(":");
+    if (dubbelepunt === -1) continue;
+    const sleutel = regel.slice(0, dubbelepunt).trim().toLowerCase();
+    const waarde = regel.slice(dubbelepunt + 1).trim();
+    if (waarde !== "") velden[sleutel] = waarde;
+  }
+  return { velden, tekst: match[2].trim() };
+}
+
+// Tekst van een tip naar HTML-alinea's. Ondersteunt alleen links in de vorm
+// [linktekst](https://...), die (zoals alle links in lopende tekst op deze
+// site) in een nieuw tabblad openen. Verder wordt alles veilig als tekst
+// neergezet.
+function tipAlineas(tekst) {
+  return tekst
+    .split(/\n\s*\n/)
+    .map((alinea) => alinea.replace(/\s*\n\s*/g, " ").trim())
+    .filter(Boolean)
+    .map((alinea) => {
+      const delen = [];
+      let rest = alinea;
+      const link = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/;
+      let m;
+      while ((m = rest.match(link))) {
+        delen.push(htmlTekst(rest.slice(0, m.index)));
+        delen.push(`<a href="${htmlTekst(m[2])}" target="_blank" rel="noopener">${htmlTekst(m[1])}</a>`);
+        rest = rest.slice(m.index + m[0].length);
+      }
+      delen.push(htmlTekst(rest));
+      return delen.join("");
+    });
+}
+
+// Gewone tekst zonder links (voor het tellen van woorden en de teaser).
+function tipPlatteTekst(tekst) {
+  return tekst.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, "$1").replace(/\s+/g, " ").trim();
+}
+
+// Eerste zin(nen) tot hooguit `max` tekens, afgekapt op een heel woord.
+function tipSamenvatting(platteTekst, aantalZinnen, max) {
+  const zinnen = platteTekst.match(/[^.!?]+[.!?]+(\s|$)/g) || [platteTekst];
+  let tekst = zinnen.slice(0, aantalZinnen).join("").trim();
+  if (tekst.length > max) {
+    tekst = tekst.slice(0, max - 1).replace(/\s+\S*$/, "") + "…";
+  }
+  return tekst;
+}
+
+// Een foto-veld (bv. "de-kleine-kapitein-gevel.jpg") controleren en de
+// afmetingen erbij zoeken. Stopt de build als het bestand of een van de
+// gevraagde varianten (-mobiel, -kaart) ontbreekt.
+function tipFoto(bestandsnaam, bron, veld, varianten) {
+  const naam = bestandsnaam.replace(/^assets\/img\//, "");
+  if (!/^[a-z0-9_-]+\.jpg$/.test(naam)) {
+    throw new Error(`${bron}: ${veld} "${bestandsnaam}" moet een .jpg in assets/img zijn, met alleen kleine letters, cijfers, streepjes en liggende streepjes.`);
+  }
+  const basis = naam.slice(0, -".jpg".length);
+  const groot = path.join(__dirname, "assets", "img", naam);
+  const afmeting = jpegAfmetingen(groot);
+  if (!afmeting) throw new Error(`${bron}: ${veld}: assets/img/${naam} bestaat niet (of is geen JPEG).`);
+  for (const variant of varianten) {
+    if (!fs.existsSync(path.join(__dirname, "assets", "img", `${basis}-${variant}.jpg`))) {
+      throw new Error(`${bron}: ${veld}: assets/img/${basis}-${variant}.jpg ontbreekt. Maak de verkleinde varianten eerst (zie NIEUWE-POST.md, "Een korte tip").`);
+    }
+  }
+  return { naam, basis, ...afmeting };
+}
+
+// Een categorie of gebied mag als slug ("dagje-uit") of als label
+// ("Dagje uit") ingevuld worden; hoofdletters maken niet uit.
+function tipCategorie(waarde) {
+  const sleutel = waarde.trim().toLowerCase();
+  if (CATEGORIE_LABELS[sleutel]) return sleutel;
+  return CATEGORIE_SLUGS[sleutel] || null;
+}
+
+// Alle tips inlezen en controleren. Geeft een lijst tips, inclusief de
+// (nog) niet gepubliceerde, met per tip een vlag `verborgen`.
+function leesTips() {
+  if (!fs.existsSync(tipsmap)) return [];
+  const tips = [];
+  for (const bestandsnaam of fs.readdirSync(tipsmap).sort(alfabetisch)) {
+    if (!bestandsnaam.endsWith(".md") || bestandsnaam.startsWith("_")) continue;
+    const bestand = path.join(tipsmap, bestandsnaam);
+    const bron = `src/tips/${bestandsnaam}`;
+    const naam = bestandsnaam.slice(0, -".md".length);
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(naam)) {
+      throw new Error(`${bron}: de bestandsnaam wordt het webadres, gebruik alleen kleine letters, cijfers en streepjes (bv. de-kleine-kapitein.md).`);
+    }
+    if (fs.existsSync(path.join(bronmap, "posts", `${naam}.html`))) {
+      console.warn(`⚠ ${bron}: er bestaat ook een verhaal src/posts/${naam}.html. Het verhaal wint, de tip wordt overgeslagen.`);
+      continue;
+    }
+    const { velden, tekst } = leesTipBestand(bestand);
+    const verplicht = (veld, uitleg) => {
+      if (!velden[veld]) throw new Error(`${bron}: het veld "${veld}" ontbreekt of is leeg (${uitleg}).`);
+      return velden[veld];
+    };
+
+    const titel = verplicht("titel", "de naam van de plek, bv. De Kleine Kapitein");
+    const bezocht = verplicht("bezocht", "maand van je bezoek als JJJJ-MM, bv. 2026-11; alleen plekken waar je zelf bent geweest");
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(bezocht)) {
+      throw new Error(`${bron}: bezocht "${bezocht}" moet de vorm JJJJ-MM hebben, bv. 2026-11.`);
+    }
+    if (bezocht > vandaag.slice(0, 7)) console.warn(`⚠ ${bron}: bezocht ${bezocht} ligt in de toekomst.`);
+
+    const gebied = verplicht("gebied", `één van: ${GEBIED_VOLGORDE.join(", ")}`).toLowerCase();
+    if (!GEBIED_VOLGORDE.includes(gebied)) {
+      throw new Error(`${bron}: gebied "${velden.gebied}" bestaat niet. Kies uit: ${GEBIED_VOLGORDE.join(", ")}.`);
+    }
+    const categorie = verplicht("categorie", "bv. kidsproof, of meerdere met een komma: lunchplek, kidsproof")
+      .split(",")
+      .map((c) => c.trim())
+      .filter(Boolean)
+      .map((c) => {
+        const slug = tipCategorie(c);
+        if (!slug) {
+          throw new Error(`${bron}: categorie "${c}" bestaat niet. Kies uit: ${Object.keys(CATEGORIE_LABELS).join(", ")}.`);
+        }
+        return slug;
+      });
+
+    const lat = Number(verplicht("lat", "breedtegraad, bv. 51.922104"));
+    const lon = Number(verplicht("lon", "lengtegraad, bv. 4.487699"));
+    // Ruim rond Rotterdam, inclusief de Maasvlakte: vangt omgedraaide of
+    // verkeerd geplakte coördinaten op.
+    if (!(lat > 51.8 && lat < 52.05 && lon > 3.9 && lon < 4.7)) {
+      throw new Error(`${bron}: lat ${velden.lat} / lon ${velden.lon} liggen niet in Rotterdam. Controleer of ze niet omgedraaid zijn.`);
+    }
+
+    const foto1 = tipFoto(verplicht("foto1", "eerste foto, bv. naam-gevel.jpg"), bron, "foto1", ["mobiel", "kaart"]);
+    const foto2 = tipFoto(verplicht("foto2", "tweede foto"), bron, "foto2", ["mobiel"]);
+    const alt1 = verplicht("alt1", "wat er op foto 1 te zien is, in één zin");
+    const alt2 = verplicht("alt2", "wat er op foto 2 te zien is, in één zin");
+    const deelfoto = velden.deelfoto ? tipFoto(velden.deelfoto, bron, "deelfoto", []) : null;
+
+    const publicatie = velden.publicatiedatum || null;
+    if (publicatie && !/^\d{4}-\d{2}-\d{2}$/.test(publicatie)) {
+      throw new Error(`${bron}: publicatiedatum "${publicatie}" moet de vorm JJJJ-MM-DD hebben.`);
+    }
+
+    if (!tekst) throw new Error(`${bron}: onder de velden staat nog geen tekst.`);
+    const platteTekst = tipPlatteTekst(tekst);
+    const woorden = platteTekst.split(/\s+/).filter(Boolean).length;
+    if (woorden > TIP_MAX_WOORDEN) {
+      console.warn(`⚠ ${bron}: ${woorden} woorden, een tip is maximaal ${TIP_MAX_WOORDEN}. Misschien wordt dit een verhaal?`);
+    }
+    for (const [veld, waarde] of [["titel", titel], ["omschrijving", velden.omschrijving || ""], ["tekst", tekst], ["alt1", alt1], ["alt2", alt2]]) {
+      if (GEDACHTESTREEPJE.test(waarde)) console.warn(`⚠ ${bron}: gedachtestreepje in ${veld}. Gebruik een komma, dubbele punt of nieuwe zin.`);
+    }
+    if (!velden.straat) console.warn(`⚠ ${bron}: geen straat ingevuld; het adres ontbreekt dan op de pagina en in Google.`);
+    if (velden.instagram_url && !velden.instagram_url.startsWith("https://www.instagram.com/")) {
+      throw new Error(`${bron}: instagram_url moet beginnen met https://www.instagram.com/`);
+    }
+    if (velden.website && !/^https?:\/\//.test(velden.website)) {
+      throw new Error(`${bron}: website moet beginnen met https:// (of http://).`);
+    }
+
+    if (publicatie) publicatiedatums[naam] = publicatie;
+    const [jaar, maand] = bezocht.split("-");
+    tips.push({
+      naam,
+      bestand,
+      bron,
+      post: `posts/${naam}.html`,
+      titel,
+      omschrijving: velden.omschrijving || tipSamenvatting(platteTekst, 2, 155),
+      gebied,
+      categorie,
+      bezochtTekst: `${MAANDEN[Number(maand) - 1]} ${jaar}`,
+      straat: velden.straat || null,
+      postcode: velden.postcode || null,
+      lat,
+      lon,
+      foto1,
+      foto2,
+      alt1,
+      alt2,
+      deelfoto,
+      website: velden.website || null,
+      instagramUrl: velden.instagram_url || null,
+      noindex: /^(ja|true|1)$/i.test(velden.noindex || ""),
+      alineas: tipAlineas(tekst),
+      teaser: tipSamenvatting(platteTekst, 1, 110),
+      publicatie,
+      verborgen: Boolean(publicatie && !alles && publicatie > vandaag),
+    });
+  }
+  return tips;
+}
+// Een fout in een tipbestand stopt de build met alleen de melding zelf (geen
+// lange technische foutregels), zodat direct duidelijk is wat er moet gebeuren.
+const alleTips = (() => {
+  try {
+    return leesTips();
+  } catch (fout) {
+    console.error(`✗ ${fout.message}`);
+    console.error("De build is gestopt; er is niets gepubliceerd. Pas het tipbestand aan en bouw opnieuw.");
+    process.exit(1);
+  }
+})();
+const liveTips = alleTips.filter((tip) => !tip.verborgen);
+
+// De pin van een tip, zoals hij in places.json komt (en in de lookups voor
+// broodkruimel en JSON-LD). image = de 16:10-kaartvariant van foto 1.
+function tipPlek(tip) {
+  return {
+    naam: tip.titel,
+    formaat: "tip",
+    lat: tip.lat,
+    lon: tip.lon,
+    categorie: tip.categorie,
+    gebied: tip.gebied,
+    post: tip.post,
+    image: `assets/img/${tip.foto1.basis}-kaart.jpg`,
+    alt: tip.alt1,
+    teaser: tip.teaser,
+    ...(tip.straat ? { straat: tip.straat } : {}),
+    ...(tip.postcode ? { postcode: tip.postcode } : {}),
+  };
+}
+const tipPlekPerPost = new Map(liveTips.map((tip) => [tip.post, tipPlek(tip)]));
+
+// De plek bij een pagina: eerst de verhalen (src/places.json), dan de tips.
+function plekVoorPagina(relatiefUrl) {
+  return plekPerPost.get(relatiefUrl) || tipPlekPerPost.get(relatiefUrl);
+}
+
+// "Misschien vind je dit ook leuk" onder een tip: 3 verhalen. Tips geven
+// wel links, maar krijgen er zelf geen in dit blok, zodat de eerlijke
+// verdeling onder de verhalen (verdeelVerwantePosts) niet verschuift.
+// Volgorde: hoogste relevantie, dan het verhaal met de minste links tot nu
+// toe (verhaalblokken plus eerdere tips), dan alfabetisch. Vast resultaat,
+// geen datums.
+{
+  const verhalen = [...plekPerPost.values()].sort((a, b) => alfabetisch(a.post, b.post));
+  const inkomend = new Map(verhalen.map((plek) => [plek.post, 0]));
+  for (const keuzes of verwantePerPost.values()) {
+    for (const plek of keuzes) inkomend.set(plek.post, (inkomend.get(plek.post) || 0) + 1);
+  }
+  for (const tip of liveTips) {
+    const bron = tipPlekPerPost.get(tip.post);
+    const gekozen = verhalen
+      .map((doel) => ({ doel, score: relevantie(bron, doel) }))
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          inkomend.get(a.doel.post) - inkomend.get(b.doel.post) ||
+          alfabetisch(a.doel.post, b.doel.post)
+      )
+      .slice(0, AANTAL_VERWANT)
+      .map(({ doel }) => doel);
+    for (const doel of gekozen) inkomend.set(doel.post, inkomend.get(doel.post) + 1);
+    verwantePerPost.set(tip.post, gekozen);
+  }
+}
+
+// Bouwt de bron-HTML van een tippagina. Daarna gaat die door precies
+// dezelfde stappen als een verhaal (header/footer, og-tags, JSON-LD,
+// broodkruimel, klikbare labels, inline stijl), zie de hoofdlus hieronder.
+// De kop van de pagina volgt src/posts/_template.html.
+function tipHtml(tip) {
+  const labels = [
+    `    <a class="tag formaat-tip" href="/?formaat=tip">Even langs<span class="visueel-verborgen">, meer tips</span></a>`,
+    ...tip.categorie.map((c) => `    <span class="tag">${CATEGORIE_LABELS[c]}</span>`),
+    `    <span class="tag gebied">${gebiedLabel(tip.gebied)}</span>`,
+  ].join("\n");
+  // Beide foto's liggend: op de computer naast elkaar in 4:3; anders 3:4.
+  const liggend = tip.foto1.breedte > tip.foto1.hoogte && tip.foto2.breedte > tip.foto2.hoogte;
+  const foto = (f, alt, nummer, eerste) =>
+    `  <figure class="tip-foto tip-foto-${nummer}">
+    <img src="../assets/img/${f.naam}" srcset="../assets/img/${f.basis}-mobiel.jpg 800w, ../assets/img/${f.naam} ${f.breedte}w" sizes="(max-width: 640px) 100vw, 312px" alt="${htmlTekst(alt)}" width="${f.breedte}" height="${f.hoogte}" loading="eager"${eerste ? ' fetchpriority="high"' : ""}>
+  </figure>`;
+  const adres = [
+    tip.straat ? `${htmlTekst(tip.straat)}, Rotterdam` : null,
+    `<a href="../kaart.html?plek=${tip.naam}">Bekijk op de kaart</a>`,
+    tip.website ? `<a href="${htmlTekst(tip.website)}" target="_blank" rel="noopener">Website</a>` : null,
+  ]
+    .filter(Boolean)
+    .join(" &middot; ");
+  return `<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${htmlTekst(tip.titel)} | Rotterdam by Ferry</title>
+  <meta name="description" content="${htmlTekst(tip.omschrijving)}">${tip.instagramUrl ? `\n  <meta name="instagram_url" content="${htmlTekst(tip.instagramUrl)}">` : ""}
+  <link rel="icon" href="../assets/img/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/img/favicon-192x192.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQS8RQWBE9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZQS8RQWBE9');
+  </script>
+</head>
+<body>
+
+<!-- INCLUDE:header -->
+
+<main class="artikel">
+  <div class="tags">
+${labels}
+  </div>
+
+  <h1>${htmlTekst(tip.titel)}</h1>
+  <p class="meta">Door Ferry &middot; Bezocht in ${tip.bezochtTekst}</p>
+
+  <div class="tip-inhoud${liggend ? " liggend" : ""}">
+${foto(tip.foto1, tip.alt1, 1, true)}
+  <div class="tip-tekst">
+${tip.alineas.map((a) => `    <p>${a}</p>`).join("\n")}
+  </div>
+${foto(tip.foto2, tip.alt2, 2, false)}
+  <p class="tip-adres">${adres}</p>
+  </div>
+</main>
+
+<!-- INCLUDE:footer -->
+
+<script src="../assets/header.js" defer></script>
+
+</body>
+</html>
+`;
+}
+
 // Leest de echte pixelafmetingen van een JPEG-bestand, puur door de
 // SOF-marker in de header op te zoeken (geen npm-package nodig). Geeft
 // null terug als het bestand ontbreekt of niet als JPEG te lezen is.
@@ -629,7 +1006,7 @@ function popupAltTekst(postPad) {
 // Bouwt het og/twitter/canonical-blok voor één pagina, op basis van de
 // <title> en <meta name="description"> die toch al met de hand op elke
 // pagina staan — daar hoeft dus niets nieuws voor bijgehouden te worden.
-function metaBlok({ inhoud, paginaUrl, ogType }) {
+function metaBlok({ inhoud, paginaUrl, ogType, vasteOgAfbeelding }) {
   const titelMatch = inhoud.match(/<title>([\s\S]*?)<\/title>/);
   const titel = ontleedEntiteiten(titelMatch ? titelMatch[1] : "");
   const ogTitel = titel.replace(/ \| Rotterdam by Ferry$/, "");
@@ -646,8 +1023,11 @@ function metaBlok({ inhoud, paginaUrl, ogType }) {
   // breed) en Simit and Cheese (1050 breed) met de algemene skylinefoto in
   // plaats van hun eigen foto, terwijl WhatsApp en Facebook zulke foto's
   // prima groot tonen.)
+  // Een tip geeft zijn og-afbeelding zelf mee (vasteOgAfbeelding, zie de
+  // hoofdlus): de eigen liggende deelfoto, of anders foto 1.
   let ogAfbeelding = standaardOgAfbeelding;
-  const fotoMatch = inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\ssrc="([^"]+)"/);
+  const fotoMatch = vasteOgAfbeelding ? null : inhoud.match(/<figure class="(?:foto|post-foto)">\s*<img[^>]*\ssrc="([^"]+)"/);
+  if (vasteOgAfbeelding) ogAfbeelding = vasteOgAfbeelding;
   if (fotoMatch) {
     const relatiefPad = fotoMatch[1].replace(/^(\.\.\/)+/, "");
     const afmeting = jpegAfmetingen(path.join(__dirname, relatiefPad));
@@ -698,7 +1078,7 @@ function jsonLdScript(schema) {
 // schema.org-manier om een artikel aan een locatie te koppelen) als als
 // tussenliggende kruimel in het BreadcrumbList meegenomen.
 function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschrijving, ogAfbeelding }) {
-  const plek = plekPerPost.get(relatiefUrl);
+  const plek = plekVoorPagina(relatiefUrl);
 
   const schema = {
     "@context": "https://schema.org",
@@ -724,6 +1104,8 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
       geo: { "@type": "GeoCoordinates", latitude: plek.lat, longitude: plek.lon },
       address: {
         "@type": "PostalAddress",
+        ...(plek.straat ? { streetAddress: plek.straat } : {}),
+        ...(plek.postcode ? { postalCode: plek.postcode } : {}),
         addressLocality: "Rotterdam",
         addressCountry: "NL",
       },
@@ -751,7 +1133,7 @@ function jsonLdBlok({ bronbestand, naam, relatiefUrl, paginaUrl, ogTitel, beschr
 // homepage, alvast gefilterd via ?gebied=... (zie het filterscript in
 // src/index.html).
 function broodkruimelHtml(relatiefUrl, ogTitel) {
-  const plek = plekPerPost.get(relatiefUrl);
+  const plek = plekVoorPagina(relatiefUrl);
   const kruimels = ['<a href="/">Home</a>'];
   if (plek) {
     kruimels.push(`<a href="/?gebied=${plek.gebied}">${gebiedLabel(plek.gebied)}</a>`);
@@ -922,11 +1304,28 @@ function snapshotsHtml(root) {
 // pagina's (het kopieersjabloon wordt niet gebouwd, zie hieronder).
 const sitemapPaginas = [];
 
+// De pagina's die gebouwd worden: alle HTML in /src, plus een pagina per
+// korte tip (src/tips/*.md). Een tip heeft geen HTML-bronbestand: tipHtml()
+// maakt de bron-HTML, en bronbestand is dan het .md-bestand (voor de
+// git-datums). Tips komen achteraan, zodat de volgorde van al het andere
+// (en dus van sitemap.xml) gelijk blijft.
+const bronnen = verzamelHtml(bronmap).map((bronbestand) => ({ bronbestand, relatief: path.relative(bronmap, bronbestand) }));
+for (const tip of alleTips) {
+  bronnen.push({ bronbestand: tip.bestand, relatief: path.join("posts", `${tip.naam}.html`), tip });
+}
+
 let aantal = 0;
-for (const bronbestand of verzamelHtml(bronmap)) {
-  const relatief = path.relative(bronmap, bronbestand);
+for (const { bronbestand, relatief, tip } of bronnen) {
   const delen = relatief.split(path.sep);
   const doel = path.join(__dirname, relatief);
+
+  // Korte tip met een publicatiedatum in de toekomst: net als bij een
+  // verhaal geen pagina bouwen, en een eventuele oude versie opruimen.
+  if (tip && tip.verborgen) {
+    if (fs.existsSync(doel)) fs.unlinkSync(doel);
+    console.log(`○ ${relatief}  (tip, nog niet gepubliceerd: ${tip.publicatie})`);
+    continue;
+  }
 
   // Het kopieersjabloon (src/posts/_template.html) is alleen het startpunt
   // voor een nieuwe post en hoort niet op de live site. Stond er van een
@@ -962,7 +1361,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
   const relatiefUrl = delen.join("/");
   const paginaUrl = SITE + (relatiefUrl === "index.html" ? "" : relatiefUrl);
 
-  const inhoud = leesTekst(bronbestand);
+  const inhoud = tip ? tipHtml(tip) : leesTekst(bronbestand);
 
   // Waarschuwing (geen stop) voor foto's zonder alt-tekst in de bron: een
   // homepagekaart, postfoto of videoplaatje met alt="" of zonder alt. Zo
@@ -992,6 +1391,15 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     inhoud,
     paginaUrl,
     ogType: delen[0] === "posts" ? "article" : "website",
+    // Tip: de eigen deelfoto, of foto 1 als die groot genoeg is (minimaal
+    // 1000x630), anders de standaardfoto.
+    vasteOgAfbeelding: tip
+      ? tip.deelfoto
+        ? `${SITE}assets/img/${tip.deelfoto.naam}`
+        : tip.foto1.breedte >= 1000 && tip.foto1.hoogte >= 630
+          ? `${SITE}assets/img/${tip.foto1.naam}`
+          : standaardOgAfbeelding
+      : undefined,
   });
   let resultaat = bestaandMetaBlok.test(inhoud)
     ? inhoud.replace(bestaandMetaBlok, nieuwMetaBlok)
@@ -1117,6 +1525,11 @@ for (const bronbestand of verzamelHtml(bronmap)) {
     }
   }
 
+  // Een tip met "noindex: ja": niet in Google, en ook niet in de sitemap.
+  if (tip && tip.noindex) {
+    resultaat = resultaat.replace("</head>", '  <meta name="robots" content="noindex">\n</head>');
+  }
+
   // 404.html hoort niet in Google: noindex, en verderop ook geen regel in
   // de sitemap.
   if (is404) {
@@ -1129,10 +1542,12 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 
   fs.mkdirSync(path.dirname(doel), { recursive: true });
   schrijfTekst(doel, resultaat);
-  console.log(`✓ ${relatief}`);
+  console.log(`✓ ${relatief}${tip ? "  (tip)" : ""}`);
   aantal++;
 
-  if (!is404 && (!isSnapshotsPagina || snapshotsEcht)) sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  if (!is404 && (!isSnapshotsPagina || snapshotsEcht) && !(tip && tip.noindex)) {
+    sitemapPaginas.push({ url: paginaUrl, bronbestand });
+  }
 }
 
 // sitemap.xml: automatisch opgebouwd uit de pagina's die hierboven écht
@@ -1149,7 +1564,7 @@ for (const bronbestand of verzamelHtml(bronmap)) {
 {
   const livePostBestanden = sitemapPaginas
     .map(({ bronbestand }) => bronbestand)
-    .filter((bestand) => path.relative(bronmap, bestand).split(path.sep)[0] === "posts");
+    .filter((bestand) => ["posts", "tips"].includes(path.relative(bronmap, bestand).split(path.sep)[0]));
   const nieuwstePostDatum = livePostBestanden
     .map((bestand) => publicatiedatum(bestand))
     .sort()
@@ -1217,7 +1632,19 @@ function metPopupAlt(plek) {
         `De build is gestopt, zodat er geen onvolledige kaart online komt.`
     );
   }
-  schrijfTekst(path.join(__dirname, "places.json"), JSON.stringify(uitvoer, null, 2) + "\n");
+  // Elke plek krijgt een formaat: "verhaal" voor de plekken uit
+  // src/places.json, "tip" voor de korte tips (achteraan). De kaart kan zo
+  // beide soorten uit elkaar houden.
+  const metFormaat = (plek) => {
+    const uit = {};
+    for (const [sleutel, waarde] of Object.entries(plek)) {
+      uit[sleutel] = waarde;
+      if (sleutel === "naam") uit.formaat = "verhaal";
+    }
+    return uit;
+  };
+  const metTips = [...uitvoer.map(metFormaat), ...liveTips.map((tip) => tipPlekPerPost.get(tip.post))];
+  schrijfTekst(path.join(__dirname, "places.json"), JSON.stringify(metTips, null, 2) + "\n");
   console.log(`✓ places.json`);
   aantal++;
 }
