@@ -132,6 +132,30 @@ zelf niets te doen: elke ochtend controleert de site vanzelf of er een
 post is waarvan de datum is aangebroken, en zet die dan automatisch
 online.
 
+## Een korte tip ("Even langs")
+
+Een plek die het noemen waard is, maar geen heel verhaal krijgt: ongeveer
+4 zinnen, maximaal 150 woorden, 2 foto's, in de ik-vorm. Alleen plekken waar
+je zelf bent geweest. Een tip is één tekstbestand; de site maakt de rest
+(pagina, pin op de kaart, sitemap, Google-gegevens) zelf.
+
+1. Ga naar `src\tips`, kopieer `_sjabloon.md` en geef de kopie de naam van
+   de plek, alleen kleine letters en streepjes: `de-kleine-kapitein.md`.
+   Dat wordt ook het webadres: `/posts/de-kleine-kapitein.html`.
+2. Vul de velden bovenaan in (titel, gebied, categorie, bezocht, straat,
+   postcode, lat/lon, foto1/alt1, foto2/alt2) en zet je tekst onder de
+   tweede regel `---`. Uitleg staat in het sjabloon zelf.
+3. Foto's: zet ze in `assets\img` met dezelfde namen als in foto1 en foto2,
+   met voor allebei een `-mobiel.jpg` en voor foto1 ook een `-kaart.jpg`
+   (16:10). Wil je een mooie foto bij het delen op WhatsApp, maak dan een
+   liggende van 1200 bij 630 en zet die bij `deelfoto`.
+4. Bouw en bekijk zoals altijd (`start-preview.bat`). Klopt er iets niet,
+   dan zegt de build precies welk veld en wat er mis is.
+
+Groeit een tip later uit tot een verhaal, dan maak je gewoon een post met
+dezelfde naam in `src\posts`: die wint dan van de tip, op hetzelfde webadres.
+Haal daarna het tipbestand weg.
+
 ## Foto's
 
 Elke post kan een grote foto bovenaan hebben, en de kaart op de
