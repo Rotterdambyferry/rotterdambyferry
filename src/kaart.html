@@ -206,6 +206,21 @@
       });
     }
 
+    // ?plek=<naam>: de link "Bekijk op de kaart" op een tippagina (werkt ook
+    // voor verhalen). <naam> is de bestandsnaam van de pagina zonder .html,
+    // bijvoorbeeld kaart.html?plek=de-kleine-kapitein. De kaart gaat dan
+    // direct naar die pin en opent de popup, ook als de pin in een cluster
+    // zit (zie toonGekozen hieronder). Zolang `gekozen` gezet is:
+    //  - blijft die pin zichtbaar, ook als een filter uit het adres hem
+    //    anders zou verbergen;
+    //  - past de kaart de uitsnede niet opnieuw in bij het laden van de
+    //    pagina of een andere afmeting van het kaartvak (dan zou de gekozen
+    //    plek weer uit beeld schuiven en de popup sluiten).
+    // Zodra de bezoeker zelf een filter kiest, gaat dit uit en werkt alles
+    // weer zoals gewoonlijk. Een onbekende naam wordt genegeerd.
+    var plekUitAdres = adres.get("plek");
+    var gekozen = null; // { data, marker }
+
     // Tekst veilig in de popup zetten: een aanhalingsteken in een
     // alt-tekst of een < in een naam kan de popup zo niet breken.
     function veilig(tekst) {
@@ -251,7 +266,7 @@
       var zoomOp = [];
       plekken.forEach(function (plek) {
         var p = plek.data;
-        if (past(p, actief.gebied)) {
+        if (past(p, actief.gebied) || plek === gekozen) {
           zichtbaar.push(plek.marker);
           if (p.gebied !== "maasvlakte" || actief.gebied === "maasvlakte") {
             zoomOp.push(plek.marker.getLatLng());
@@ -269,12 +284,17 @@
         });
         knop.dataset.aantal = aantal;
       });
+      // Met ?plek=: meteen de uitsnede rond die pin, in plaats van eerst de
+      // hele stad. Zo worden de kaarttegels maar één keer geladen.
+      if (gekozen) {
+        map.setView(gekozen.marker.getLatLng(), 16, { animate: false });
+      }
       // De clustergroep helemaal opnieuw vullen, zodat gefilterde pins
       // ook uit de cluster-telling verdwijnen
       cluster.clearLayers();
       cluster.addLayers(zichtbaar);
       leeg.hidden = zichtbaar.length > 0;
-      if (zichtbaar.length > 0) {
+      if (zichtbaar.length > 0 && !gekozen) {
         // Staat er alleen een Maasvlakte-pin in beeld (bijvoorbeeld bij een
         // categorie die verder nergens voorkomt), dan toch daarop inzoomen.
         var grenzen = zoomOp.length > 0 ? L.latLngBounds(zoomOp) : cluster.getBounds();
@@ -321,9 +341,24 @@
           });
           plekken.push({ data: p, marker: marker });
         });
+        if (plekUitAdres) {
+          gekozen = plekken.filter(function (plek) {
+            return plek.data.post === "posts/" + plekUitAdres + ".html";
+          })[0] || null;
+        }
         toonPlekken();
+        if (gekozen) toonGekozen();
+        // Opnieuw passend maken bij het laden van alles en bij een andere
+        // afmeting, behalve met ?plek= (dan alleen de afmeting bijwerken).
+        function herpas() {
+          if (gekozen) {
+            map.invalidateSize();
+            return;
+          }
+          toonPlekken();
+        }
         // Nogmaals passend maken zodra alles (fonts, layout) geladen is
-        window.addEventListener("load", toonPlekken);
+        window.addEventListener("load", herpas);
         // En opnieuw passend maken als het kaartvak van afmeting verandert
         // (bijv. telefoon draaien, of het vak kreeg pas laat zijn echte maat)
         if (window.ResizeObserver) {
@@ -332,7 +367,7 @@
           new ResizeObserver(function () {
             if (kaartDiv.offsetWidth !== vorigeBreedte) {
               vorigeBreedte = kaartDiv.offsetWidth;
-              toonPlekken();
+              herpas();
             }
           }).observe(kaartDiv);
         }
@@ -342,6 +377,28 @@
         leeg.hidden = false;
         leeg.innerHTML = "De plekken konden niet geladen worden. Probeer het later nog eens.";
       });
+
+    // De pin van ?plek= tonen en zijn popup openen. Zit hij in een cluster,
+    // dan net als bij een klik op een cluster: inzoomen tot de pin los
+    // staat (tot zoom 17, zonder animatie), en lukt dat niet omdat plekken
+    // vrijwel op hetzelfde adres liggen, het cluster openklappen.
+    // (cluster.zoomToShowLayer wacht op een animatie-einde dat er met
+    // animate: false niet komt, en bleef dan in het cluster hangen.)
+    function toonGekozen() {
+      var marker = gekozen.marker;
+      for (var stap = 0; stap < 20; stap++) {
+        var ouder = cluster.getVisibleParent(marker);
+        if (!ouder || ouder === marker) break;
+        var b = ouder.getBounds().pad(0.2);
+        if (map.getZoom() < 17 && map.getBoundsZoom(b) > map.getZoom()) {
+          map.fitBounds(b, { maxZoom: 17, animate: false });
+        } else {
+          ouder.spiderfy();
+          break;
+        }
+      }
+      marker.openPopup();
+    }
 
     function naFilteren() {
       var aantal = toonPlekken();
@@ -360,6 +417,7 @@
             k.setAttribute("aria-pressed", k === knop ? "true" : "false");
           }
         });
+        gekozen = null; // de bezoeker kiest zelf: ?plek= telt niet meer
         naFilteren();
       });
     });
@@ -370,6 +428,7 @@
         formaatknoppen.forEach(function (k) {
           k.setAttribute("aria-pressed", k === knop ? "true" : "false");
         });
+        gekozen = null; // de bezoeker kiest zelf: ?plek= telt niet meer
         naFilteren();
       });
     });
