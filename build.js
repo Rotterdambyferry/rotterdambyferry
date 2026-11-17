@@ -97,6 +97,10 @@ const SITE = "https://rotterdambyferry.nl/";
 // places.json.
 const verborgenPosts = new Set();
 const publicatiedatums = {};
+// De publicatiedatums van korte tips (src/tips/*.md) staan apart, zodat een
+// tip en een voorbereid verhaal met dezelfde naam elkaars datum niet
+// overschrijven. Gevuld door leesTips() verderop.
+const tipPublicatiedatums = {};
 for (const bronbestand of verzamelHtml(bronmap)) {
   const relatief = path.relative(bronmap, bronbestand);
   const delen = relatief.split(path.sep);
@@ -193,7 +197,8 @@ function laatsteWijziging(bronbestand) {
 // datePublished in de JSON-LD en de volgorde van de Leestips.
 function publicatiedatum(bronbestand) {
   const naam = path.basename(bronbestand).replace(/\.(html|md)$/, "");
-  return publicatiedatums[naam] || eersteWijziging(bronbestand);
+  const lijst = bronbestand.endsWith(".md") ? tipPublicatiedatums : publicatiedatums;
+  return lijst[naam] || eersteWijziging(bronbestand);
 }
 
 // Datum waarop dit bronbestand voor het eerst aan git is toegevoegd: voor
@@ -573,8 +578,11 @@ ${groepen}    </div>
 // "Misschien vind je dit ook leuk" en de pin in places.json (met
 // formaat "tip"). Er hoeft dus niets met de hand in src/places.json.
 //
-// Bestaat er ook een verhaal met dezelfde naam (src/posts/<naam>.html), dan
-// wint het verhaal en wordt de tip overgeslagen, met een waarschuwing.
+// Bestaat er ook een verhaal met dezelfde naam (src/posts/<naam>.html) dat
+// al live is, dan wint het verhaal en wordt de tip overgeslagen, met een
+// waarschuwing. Heeft dat verhaal nog een publicatiedatum in de toekomst,
+// dan blijft de tip tot die dag gewoon online (ook met een waarschuwing);
+// vanaf die dag neemt het verhaal de plek op hetzelfde adres over.
 //
 // Foutmeldingen die de build stoppen (anders komt er een kapotte pagina
 // online): ontbrekende of ongeldige titel, gebied, categorie, bezocht,
@@ -714,8 +722,13 @@ function leesTips() {
       throw new Error(`${bron}: de bestandsnaam wordt het webadres, gebruik alleen kleine letters, cijfers en streepjes (bv. de-kleine-kapitein.md).`);
     }
     if (fs.existsSync(path.join(bronmap, "posts", `${naam}.html`))) {
-      console.warn(`⚠ ${bron}: er bestaat ook een verhaal src/posts/${naam}.html. Het verhaal wint, de tip wordt overgeslagen.`);
-      continue;
+      if (!verborgenPosts.has(naam)) {
+        console.warn(`⚠ ${bron}: er bestaat ook een verhaal src/posts/${naam}.html. Het verhaal wint, de tip wordt overgeslagen.`);
+        continue;
+      }
+      console.warn(
+        `⚠ ${bron}: er staat ook een verhaal src/posts/${naam}.html klaar (publicatiedatum ${publicatiedatums[naam]}). Tot die dag staat de tip online, daarna neemt het verhaal zijn plek over.`
+      );
     }
     const { velden, tekst } = leesTipBestand(bestand);
     const verplicht = (veld, uitleg) => {
@@ -789,7 +802,7 @@ function leesTips() {
       throw new Error(`${bron}: website moet beginnen met https:// (of http://).`);
     }
 
-    if (publicatie) publicatiedatums[naam] = publicatie;
+    if (publicatie) tipPublicatiedatums[naam] = publicatie;
     const [jaar, maand] = bezocht.split("-");
     tips.push({
       naam,
@@ -1375,11 +1388,15 @@ for (const { bronbestand, relatief, tip } of bronnen) {
 
   // Voorbereide post met een datum in de toekomst: geen pagina bouwen. Stond
   // er van een eerdere build nog een (bijvoorbeeld na het per ongeluk
-  // vervroegen van de datum), ruim die dan op.
-  if (delen[0] === "posts") {
+  // vervroegen van de datum), ruim die dan op. Geldt alleen voor verhalen:
+  // een tip met dezelfde naam wordt wel gebouwd (zie leesTips). Die tip
+  // gebruikt hetzelfde adres in posts/, dus dan wordt die pagina niet
+  // opgeruimd, ongeacht of de tip in deze lus vóór of na het verhaal komt.
+  if (!tip && delen[0] === "posts") {
     const naam = delen[1].slice(0, -".html".length);
     if (verborgenPosts.has(naam)) {
-      if (fs.existsSync(doel)) fs.unlinkSync(doel);
+      const tipOpZelfdeAdres = liveTips.some((t) => t.naam === naam);
+      if (!tipOpZelfdeAdres && fs.existsSync(doel)) fs.unlinkSync(doel);
       console.log(`○ ${relatief}  (nog niet gepubliceerd: ${publicatiedatums[naam]})`);
       continue;
     }
