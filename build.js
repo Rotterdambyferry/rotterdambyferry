@@ -666,13 +666,36 @@ function tipPlatteTekst(tekst) {
   return tekst.replace(TIP_LINK_ALLE, "$1").replace(/\s+/g, " ").trim();
 }
 
+// Afkortingen waarna een zin niet ophoudt ("Neem bv. de pannenkoek." is één
+// zin). Kleine letters; hoofdletters in de tekst maken niet uit.
+const AFKORTINGEN = [
+  "bv.", "bijv.", "o.a.", "ca.", "m.n.", "d.w.z.", "enz.", "incl.", "excl.",
+  "nr.", "vs.", "st.", "dhr.", "mevr.", "t.o.v.",
+];
+
+// Tekst in zinnen knippen. Alleen een punt, uitroepteken of vraagteken met
+// witruimte erachter sluit een zin af, dus tijden als "11.45 tot 12.00" en
+// afkortingen als "o.a." blijven heel. Eindigt een stuk op een afkorting uit
+// de lijst hierboven, dan hoort het volgende stuk er nog bij.
+function tipZinnen(tekst) {
+  const zinnen = [];
+  for (const stuk of tekst.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean)) {
+    const vorige = zinnen[zinnen.length - 1];
+    const laatsteWoord = vorige ? vorige.split(/\s+/).pop().toLowerCase().replace(/^[("'\u201c\u2018]+/, "") : "";
+    if (vorige && AFKORTINGEN.includes(laatsteWoord)) zinnen[zinnen.length - 1] = `${vorige} ${stuk}`;
+    else zinnen.push(stuk);
+  }
+  return zinnen;
+}
+
 // Automatische omschrijving of teaser: zoveel hele zinnen (hooguit
 // `aantalZinnen`) als er binnen `max` tekens passen. Past zelfs de eerste
 // zin niet, dan wordt die op een heel woord afgekapt met "…". Een
 // gedachtestreepje wordt een komma (geen streepjes in zichtbare tekst).
 function tipSamenvatting(platteTekst, aantalZinnen, max) {
   const schoon = platteTekst.replace(/\s*[\u2013\u2014]\s*/g, ", ");
-  const zinnen = (schoon.match(/[^.!?]+[.!?]+(\s|$)/g) || [schoon]).map((zin) => zin.trim());
+  const zinnen = tipZinnen(schoon);
+  if (zinnen.length === 0) return "";
   for (let aantal = Math.min(aantalZinnen, zinnen.length); aantal >= 1; aantal--) {
     const tekst = zinnen.slice(0, aantal).join(" ");
     if (tekst.length <= max) return tekst;
