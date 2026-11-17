@@ -233,8 +233,20 @@
   })();
 </script>
 
-<section class="filters" aria-label="Filter verhalen">
+<section class="filters" aria-label="Filter verhalen en tips">
   <div class="inner">
+    <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
+         Staat verborgen zolang er geen tip live is: build.js haalt het
+         hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
+         want die pakken de filterscripts allemaal op. -->
+    <div class="groep groep-formaat" hidden>
+      <span class="label" id="formaat-label">Soort</span>
+      <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
+        <button type="button" class="formaatknop" data-formaat="alles" aria-pressed="true">Alles</button>
+        <button type="button" class="formaatknop" data-formaat="verhaal" aria-pressed="false">Verhalen</button>
+        <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
+      </div>
+    </div>
     <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
          assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
          computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
@@ -275,7 +287,7 @@
 
 <main class="grid" id="verhalen">
 
-  <article class="kaart" data-categorie="kidsproof dagje-uit" data-gebied="maasvlakte">
+  <article class="kaart" data-formaat="verhaal" data-categorie="kidsproof dagje-uit" data-gebied="maasvlakte">
     <a class="thumb" href="posts/portlantis.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/portlantis-kaart.jpg" alt="Havenmuseum Portlantis met de rode trappen aan de Prinses Máximaweg op Maasvlakte 2, gezien vanaf het duinpad" width="800" height="500" loading="lazy">
     </a>
@@ -289,7 +301,7 @@
     <a class="lees" href="posts/portlantis.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="lunchplek" data-gebied="west">
+  <article class="kaart" data-formaat="verhaal" data-categorie="lunchplek" data-gebied="west">
     <a class="thumb" href="posts/warung-melatie.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/warung-melatie-saoto-soep-hero-kaart.jpg" alt="Kom saoto soep met kip, ei en taugé bij Warung Melatie aan de Vierambachtsstraat in Rotterdam-West" width="800" height="500" loading="lazy">
     </a>
@@ -302,7 +314,7 @@
     <a class="lees" href="posts/warung-melatie.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="restaurant lunchplek kidsproof" data-gebied="zuid">
+  <article class="kaart" data-formaat="verhaal" data-categorie="restaurant lunchplek kidsproof" data-gebied="zuid">
     <a class="thumb" href="posts/simit-and-cheese.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/simit-and-cheese-menemen-kaart.jpg" alt="Pannetje menemen met sucuk en een verse simit bij Simit and Cheese aan de Beijerlandselaan in Rotterdam-Zuid" width="800" height="500" loading="lazy">
     </a>
@@ -317,7 +329,7 @@
     <a class="lees" href="posts/simit-and-cheese.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="dagje-uit" data-gebied="centrum">
+  <article class="kaart" data-formaat="verhaal" data-categorie="dagje-uit" data-gebied="centrum">
     <a class="thumb" href="posts/pleinbios.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/pleinbios-kaart.jpg" alt="Publiek van openluchtbioscoop Pleinbios op de Wilhelminapier, met het Holland Amerika Lijn-gebouw van Hotel New York op de achtergrond" width="800" height="500" loading="lazy">
     </a>
@@ -330,7 +342,7 @@
     <a class="lees" href="posts/pleinbios.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="bruine-kroeg" data-gebied="centrum">
+  <article class="kaart" data-formaat="verhaal" data-categorie="bruine-kroeg" data-gebied="centrum">
     <a class="thumb" href="posts/vijgeboom.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/vijgeboom-kaart.jpg" alt="Verlichte gevel en vol avondterras van bruine kroeg De Vijgeboom aan de Oude Binnenweg" width="800" height="500" loading="lazy">
     </a>
@@ -343,7 +355,7 @@
     <a class="lees" href="posts/vijgeboom.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="borrelplek" data-gebied="centrum">
+  <article class="kaart" data-formaat="verhaal" data-categorie="borrelplek" data-gebied="centrum">
     <a class="thumb" href="posts/dak-rotterdam.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/dak-rotterdam-kaart.jpg" alt="Bezoekers bbq'en tussen de rook op het pop-up dakpark DÂK, met de Rotterdamse skyline op de achtergrond" width="800" height="500" loading="lazy">
     </a>
@@ -356,7 +368,7 @@
     <a class="lees" href="posts/dak-rotterdam.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="dagje-uit" data-gebied="maasvlakte">
+  <article class="kaart" data-formaat="verhaal" data-categorie="dagje-uit" data-gebied="maasvlakte">
     <a class="thumb" href="posts/balkon-van-europa.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/balkon-van-europa-kaart.jpg" alt="Terras van snackbar Smickel Inn op de Maasvlakte met uitzicht op een passerend containerschip" width="800" height="500" loading="lazy">
     </a>
@@ -369,7 +381,7 @@
     <a class="lees" href="posts/balkon-van-europa.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="foodhal borrelplek" data-gebied="noord">
+  <article class="kaart" data-formaat="verhaal" data-categorie="foodhal borrelplek" data-gebied="noord">
     <a class="thumb" href="posts/station-bergweg.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/station-bergweg-kaart.jpg" alt="Terras van foodhal Station Bergweg in het voormalige treinstation aan de Hofbogen, Rotterdam-Noord" width="800" height="500" loading="lazy">
     </a>
@@ -383,7 +395,7 @@
     <a class="lees" href="posts/station-bergweg.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="lunchplek delicatessen" data-gebied="centrum">
+  <article class="kaart" data-formaat="verhaal" data-categorie="lunchplek delicatessen" data-gebied="centrum">
     <a class="thumb" href="posts/little-italy.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/little-italy-kaart.jpg" alt="Gevel van Italiaanse lunchzaak Little Italy aan de Lombardkade in Rotterdam" width="640" height="400" loading="lazy">
     </a>
@@ -397,7 +409,7 @@
     <a class="lees" href="posts/little-italy.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="kidsproof" data-gebied="centrum">
+  <article class="kaart" data-formaat="verhaal" data-categorie="kidsproof" data-gebied="centrum">
     <a class="thumb" href="posts/rif010.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/rif010-kaart.jpg" alt="Surfers op de urban surfpool Rif010 achter de Markthal in Rotterdam" width="640" height="400" loading="lazy">
     </a>
@@ -410,7 +422,7 @@
     <a class="lees" href="posts/rif010.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <article class="kaart" data-categorie="restaurant" data-gebied="centrum">
+  <article class="kaart" data-formaat="verhaal" data-categorie="restaurant" data-gebied="centrum">
     <a class="thumb" href="posts/due-tonino.html" aria-hidden="true" tabindex="-1">
       <img src="assets/img/due-tonino-kaart.jpg" alt="Terras van Italiaans restaurant Due Tonino aan de Goudsesingel in Rotterdam" width="640" height="400" loading="lazy">
     </a>
@@ -423,18 +435,63 @@
     <a class="lees" href="posts/due-tonino.html">Lees het verhaal &rarr;</a>
   </article>
 
-  <p class="leeg" hidden>Nog geen verhalen in deze combinatie. Die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">@rotterdambyferry</a> voor het laatste nieuws.</p>
+  <p class="leeg" hidden>Nog niets in deze combinatie. Volg <a href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">@rotterdambyferry</a> op Instagram, dan zie je als eerste wat erbij komt.</p>
 
 </main>
 
 <!-- INCLUDE:footer -->
 
 <script>
-  // Eenvoudige filters: één actieve categorie + één actief gebied
-  const actief = { categorie: "alles", gebied: "alles" };
+  // Filters: één actieve categorie, één actief gebied en één soort (alles,
+  // alleen verhalen of alleen korte tips). Een kaart zonder data-formaat
+  // telt als verhaal, zodat een gekopieerd oud kaartblokje gewoon meedoet.
+  const actief = { categorie: "alles", gebied: "alles", formaat: "alles" };
   const knoppen = document.querySelectorAll(".filterknop");
+  const formaatknoppen = document.querySelectorAll(".formaatknop");
+  // De rij Soort staat verborgen zolang er geen tip live is (build.js).
+  const formaatGroep = document.querySelector(".groep-formaat");
+  const metTips = Boolean(formaatGroep && !formaatGroep.hidden);
   const kaarten = document.querySelectorAll(".kaart");
   const leeg = document.querySelector(".leeg");
+
+  function formaatVan(kaart) {
+    return kaart.dataset.formaat || "verhaal";
+  }
+  // Past deze kaart bij de gekozen filters? Met `gebied` kan een ander
+  // gebied dan het gekozen worden nagerekend (voor de aantallen per gebied).
+  function past(kaart, gebied) {
+    const catOk = actief.categorie === "alles" || (kaart.dataset.categorie || "").split(" ").includes(actief.categorie);
+    const gebOk = gebied === "alles" || (kaart.dataset.gebied || "").split(" ").includes(gebied);
+    const formaatOk = actief.formaat === "alles" || formaatVan(kaart) === actief.formaat;
+    return catOk && gebOk && formaatOk;
+  }
+
+  // "1 verhaal", "3 verhalen", "0 tips"
+  function aantalTekst(aantal, een, meer) {
+    return aantal + " " + (aantal === 1 ? een : meer);
+  }
+
+  function filter() {
+    let verhalen = 0;
+    let tips = 0;
+    kaarten.forEach(function (kaart) {
+      const toon = past(kaart, actief.gebied);
+      kaart.hidden = !toon;
+      if (toon) {
+        if (formaatVan(kaart) === "tip") tips++;
+        else verhalen++;
+      }
+    });
+    leeg.hidden = verhalen + tips > 0;
+    telPerGebied();
+    // Voor screenreaders: hoeveel verhalen en tips blijven er over?
+    let tekst;
+    if (verhalen + tips === 0) tekst = "Niets gevonden in deze combinatie.";
+    else if (!metTips || actief.formaat === "verhaal") tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " gevonden.";
+    else if (actief.formaat === "tip") tekst = aantalTekst(tips, "tip", "tips") + " gevonden.";
+    else tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " en " + aantalTekst(tips, "tip", "tips") + " gevonden.";
+    document.getElementById("filter-uitkomst").textContent = tekst;
+  }
 
   knoppen.forEach(function (knop) {
     knop.addEventListener("click", function () {
@@ -445,34 +502,30 @@
           k.setAttribute("aria-pressed", k === knop ? "true" : "false");
         }
       });
-      let zichtbaar = 0;
-      kaarten.forEach(function (kaart) {
-        const catOk = actief.categorie === "alles" || (kaart.dataset.categorie || "").split(" ").includes(actief.categorie);
-        const gebOk = actief.gebied === "alles" || (kaart.dataset.gebied || "").split(" ").includes(actief.gebied);
-        const toon = catOk && gebOk;
-        kaart.hidden = !toon;
-        if (toon) zichtbaar++;
-      });
-      leeg.hidden = zichtbaar > 0;
-      telPerGebied();
-      // Voor screenreaders: hoeveel verhalen blijven er over?
-      document.getElementById("filter-uitkomst").textContent = zichtbaar === 0
-        ? "Geen verhalen in deze combinatie."
-        : zichtbaar + (zichtbaar === 1 ? " verhaal" : " verhalen") + " gevonden.";
+      filter();
     });
   });
 
-  // Aantal verhalen per gebied bij de gekozen categorie, als data-aantal op
-  // elk gebiedknopje. De keuzelijst op mobiel (assets/filterrij.js) toont
-  // die aantallen, bijvoorbeeld "Oost (0)". Verandert niets aan het filteren.
+  formaatknoppen.forEach(function (knop) {
+    knop.addEventListener("click", function () {
+      actief.formaat = knop.dataset.formaat;
+      formaatknoppen.forEach(function (k) {
+        k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+      });
+      filter();
+    });
+  });
+
+  // Aantal verhalen en tips per gebied bij de gekozen categorie en soort,
+  // als data-aantal op elk gebiedknopje. De keuzelijst op mobiel
+  // (assets/filterrij.js) toont die aantallen, bijvoorbeeld "Oost (0)".
+  // Verandert niets aan het filteren.
   function telPerGebied() {
     knoppen.forEach(function (knop) {
       if (knop.dataset.filter !== "gebied") return;
       let aantal = 0;
       kaarten.forEach(function (kaart) {
-        const catOk = actief.categorie === "alles" || (kaart.dataset.categorie || "").split(" ").includes(actief.categorie);
-        const gebOk = knop.dataset.waarde === "alles" || (kaart.dataset.gebied || "").split(" ").includes(knop.dataset.waarde);
-        if (catOk && gebOk) aantal++;
+        if (past(kaart, knop.dataset.waarde)) aantal++;
       });
       knop.dataset.aantal = aantal;
     });
@@ -480,14 +533,16 @@
   telPerGebied();
 
   // Komt een bezoeker binnen via ?gebied=centrum (het broodkruimelpad of het
-  // gebiedlabel op een postpagina) of ?categorie=kidsproof (de labels boven
-  // een post), dan simuleren we een klik op dat filterknopje zodat de
-  // homepage meteen gefilterd opent. Geen aparte filterlogica nodig. Daarna
-  // springt de pagina naar de filterbalk, zodat de bezoeker direct ziet welk
-  // filter aan staat en de verhalen eronder (zonder eerst langs de hero te
-  // moeten scrollen).
+  // gebiedlabel op een postpagina), ?categorie=kidsproof (de labels boven
+  // een post) of ?formaat=tip (het label Even langs op een tippagina), dan
+  // simuleren we een klik op dat knopje zodat de homepage meteen gefilterd
+  // opent. Geen aparte filterlogica nodig. ?formaat= werkt alleen als de rij
+  // Soort er is (er staat minstens één tip live). Daarna springt de pagina
+  // naar de filterbalk, zodat de bezoeker direct ziet welk filter aan staat
+  // en de kaarten eronder (zonder eerst langs de hero te moeten scrollen).
   const filterUitUrl = new URLSearchParams(location.search);
   let gekozenKnop = null;
+  let naarFilters = false;
   ["categorie", "gebied"].forEach(function (soort) {
     const waarde = filterUitUrl.get(soort);
     if (!waarde) return;
@@ -496,18 +551,29 @@
     );
     if (knop) {
       knop.click();
+      naarFilters = true;
       if (!gekozenKnop || soort === "categorie") gekozenKnop = knop;
     }
   });
+  const formaatUitUrl = filterUitUrl.get("formaat");
+  if (metTips && formaatUitUrl) {
+    const knop = document.querySelector('.formaatknop[data-formaat="' + CSS.escape(formaatUitUrl) + '"]');
+    if (knop) {
+      knop.click();
+      naarFilters = true;
+    }
+  }
   if (gekozenKnop) {
     // Op mobiel staan de categorieknoppen in een veegbare rij: schuif de
-    // gekozen knop daarin in beeld (alleen horizontaal), daarna de filterbalk
-    // bovenaan het scherm. html heeft scroll-padding-top, dus de vaste
-    // header valt er niet overheen.
+    // gekozen knop daarin in beeld (alleen horizontaal).
     const rij = gekozenKnop.parentElement;
     if (rij && rij.scrollWidth > rij.clientWidth) {
       rij.scrollLeft = gekozenKnop.offsetLeft - rij.offsetLeft - (rij.clientWidth - gekozenKnop.offsetWidth) / 2;
     }
+  }
+  if (naarFilters) {
+    // Daarna de filterbalk bovenaan het scherm. html heeft
+    // scroll-padding-top, dus de vaste header valt er niet overheen.
     document.querySelector(".filters").scrollIntoView({ block: "start" });
   }
 </script>
