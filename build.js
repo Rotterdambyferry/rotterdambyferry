@@ -579,9 +579,9 @@ ${groepen}    </div>
 // Foutmeldingen die de build stoppen (anders komt er een kapotte pagina
 // online): ontbrekende of ongeldige titel, gebied, categorie, bezocht,
 // lat/lon, foto's of alt-teksten, een foto die niet in assets/img staat, een
-// ongeldige publicatiedatum. Waarschuwingen (de build gaat door): meer dan
-// TIP_MAX_WOORDEN woorden, een gedachtestreepje, een bezochtdatum in de
-// toekomst, geen straat.
+// ongeldige publicatiedatum, een bezoekmaand in de toekomst. Waarschuwingen
+// (de build gaat door): meer dan TIP_MAX_WOORDEN woorden, een
+// gedachtestreepje, geen straat.
 const tipsmap = path.join(bronmap, "tips");
 const TIP_MAX_WOORDEN = 150;
 const MAANDEN = [
@@ -706,7 +706,11 @@ function leesTips() {
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(bezocht)) {
       throw new Error(`${bron}: bezocht "${bezocht}" moet de vorm JJJJ-MM hebben, bv. 2026-11.`);
     }
-    if (bezocht > vandaag.slice(0, 7)) console.warn(`⚠ ${bron}: bezocht ${bezocht} ligt in de toekomst.`);
+    // Alleen plekken waar Ferry al is geweest: een bezoekmaand in de toekomst
+    // kan niet. (Een publicatiedatum in de toekomst mag wel.)
+    if (bezocht > vandaag.slice(0, 7)) {
+      throw new Error(`${bron}: bezocht ${bezocht} ligt in de toekomst. Vul de maand in waarin je er echt was (deze maand of eerder).`);
+    }
 
     const gebied = verplicht("gebied", `één van: ${GEBIED_VOLGORDE.join(", ")}`).toLowerCase();
     if (!GEBIED_VOLGORDE.includes(gebied)) {
