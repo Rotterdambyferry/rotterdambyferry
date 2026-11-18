@@ -699,7 +699,7 @@ const AFKORTINGEN = [
 // door als het volgende stuk met een kleine letter of een cijfer begint.
 const ALTIJD_DOOR = [
   "st.", "dhr.", "mevr.", "nr.", "mr.", "dr.", "ds.", "prof.",
-  "bv.", "bijv.", "o.a.", "m.n.", "d.w.z.", "t.o.v.", "i.p.v.", "o.b.v.", "vs.", "ca.", "ong.", "incl.", "excl.", "max.",
+  "bv.", "bijv.", "o.a.", "m.n.", "d.w.z.", "t.o.v.", "i.p.v.", "o.b.v.", "vs.", "ca.", "ong.", "incl.", "excl.",
 ];
 // Tekens die vóór een woord kunnen staan: haakje en aanhalingstekens, ook
 // de typografische van een telefoon („ ‚ “ ‘ ’).
