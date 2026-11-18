@@ -26,6 +26,9 @@ Ferry ging op vakantie en had weinig gebruikslimiet over, dus sessie 3 is verkle
    3. Op de tippagina laadt foto 2 meteen (`loading="eager"`), ook op de telefoon waar die onder de tekst staat (ongeveer 195 KB); op `lazy` zetten (ontwerpbesluit uit sessie 2).
    4. Ferry koos bewust geen eigen `omschrijving` en geen vaste `publicatiedatum` voor De Kleine Kapitein: de meta description is de eerste zin van de tekst. Na ongeveer 4 weken in Search Console kijken (zie paragraaf 5). De tip sorteert op de datum van de commit die hem toevoegde (18 november 2026), dus alleen met een gewone merge-commit mergen, nooit squash of rebase.
 
+5. **Homepage: te veel filters boven de verhalen.** Op de computer staan nu drie filterrijen (Soort, Categorie, Gebied) onder de hero, waardoor je pas na een scroll een verhaal ziet. Slimmer ontwerpen, zowel op mobiel als op de computer: bijvoorbeeld de filters achter een uitvouwknop ("Filters") met alleen de gekozen filters zichtbaar, zodat de eerste verhaalkaarten direct in beeld staan. Eerst een voorstel (schets) aan Ferry, dan pas bouwen; de bestaande besluiten (rij Soort, filters uit het adres, mobiele filterrij) moeten blijven werken.
+6. **Kaart op mobiel (opgelost op 18 november 2026, ter info):** een open popup verdween op een telefoon als je tikte voordat de kaarttegels binnen waren, doordat het load-event de kaart opnieuw inpaste. Opgelost met de vlag `bezoekerBezig` in `src/kaart.html` (zie CLAUDE.md, kopje `kaart.html`). Controleer bij elke wijziging aan het kaartscript met aanraking op 390px en trage tegels (de proef van die dag: tik op een pin terwijl `document.readyState` nog `interactive` is).
+
 ## 3. Open punten uit de reviews van sessie 2
 
 Er staan geen open punten meer. Alles wat de reviews van sessie 2 vonden en wat Ferry goedkeurde, is verwerkt; de rest is bewust zo gelaten. Het overzicht staat in `PLAN-SESSIE-2.md`, paragraaf 7. Bekende punten die bewust zo blijven:
