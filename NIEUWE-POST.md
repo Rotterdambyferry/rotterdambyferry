@@ -147,8 +147,10 @@ je zelf bent geweest. Een tip is één tekstbestand; de site maakt de rest
    de plek, alleen kleine letters en streepjes: `de-kleine-kapitein.md`.
    Dat wordt ook het webadres: `/posts/de-kleine-kapitein.html`.
 2. Vul de velden bovenaan in (titel, gebied, categorie, bezocht, straat,
-   postcode, lat/lon, foto1/alt1, foto2/alt2) en zet je tekst onder de
-   tweede regel `---`. Uitleg staat in het sjabloon zelf.
+   postcode, lat/lon, foto1/alt1, foto2/alt2, website) en zet je tekst onder
+   de tweede regel `---`. De website van de zaak zet je er altijd bij, ook
+   bij een kleine tip: zo steunen we de lokale ondernemer. Het wordt een
+   link "Website" onder de tekst. Uitleg staat in het sjabloon zelf.
 3. Foto's: zet ze in `assets\img` met dezelfde namen als in foto1 en foto2,
    met voor allebei een `-mobiel.jpg` en voor foto1 ook een `-kaart.jpg`
    (16:10). Wil je een mooie foto bij het delen op WhatsApp, maak dan een

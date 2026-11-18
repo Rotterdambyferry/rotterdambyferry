@@ -29,8 +29,11 @@ alt2: Wat er op foto 2 te zien is, in één zin
 deelfoto:
 # Optioneel: pas verschijnen op deze dag (JJJJ-MM-DD)
 publicatiedatum:
-# Optioneel
+# De website van de zaak: zet die er altijd bij, ook bij een kleine tip. Zo
+# steunen we de lokale ondernemer en linken zij straks misschien terug.
+# Het wordt een link "Website" onder de tekst. Begin met https://
 website:
+# Optioneel
 instagram_url:
 # Op "ja" zetten om de tip uit Google te houden (dan ook niet in de sitemap)
 noindex:
