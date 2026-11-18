@@ -157,5 +157,21 @@
     "image": "assets/img/dak-rotterdam-vuurtje-mobiel.jpg",
     "alt": "Een man staat in de rook bij een brandende bbq op het dak, terwijl bezoekers eromheen kletsen met een drankje in de hand",
     "teaser": "Bbq'en op een dak in de stad: ieder jaar weer iets magisch."
+  },
+  {
+    "naam": "De Kleine Kapitein",
+    "formaat": "tip",
+    "lat": 51.922104,
+    "lon": 4.487699,
+    "categorie": [
+      "kidsproof"
+    ],
+    "gebied": "centrum",
+    "post": "posts/de-kleine-kapitein.html",
+    "image": "assets/img/de-kleine-kapitein-gevel-kaart.jpg",
+    "alt": "Gevel van kinderboekwinkel De Kleine Kapitein aan de Botersloot met twee blauwe vlaggen, met de Centrale Bibliotheek op de achtergrond",
+    "teaser": "Als je in Rotterdam een kinderboekwinkel zoekt, is dit al jaren mijn vaste adres.",
+    "straat": "Botersloot 173",
+    "postcode": "3011 HE"
   }
 ]

@@ -1849,7 +1849,7 @@ body:has(.artikel) .site-footer .inner {
          Staat verborgen zolang er geen tip live is: build.js haalt het
          hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
          want die pakken de filterscripts allemaal op. -->
-    <div class="groep groep-formaat" hidden>
+    <div class="groep groep-formaat">
       <span class="label" id="formaat-label">Soort</span>
       <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
         <button type="button" class="formaatknop" data-formaat="alles" aria-pressed="true">Alles</button>
@@ -1896,6 +1896,20 @@ body:has(.artikel) .site-footer .inner {
 </section>
 
 <main class="grid" id="verhalen">
+
+  <article class="kaart kaart-tip" data-formaat="tip" data-categorie="kidsproof" data-gebied="centrum">
+    <a class="thumb" href="posts/de-kleine-kapitein.html" aria-hidden="true" tabindex="-1">
+      <img src="assets/img/de-kleine-kapitein-gevel-kaart.jpg" alt="Gevel van kinderboekwinkel De Kleine Kapitein aan de Botersloot met twee blauwe vlaggen, met de Centrale Bibliotheek op de achtergrond" width="800" height="500" loading="eager">
+    </a>
+    <h2><a href="posts/de-kleine-kapitein.html">De Kleine Kapitein</a></h2>
+    <div class="tags">
+      <span class="tag formaat-tip">Even langs</span>
+      <span class="tag">Kidsproof</span>
+      <span class="tag gebied">Centrum</span>
+    </div>
+    <p>Als je in Rotterdam een kinderboekwinkel zoekt, is dit al jaren mijn vaste adres. De Kleine Kapitein heeft kinderboeken van 0 tot 18, en achterin een heerlijke spellenhoek met een houten treinbaan waar de kids zo even mee aan de slag gaan.</p>
+    <a class="lees" href="posts/de-kleine-kapitein.html">Lees de tip &rarr;</a>
+  </article>
 
   <article class="kaart" data-formaat="verhaal" data-categorie="kidsproof dagje-uit" data-gebied="maasvlakte">
     <a class="thumb" href="posts/portlantis.html" aria-hidden="true" tabindex="-1">
