@@ -770,14 +770,16 @@ function leesTips() {
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(naam)) {
       throw new Error(`${bron}: de bestandsnaam wordt het webadres, gebruik alleen kleine letters, cijfers en streepjes (bv. de-kleine-kapitein.md).`);
     }
+    // Een verhaal met dezelfde naam dat nog klaarstaat (publicatiedatum in
+    // de toekomst): de melding daarover volgt verderop, alleen als de tip
+    // zelf al live is.
+    let voorbereidVerhaal = null;
     if (fs.existsSync(path.join(bronmap, "posts", `${naam}.html`))) {
       if (!verborgenPosts.has(naam)) {
         console.warn(`⚠ ${bron}: er bestaat ook een verhaal src/posts/${naam}.html. Het verhaal wint, de tip wordt overgeslagen.`);
         continue;
       }
-      console.warn(
-        `⚠ ${bron}: er staat ook een verhaal src/posts/${naam}.html klaar (publicatiedatum ${publicatiedatums[naam]}). Tot die dag staat de tip online, daarna neemt het verhaal zijn plek over.`
-      );
+      voorbereidVerhaal = publicatiedatums[naam];
     }
     const { velden, tekst } = leesTipBestand(bestand);
     const verplicht = (veld, uitleg) => {
@@ -851,6 +853,12 @@ function leesTips() {
       throw new Error(`${bron}: website moet beginnen met https:// (of http://).`);
     }
 
+    const verborgen = Boolean(publicatie && !alles && publicatie > vandaag);
+    if (voorbereidVerhaal && !verborgen) {
+      console.warn(
+        `⚠ ${bron}: er staat ook een verhaal src/posts/${naam}.html klaar (publicatiedatum ${voorbereidVerhaal}). Tot die dag staat de tip online, daarna neemt het verhaal zijn plek over.`
+      );
+    }
     if (publicatie) tipPublicatiedatums[naam] = publicatie;
     const [jaar, maand] = bezocht.split("-");
     tips.push({
@@ -879,7 +887,7 @@ function leesTips() {
       teaser: tipSamenvatting(platteTekst, 1, 110),
       kaartTekst: tipSamenvatting(platteTekst, 3, 260),
       publicatie,
-      verborgen: Boolean(publicatie && !alles && publicatie > vandaag),
+      verborgen,
     });
   }
   return tips;
