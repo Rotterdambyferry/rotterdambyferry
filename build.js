@@ -695,11 +695,12 @@ const AFKORTINGEN = [
 // altijd vóór een naam) en woorden als o.a., bv. en t.o.v., waar vaak een
 // naam op volgt ("o.a. Kaapse Brouwers", "t.o.v. De Kuip"). Daarna loopt de
 // zin altijd door. De overige afkortingen uit AFKORTINGEN (enz., a.s.,
-// z.s.m., min.) kunnen wel een zin afsluiten; daarna loopt de zin alleen
-// door als het volgende stuk met een kleine letter of een cijfer begint.
+// z.s.m., min., max.) kunnen wel een zin afsluiten; daarna loopt de zin alleen
+// door als het volgende stuk met een kleine letter, een cijfer of een euroteken
+// begint ("max. 4 personen", "max. €10").
 const ALTIJD_DOOR = [
   "st.", "dhr.", "mevr.", "nr.", "mr.", "dr.", "ds.", "prof.",
-  "bv.", "bijv.", "o.a.", "m.n.", "d.w.z.", "t.o.v.", "i.p.v.", "o.b.v.", "vs.", "ca.", "ong.", "incl.", "excl.", "max.",
+  "bv.", "bijv.", "o.a.", "m.n.", "d.w.z.", "t.o.v.", "i.p.v.", "o.b.v.", "vs.", "ca.", "ong.", "incl.", "excl.",
 ];
 // Tekens die vóór een woord kunnen staan: haakje en aanhalingstekens, ook
 // de typografische van een telefoon („ ‚ “ ‘ ’).
@@ -710,8 +711,8 @@ const AANLOOP = "(\"'\u201c\u2018\u2019\u201e\u201a";
 // afkortingen als "o.a." blijven heel. Eindigt een stuk op een afkorting uit
 // ALTIJD_DOOR, dan hoort het volgende stuk er altijd bij ("Je vindt er o.a.
 // Kaapse Brouwers"). Eindigt het op een andere afkorting uit AFKORTINGEN,
-// dan alleen als het volgende stuk met een kleine letter of een cijfer
-// begint: "Poffertjes, wafels enz. Daarna naar huis" is twee zinnen.
+// dan alleen als het volgende stuk met een kleine letter, een cijfer of een
+// euroteken begint: "Poffertjes, wafels enz. Daarna naar huis" is twee zinnen.
 function tipZinnen(tekst) {
   const zinnen = [];
   for (const stuk of tekst.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean)) {
@@ -719,7 +720,7 @@ function tipZinnen(tekst) {
     const laatsteWoord = vorige ? vorige.split(/\s+/).pop().toLowerCase().replace(new RegExp(`^[${AANLOOP}]+`), "") : "";
     const looptDoor =
       ALTIJD_DOOR.includes(laatsteWoord) ||
-      (AFKORTINGEN.includes(laatsteWoord) && new RegExp(`^[${AANLOOP}]*[a-z\u00e0-\u00ff0-9]`).test(stuk));
+      (AFKORTINGEN.includes(laatsteWoord) && new RegExp(`^[${AANLOOP}]*[a-z\u00e0-\u00ff0-9\u20ac]`).test(stuk));
     if (vorige && looptDoor) zinnen[zinnen.length - 1] = `${vorige} ${stuk}`;
     else zinnen.push(stuk);
   }

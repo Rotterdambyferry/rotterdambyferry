@@ -8,15 +8,23 @@ Geschreven op 18 november 2026, aan het eind van sessie 2. Lees eerst `CLAUDE.md
 2. Kaartpagina: vierkante tip-pin, popup van een tip, escaping, popup onder de zoomknoppen, formaatfilter, filters uit het adres, `?plek=<naam>` (ook in een cluster en ondanks filters), tips in "Alle plekken op een rij".
 3. build.js: een tip blijft online naast een voorbereid verhaal met dezelfde naam; zinnen en afkortingen in de teaser; melding bij een dubbel veld.
 
-## 2. Wat sessie 3 doet
+## 2. Sessie 3, licht (18 november 2026)
 
-1. **Het blok "Even verderop":** 2 of 3 tips in hetzelfde gebied of dezelfde categorie, onder elk verhaal en elke tip; geen tips, dan geen blok. "Misschien vind je dit ook leuk" en de verdeling onder de verhalen (`verdeelVerwantePosts`) blijven ongewijzigd.
+Ferry ging op vakantie en had weinig gebruikslimiet over, dus sessie 3 is verkleind tot:
+
+1. `max.` uit `ALTIJD_DOOR` in `build.js`: een zin die op de naam Max eindigt loopt niet meer door; "max. 4 personen" blijft heel.
+2. **De eerste echte tip, De Kleine Kapitein**, live: bestand `src/tips/de-kleine-kapitein.md`, foto's in `assets/img/`. De tekst is van Ferry en is niet herschreven. Ferry heeft de coördinaten zelf in Google Maps gecontroleerd. De tip heeft geen publicatiedatum en sorteert dus op de dag van toevoegen (18 november 2026); hij staat bovenaan de homepage. Geen `noindex`: hij staat in Google en in de sitemap. De rij Soort is vanaf nu zichtbaar.
+
+## 2b. Nog te doen, na de vakantie van Ferry (de volgende sessie)
+
+1. **Het blok "Even verderop":** 2 of 3 tips in hetzelfde gebied of dezelfde categorie, onder elk verhaal en elke tip; geen tips, dan geen blok. "Misschien vind je dit ook leuk" en de verdeling onder de verhalen (`verdeelVerwantePosts`) blijven ongewijzigd. Nu is er maar één tip, dus het blok krijgt pas zin als er meer tips zijn.
 2. **Het hulpje** om in ongeveer 5 minuten een tip te maken: `npm run nieuwe-tip` plus de fotostap. Geen npm-pakketten.
 3. **Een klein fotootje voor de tipkaart** (bijvoorbeeld 176x176) in plaats van de `-kaart`-variant van 800x500 (review van het plan van sessie 2, bevinding 13.2).
-4. **De eerste echte tip, De Kleine Kapitein:** bestand en foto's staan klaar in `docs/even-langs/eerste-tip/`. De tekst is van Ferry en mag niet herschreven worden. Ferry controleert de coördinaten zelf nog in Google Maps. Pas als hij live staat:
-   1. verschijnt de rij Soort;
-   2. kan `/?formaat=tip` live gecontroleerd worden;
-   3. kan `kaart.html?plek=de-kleine-kapitein` live gecontroleerd worden.
+4. **Kleine punten uit de review van sessie 3** (bewust blijven liggen):
+   1. `assets/img/de-kleine-kapitein-spellenhoek-kaart.jpg` wordt nergens gebruikt (alleen foto 1 heeft een `-kaart`-variant nodig); weghalen of laten staan.
+   2. In `docs/even-langs/eerste-tip/` staat nog een kopie van de tip en de foto's; opruimen, of er "archief" bij zetten, zodat de .md niet uit de pas loopt met `src/tips/`.
+   3. Op de tippagina laadt foto 2 meteen (`loading="eager"`), ook op de telefoon waar die onder de tekst staat (ongeveer 195 KB); op `lazy` zetten (ontwerpbesluit uit sessie 2).
+   4. Ferry koos bewust geen eigen `omschrijving` en geen vaste `publicatiedatum` voor De Kleine Kapitein: de meta description is de eerste zin van de tekst. Na ongeveer 4 weken in Search Console kijken (zie paragraaf 5). De tip sorteert op de datum van de commit die hem toevoegde (18 november 2026), dus alleen met een gewone merge-commit mergen, nooit squash of rebase.
 
 ## 3. Open punten uit de reviews van sessie 2
 
@@ -32,4 +40,4 @@ Ongewijzigd: eerst een plan, dan een review door een aparte reviewer (Opus 5.5 o
 
 ## 5. Herinnering
 
-Ongeveer 4 weken nadat de eerste tip live staat: in Search Console kijken of de tips geïndexeerd worden. Zo niet, dan kan per tip `noindex: ja`.
+Ongeveer 4 weken nadat de eerste tip live staat (eenmalige herinnering ingepland voor woensdag 16 december 2026): in Search Console kijken of de tips geïndexeerd worden. Zo niet, dan kan per tip `noindex: ja`.

@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://rotterdambyferry.nl/</loc>
-    <lastmod>2026-11-13</lastmod>
+    <lastmod>2026-11-18</lastmod>
   </url>
   <url>
     <loc>https://rotterdambyferry.nl/kaart.html</loc>
@@ -55,5 +55,9 @@
   <url>
     <loc>https://rotterdambyferry.nl/posts/warung-melatie.html</loc>
     <lastmod>2026-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://rotterdambyferry.nl/posts/de-kleine-kapitein.html</loc>
+    <lastmod>2026-11-18</lastmod>
   </url>
 </urlset>
