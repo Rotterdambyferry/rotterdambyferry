@@ -221,6 +221,18 @@
     var plekUitAdres = adres.get("plek");
     var gekozen = null; // { data, marker }
 
+    // Heeft de bezoeker de kaart al aangeraakt of een popup geopend? Dan mag
+    // de kaart zichzelf niet meer opnieuw inpassen: toonPlekken() maakt de
+    // pins opnieuw aan (dat sluit een open popup) en zoomt weer uit op alle
+    // pins. Op een telefoon met een trage verbinding komt het load-event pas
+    // als de kaarttegels binnen zijn; wie al op een pin tikte, zag de popup
+    // dan verdwijnen. Een filterklik zet dit weer uit: dan is opnieuw
+    // inpassen precies wat de bezoeker wil.
+    var bezoekerBezig = false;
+    document.getElementById("plattegrond").addEventListener("pointerdown", function () { bezoekerBezig = true; }, true);
+    document.getElementById("plattegrond").addEventListener("keydown", function () { bezoekerBezig = true; }, true);
+    map.on("popupopen", function () { bezoekerBezig = true; });
+
     // Tekst veilig in de popup zetten: een aanhalingsteken in een
     // alt-tekst of een < in een naam kan de popup zo niet breken.
     function veilig(tekst) {
@@ -349,9 +361,10 @@
         toonPlekken();
         if (gekozen) toonGekozen();
         // Opnieuw passend maken bij het laden van alles en bij een andere
-        // afmeting, behalve met ?plek= (dan alleen de afmeting bijwerken).
+        // afmeting, behalve met ?plek= of als de bezoeker de kaart al gebruikt
+        // (dan alleen de afmeting bijwerken).
         function herpas() {
-          if (gekozen) {
+          if (gekozen || bezoekerBezig) {
             map.invalidateSize();
             return;
           }
@@ -418,6 +431,7 @@
           }
         });
         gekozen = null; // de bezoeker kiest zelf: ?plek= telt niet meer
+        bezoekerBezig = false;
         naFilteren();
       });
     });
@@ -429,6 +443,7 @@
           k.setAttribute("aria-pressed", k === knop ? "true" : "false");
         });
         gekozen = null; // de bezoeker kiest zelf: ?plek= telt niet meer
+        bezoekerBezig = false;
         naFilteren();
       });
     });
