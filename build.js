@@ -691,17 +691,24 @@ const AFKORTINGEN = [
   // Ds. Jan Scharpstraat.
   "mr.", "dr.", "ds.", "prof.", "a.s.", "i.p.v.", "z.s.m.", "o.b.v.", "max.", "min.", "ong.",
 ];
+// Titels staan altijd vóór een naam en sluiten dus nooit een zin af.
+const TITELS = ["st.", "dhr.", "mevr.", "nr.", "mr.", "dr.", "ds.", "prof."];
 
 // Tekst in zinnen knippen. Alleen een punt, uitroepteken of vraagteken met
 // witruimte erachter sluit een zin af, dus tijden als "11.45 tot 12.00" en
-// afkortingen als "o.a." blijven heel. Eindigt een stuk op een afkorting uit
-// de lijst hierboven, dan hoort het volgende stuk er nog bij.
+// afkortingen als "o.a." blijven heel. Eindigt een stuk op een titel (Mr.,
+// Dr., St. en dergelijke), dan hoort het volgende stuk er altijd bij. Eindigt
+// het op een andere afkorting uit de lijst hierboven, dan alleen als het
+// volgende stuk met een kleine letter of een cijfer begint: "Neem bv. de
+// pannenkoek" is één zin, "Poffertjes, wafels enz. Daarna naar huis" twee.
 function tipZinnen(tekst) {
   const zinnen = [];
   for (const stuk of tekst.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean)) {
     const vorige = zinnen[zinnen.length - 1];
     const laatsteWoord = vorige ? vorige.split(/\s+/).pop().toLowerCase().replace(/^[("'\u201c\u2018]+/, "") : "";
-    if (vorige && AFKORTINGEN.includes(laatsteWoord)) zinnen[zinnen.length - 1] = `${vorige} ${stuk}`;
+    const looptDoor =
+      TITELS.includes(laatsteWoord) || (AFKORTINGEN.includes(laatsteWoord) && /^[("'\u201c\u2018]*[a-z\u00e0-\u00ff0-9]/.test(stuk));
+    if (vorige && looptDoor) zinnen[zinnen.length - 1] = `${vorige} ${stuk}`;
     else zinnen.push(stuk);
   }
   return zinnen;
