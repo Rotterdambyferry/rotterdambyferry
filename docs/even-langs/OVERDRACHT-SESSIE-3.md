@@ -20,6 +20,11 @@ Ferry ging op vakantie en had weinig gebruikslimiet over, dus sessie 3 is verkle
 1. **Het blok "Even verderop":** 2 of 3 tips in hetzelfde gebied of dezelfde categorie, onder elk verhaal en elke tip; geen tips, dan geen blok. "Misschien vind je dit ook leuk" en de verdeling onder de verhalen (`verdeelVerwantePosts`) blijven ongewijzigd. Nu is er maar één tip, dus het blok krijgt pas zin als er meer tips zijn.
 2. **Het hulpje** om in ongeveer 5 minuten een tip te maken: `npm run nieuwe-tip` plus de fotostap. Geen npm-pakketten.
 3. **Een klein fotootje voor de tipkaart** (bijvoorbeeld 176x176) in plaats van de `-kaart`-variant van 800x500 (review van het plan van sessie 2, bevinding 13.2).
+4. **Kleine punten uit de review van sessie 3** (bewust blijven liggen):
+   1. `assets/img/de-kleine-kapitein-spellenhoek-kaart.jpg` wordt nergens gebruikt (alleen foto 1 heeft een `-kaart`-variant nodig); weghalen of laten staan.
+   2. In `docs/even-langs/eerste-tip/` staat nog een kopie van de tip en de foto's; opruimen, of er "archief" bij zetten, zodat de .md niet uit de pas loopt met `src/tips/`.
+   3. Op de tippagina laadt foto 2 meteen (`loading="eager"`), ook op de telefoon waar die onder de tekst staat (ongeveer 195 KB); op `lazy` zetten (ontwerpbesluit uit sessie 2).
+   4. Ferry koos bewust geen eigen `omschrijving` en geen vaste `publicatiedatum` voor De Kleine Kapitein: de meta description is de eerste zin van de tekst. Na ongeveer 4 weken in Search Console kijken (zie paragraaf 5). De tip sorteert op de datum van de commit die hem toevoegde (18 november 2026), dus alleen met een gewone merge-commit mergen, nooit squash of rebase.
 
 ## 3. Open punten uit de reviews van sessie 2
 
