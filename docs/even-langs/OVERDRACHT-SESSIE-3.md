@@ -44,3 +44,7 @@ Ongewijzigd: eerst een plan, dan een review door een aparte reviewer (Opus 5.5 o
 ## 5. Herinnering
 
 Ongeveer 4 weken nadat de eerste tip live staat (eenmalige herinnering ingepland voor woensdag 16 december 2026): in Search Console kijken of de tips geïndexeerd worden. Zo niet, dan kan per tip `noindex: ja`.
+
+### 6b. Tweede kaartfix op 18 november 2026 (popup sluit na een tik op een pin)
+
+Ferry stuurde een filmpje (iPhone én Android): popup opent en is meteen weer weg, daarna staan er geen pins meer in beeld. Oorzaak: de popup is ± 350px hoog en de kaart schuift zo dat hij onder de zoomknoppen past; daardoor valt de pin zelf onderaan buiten de kaart, Leaflet.markercluster haalt hem dan van de kaart (standaard voor pins buiten beeld) en een weggehaalde pin sluit zijn popup. Te nabootsen met: telefoonformaat (390x760, aanraking), tik op cluster "4", tik daarna op de pin Due Tonino. Oplossing: `removeOutsideVisibleBounds: false` en `stelPopupRuimteIn()` in `src/kaart.html`. Let op bij tests: met die optie blijven pins buiten beeld in het DOM staan, tel dus alleen pins die in het kaartvak vallen.
