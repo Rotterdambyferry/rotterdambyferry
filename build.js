@@ -687,6 +687,9 @@ function tipPlatteTekst(tekst) {
 const AFKORTINGEN = [
   "bv.", "bijv.", "o.a.", "ca.", "m.n.", "d.w.z.", "enz.", "incl.", "excl.",
   "nr.", "vs.", "st.", "dhr.", "mevr.", "t.o.v.",
+  // Ook in Rotterdamse straatnamen: Mr. Visserplein, Dr. Molewaterplein,
+  // Ds. Jan Scharpstraat.
+  "mr.", "dr.", "ds.", "prof.", "a.s.", "i.p.v.", "z.s.m.", "o.b.v.", "max.", "min.", "ong.",
 ];
 
 // Tekst in zinnen knippen. Alleen een punt, uitroepteken of vraagteken met
