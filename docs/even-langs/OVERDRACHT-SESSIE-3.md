@@ -20,7 +20,11 @@ Geschreven op 18 november 2026, aan het eind van sessie 2. Lees eerst `CLAUDE.md
 
 ## 3. Open punten uit de reviews van sessie 2
 
-Zie het gesprek van sessie 2 en de status onderaan `PLAN-SESSIE-2.md`. Wat Ferry daar nog niet heeft goedgekeurd, is niet gebouwd. Vraag het aan het begin van sessie 3 opnieuw als het daar nog openstaat.
+Er staan geen open punten meer. Alles wat de reviews van sessie 2 vonden en wat Ferry goedkeurde, is verwerkt; de rest is bewust zo gelaten. Het overzicht staat in `PLAN-SESSIE-2.md`, paragraaf 7. Bekende punten die bewust zo blijven:
+
+1. Het vergrote tikvlak van een tip-pin kan bij een heel dichtbij liggende verhaalpin een tik afvangen (ontwerpbesluit, overdracht sessie 2 paragraaf 2.3.2).
+2. Met `?plek=` plus een gebiedfilter telt de keuzelijst de gekozen pin niet mee.
+3. Escape sluit een popup niet als de focus op een tip-pin staat (standaardgedrag van Leaflet).
 
 ## 4. Werkwijze
 
