@@ -237,7 +237,20 @@
     var bezoekerBezig = false;
     document.getElementById("plattegrond").addEventListener("pointerdown", function () { bezoekerBezig = true; }, true);
     document.getElementById("plattegrond").addEventListener("keydown", function () { bezoekerBezig = true; }, true);
-    map.on("popupopen", function () { bezoekerBezig = true; });
+    map.on("popupopen", function () {
+      bezoekerBezig = true;
+      // Op een telefoon ligt de kaart onder de filters en is maar een deel van
+      // de kaart in beeld: de popup (en zijn knop) viel dan buiten beeld. Dus
+      // de pagina zo schuiven dat de hele kaart onder de vaste kop staat.
+      if (!window.matchMedia("(max-width: 640px)").matches) return;
+      var kop = document.querySelector("header");
+      var boven = (kop ? kop.getBoundingClientRect().bottom : 0) + 8;
+      var r = document.getElementById("plattegrond").getBoundingClientRect();
+      var hoogte = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (r.top < boven || r.bottom > hoogte - 8) {
+        window.scrollBy(0, r.top - boven);
+      }
+    });
 
     // Tekst veilig in de popup zetten: een aanhalingsteken in een
     // alt-tekst of een < in een naam kan de popup zo niet breken.
