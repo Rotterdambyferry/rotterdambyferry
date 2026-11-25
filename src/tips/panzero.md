@@ -9,8 +9,8 @@ lat: 51.922023
 lon: 4.488115
 foto1: panzero-puccia.jpg
 alt1: Puccia met capocollo, stracciatella en rucola, doormidden gesneden, met een flesje Aranciata Rossa op de achtergrond
-foto2: panzero-gevel.jpg
-alt2: Gevel van Panzerò aan de Botersloot, met witte stoeltjes en tafeltjes op het terras
+foto2: panzero-terras.jpg
+alt2: Het terras van Panzerò onder een parasol, met witte stoeltjes en houten tafeltjes en erachter het raam met het logo en de gele bank
 deelfoto: panzero-puccia-deel.jpg
 website: https://www.panzero.nl/
 ---
