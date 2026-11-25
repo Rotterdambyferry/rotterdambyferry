@@ -726,13 +726,27 @@ a.tag.gebied:focus-visible {
 }
 
 /* ---------- Postkaarten ---------- */
+/* Het aantal kolommen staat hier vast (1, 2 of 3) en niet meer als auto-fill:
+   het filterscript in src/index.html zet de tipstrook na de eerste rij en
+   moet dus precies weten hoeveel kolommen er zijn. Het leest dezelfde twee
+   breekpunten af met matchMedia (664px en 1000px); houd beide gelijk. De
+   marge boven 664 en 1000 houdt rekening met een schuifbalk van ongeveer
+   17px (Windows): een kaart wordt daardoor niet smaller dan ongeveer 290px.
+   minmax(0, 1fr): zonder dat kan de brede inhoud van een kaart een kolom
+   oprekken. */
 .grid {
   max-width: var(--breedte);
   margin: 0 auto;
   padding: 0 1.25rem 4rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
+}
+@media (min-width: 664px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1000px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 .kaart[hidden] { display: none; }
 .kaart {
@@ -1097,18 +1111,119 @@ a.tag.formaat-tip:focus-visible {
   .tip-foto-2 { margin-top: 0.4rem; }
 }
 
-/* Tipkaart op de homepage (gemaakt door build.js uit src/tips/*.md), tussen
-   de verhalen in hetzelfde raster. Op elke schermbreedte compact: klein
-   vierkant fotootje met de kop ernaast, daaronder over de volle breedte de
-   labels, de tekst en "Lees de tip". Staat bovenaan in zijn rij en rekt
-   niet mee met de verhalen ernaast. Groen randje van 2px, papierkleur. De
-   hele kaart is klikbaar via de kop-link (uitgerekt vlak); "Lees de tip"
-   ligt daarboven en blijft los klikbaar en focusbaar. */
+/* Tipstrook "Even langs" op de homepage (gemaakt door build.js uit
+   src/tips/*.md): alle tips samen in één strook over de volle breedte van
+   het raster, na de eerste rij verhalen. In de bron staat hij na het eerste
+   verhaal (volgorde op een telefoon); `order` zet hem hieronder op tablet en
+   computer visueel na de eerste rij, tot het filterscript (plaatsStrook) hem
+   echt verplaatst en de klasse strook-gezet op het raster zet. Zonder
+   JavaScript blijft die plaatsing dus kloppen. Een lichtgroene band zonder
+   extra zwarte rand, daarin de tipkaarten: papierkleur met een groen randje
+   van 2px. Het aantal tips naast elkaar komt uit --tip-kol (build.js en
+   filterscript zetten --kol-breed voor de computer); op een tablet altijd 2.
+   Een onvolledige laatste rij rekt uit (flex-grow), dus nergens een gat.
+   Kaartjes in een rij zijn even hoog. Op een telefoon scrolt de lijst
+   zijwaarts met scroll-snap, het volgende kaartje half in beeld. */
+.tipstrook {
+  grid-column: 1 / -1;
+  min-width: 0;
+  background: var(--groen-licht);
+  padding: 1.25rem 1.25rem 1.4rem;
+}
+.tipstrook[hidden] { display: none; }
+.tipstrook-kop {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  margin: 0;
+}
+.tipstrook-intro {
+  margin: 0.25rem 0 0;
+  color: var(--staal);
+  font-size: 0.95rem;
+}
+.tipstrook-lijst {
+  --tip-kol: var(--kol-breed, 3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.tipstrook-lijst > .kaart-tip {
+  /* Precies 1/--tip-kol van de breedte (min 1px tegen afronding): zo
+     passen er altijd --tip-kol naast elkaar en rekt de laatste rij uit. */
+  flex: 1 1 calc((100% - (var(--tip-kol) - 1) * 1rem) / var(--tip-kol) - 1px);
+  min-width: 0;
+}
+/* Eén tip (na een filter): niet over de hele breedte uitrekken. */
+.tipstrook[data-zichtbaar="1"] .tipstrook-lijst > .kaart-tip {
+  flex: 0 1 34rem;
+}
+@media (min-width: 664px) and (max-width: 999px) {
+  .tipstrook-lijst { --tip-kol: 2; }
+}
+/* Tot de tablet staat de strook in de bron al op de goede plek (na het
+   eerste verhaal). Vanaf 664px zet `order` hem na de eerste rij: 2 verhalen
+   op een tablet, 3 op de computer. nth-child telt de bronvolgorde:
+   verhaal 1 (kind 1), strook (kind 2), verhaal 2 (kind 3), ... */
+@media (min-width: 664px) {
+  .grid:not(.strook-gezet) > .tipstrook { order: 1; }
+  .grid:not(.strook-gezet) > .kaart:nth-child(n+4) { order: 2; }
+}
+@media (min-width: 1000px) {
+  .grid:not(.strook-gezet) > .kaart:nth-child(4) { order: 0; }
+  .grid:not(.strook-gezet) > .kaart:nth-child(n+5) { order: 2; }
+}
+/* Telefoon (1 kolom): de strook loopt tot de rand van het scherm en de
+   lijst scrolt zijwaarts. Elk kaartje 78% breed, zodat het volgende voor
+   een deel in beeld blijft; één tip vult de hele breedte (flex-grow). Geen
+   scroll-behavior: smooth, dus ook niets extra voor "minder beweging". De
+   lijst heeft wat lucht boven en onder (padding met een negatieve marge
+   die dat opheft) zodat de focusrand van een kaartje niet afgesneden wordt. */
+@media (max-width: 663px) {
+  .tipstrook {
+    margin-inline: -1.25rem;
+    padding-inline: 0;
+  }
+  .tipstrook-kop-blok { padding-inline: 1.25rem; }
+  .tipstrook-lijst {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    padding: 6px 1.25rem;
+    margin-block: calc(1rem - 6px) -6px;
+    overscroll-behavior-x: contain;
+  }
+  .tipstrook-lijst > .kaart-tip {
+    flex: 1 0 78%;
+    scroll-snap-align: start;
+  }
+  /* Staan er alleen tips (Soort Tips, of een filter dat alleen tips
+     overlaat): dan onder elkaar in plaats van zijwaarts. */
+  .grid.alleen-tips .tipstrook { margin-inline: 0; padding-inline: 1.25rem; }
+  .grid.alleen-tips .tipstrook-kop-blok { padding-inline: 0; }
+  .grid.alleen-tips .tipstrook-lijst {
+    flex-wrap: wrap;
+    overflow: visible;
+    padding: 0;
+    margin-block: 1rem 0;
+  }
+  .grid.alleen-tips .tipstrook-lijst > .kaart-tip { flex: 1 1 100%; }
+}
+
+/* De tipkaart zelf: compact, op elke schermbreedte. Klein vierkant fotootje
+   met de kop ernaast, daaronder over de volle breedte de labels, de tekst en
+   "Lees de tip". De hele kaart is klikbaar via de kop-link (uitgerekt
+   vlak); "Lees de tip" ligt daarboven en blijft los klikbaar en focusbaar.
+   De tekstrij rekt mee (1fr), zodat "Lees de tip" bij kaartjes van gelijke
+   hoogte onderaan staat. */
 .kaart.kaart-tip {
   position: relative;
-  align-self: start;
   display: grid;
   grid-template-columns: 88px 1fr;
+  grid-template-rows: auto auto 1fr auto;
   grid-template-areas:
     "thumb titel"
     "tags tags"
@@ -1129,12 +1244,16 @@ a.tag.formaat-tip:focus-visible {
   border: 2px solid var(--ink);
 }
 .kaart.kaart-tip .thumb img { aspect-ratio: 1; }
-.kaart.kaart-tip h2 {
+.kaart.kaart-tip h3 {
   grid-area: titel;
   align-self: center;
   font-size: 1.2rem;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
-.kaart.kaart-tip h2 a::after {
+.kaart.kaart-tip h3 a { color: var(--ink); text-decoration: none; }
+.kaart.kaart-tip h3 a::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1147,7 +1266,7 @@ a.tag.formaat-tip:focus-visible {
   position: relative;
   z-index: 1;
 }
-.kaart.kaart-tip:hover h2 a { color: var(--groen); }
+.kaart.kaart-tip:hover h3 a { color: var(--groen); }
 
 /* Formaatfilter Alles / Verhalen / Tips (homepage en kaartpagina): één
    segmentknop met drie delen. Bewust geen .filterknop (die pakken de

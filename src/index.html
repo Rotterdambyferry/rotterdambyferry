@@ -480,6 +480,26 @@
   const kaarten = document.querySelectorAll(".kaart");
   const leeg = document.querySelector(".leeg");
 
+  // De tipstrook "Even langs" (build.js): alle tips in één strook over de
+  // volle breedte van het raster. Tips blijven gewone .kaart-elementen
+  // (data-formaat="tip"), dus past(), de aantallen en de teller werken
+  // ongewijzigd; de strook zelf verdwijnt als er geen enkele tip overblijft.
+  const raster = document.getElementById("verhalen");
+  const strook = document.querySelector(".tipstrook");
+  // Het aantal kolommen van het raster: dezelfde twee breekpunten als in
+  // style.css (.grid), met matchMedia in plaats van het raster uitlezen, zodat
+  // CSS en script nooit uit de pas lopen. Houd beide gelijk.
+  const mqComputer = window.matchMedia("(min-width: 1000px)");
+  const mqTablet = window.matchMedia("(min-width: 664px)");
+  function kolommen() {
+    return mqComputer.matches ? 3 : mqTablet.matches ? 2 : 1;
+  }
+  // Tips naast elkaar op de computer: tot 3, maar 4 tips als 2 plus 2
+  // (zelfde regel als tipKolommen in build.js).
+  function tipKolommen(n) {
+    return n === 4 ? 2 : Math.min(Math.max(n, 1), 3);
+  }
+
   function formaatVan(kaart) {
     return kaart.dataset.formaat || "verhaal";
   }
@@ -509,6 +529,15 @@
       }
     });
     leeg.hidden = verhalen + tips > 0;
+    // Geen enkele zichtbare tip: de hele strook (met kopje) weg. Blijven er
+    // alleen tips over, dan staan ze op een telefoon onder elkaar.
+    if (strook) {
+      strook.hidden = tips === 0;
+      strook.dataset.zichtbaar = tips;
+      strook.style.setProperty("--kol-breed", tipKolommen(tips));
+    }
+    raster.classList.toggle("alleen-tips", verhalen === 0 && tips > 0);
+    plaatsStrook();
     telPerGebied();
     // Voor screenreaders: hoeveel verhalen en tips blijven er over? Precies
     // wat er zichtbaar is, ook als de rij Soort er (nog) niet is: een
@@ -543,6 +572,42 @@
       });
       filter();
     });
+  });
+
+  // Zet de strook na de eerste rij zichtbare verhalen: na zoveel verhalen als
+  // er kolommen zijn (3 op de computer, 2 op een tablet, 1 op een telefoon).
+  // In de bron staat hij na het eerste verhaal en zet CSS hem tot nu toe met
+  // `order` visueel goed; hier verplaatsen we hem ook echt in de HTML, zodat
+  // de tabvolgorde en een screenreader dezelfde volgorde zien als het oog
+  // (WCAG 2.4.3). Daarna zet de klasse strook-gezet de order-regels uit.
+  // Zijn er minder zichtbare verhalen dan kolommen (door een filter), dan
+  // komt de strook vooraan: anders zou er een halve rij verhalen vóór staan.
+  // Alleen verplaatsen als de plek echt anders is; een element met focus
+  // behoudt zijn focus en de zijwaartse scrollpositie blijft staan.
+  // Wordt aan het eind van filter() aangeroepen (dekt elke route: klik,
+  // adres, "Wis filters") en bij een andere breedte.
+  function plaatsStrook() {
+    if (!strook) return;
+    const verhalen = Array.prototype.filter.call(raster.children, function (el) {
+      return el.classList.contains("kaart") && !el.hidden;
+    });
+    const n = kolommen();
+    const doel = verhalen.length >= n ? verhalen[n - 1] : null;
+    const staatGoed = doel ? doel.nextElementSibling === strook : raster.firstElementChild === strook;
+    if (!staatGoed) {
+      const focus = strook.contains(document.activeElement) ? document.activeElement : null;
+      const lijst = strook.querySelector(".tipstrook-lijst");
+      const scrollLinks = lijst.scrollLeft;
+      if (doel) doel.after(strook);
+      else raster.prepend(strook);
+      lijst.scrollLeft = scrollLinks;
+      if (focus) focus.focus({ preventScroll: true });
+    }
+    raster.classList.add("strook-gezet");
+  }
+  [mqComputer, mqTablet].forEach(function (mq) {
+    if (mq.addEventListener) mq.addEventListener("change", plaatsStrook);
+    else if (mq.addListener) mq.addListener(plaatsStrook);
   });
 
   // Aantal verhalen en tips per gebied bij de gekozen categorie en soort,
@@ -609,6 +674,8 @@
   // leespositie zelf terug).
   const navigatie = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
   const terugOfHerladen = Boolean(navigatie && (navigatie.type === "reload" || navigatie.type === "back_forward"));
+  // Ook zonder filter uit het adres: de strook naar zijn plek (na de eerste rij).
+  plaatsStrook();
   if (naarFilters && !terugOfHerladen) {
     // Daarna de filterbalk bovenaan het scherm. html heeft
     // scroll-padding-top, dus de vaste header valt er niet overheen.
