@@ -293,6 +293,14 @@
         <button class="filterknop" data-filter="gebied" data-waarde="maasvlakte" aria-pressed="false">Maasvlakte</button>
       </div>
     </div>
+    <!-- Aantal gevonden en de knop Wis filters: alleen te zien zolang er een
+         filter aan staat (style.css, .filter-status). Staat al in de HTML,
+         zodat er niets verspringt als de filters uit het webadres komen; de
+         tekst en de knop doen het via assets/filterrij.js. -->
+    <div class="filter-status">
+      <span class="filter-status-tekst" aria-hidden="true"></span>
+      <button type="button" class="wisknop">Wis filters</button>
+    </div>
   </div>
   <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
        verhalen er overblijven (gevuld door het filterscript onderaan). -->

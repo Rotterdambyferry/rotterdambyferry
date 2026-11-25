@@ -667,6 +667,53 @@ a.tag.gebied:focus-visible {
     white-space: nowrap;
   }
 }
+/* Aantal gevonden en "Wis filters" (in de HTML, tekst en knop via
+   assets/filterrij.js), alleen zolang er een filter aan staat: een eigen
+   regel onder de filterrij, nooit erboven (anders springt de knop waar je
+   net op klikte omlaag). Aan of uit via :has() op aria-pressed, dus al
+   goed bij de eerste weergave. Het aantal links, de knop rechts: komt het
+   aantal later binnen (kaartpagina), dan schuift de knop niet op. */
+.filter-status {
+  flex: 0 0 100%;
+  order: 3;
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2rem;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+}
+.filters:has(.filterknop[aria-pressed="true"]:not([data-waarde="alles"]), .formaatknop[aria-pressed="true"]:not([data-formaat="alles"])) .filter-status {
+  display: flex;
+}
+.filter-status-tekst { flex: 1; min-width: 0; }
+.wisknop {
+  position: relative;
+  min-height: 2rem;
+  padding: 0 0.1rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--groen);
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .wisknop:hover { color: var(--ink); }
+}
+/* Aanraakschermen: het tikvlak is 44px hoog, zonder dat de regel hoger wordt */
+@media (pointer: coarse) {
+  .wisknop::before {
+    content: "";
+    position: absolute;
+    inset: -6px -8px;
+  }
+}
+
 /* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
    gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
    op te tikken (assets/filterrij.js). */

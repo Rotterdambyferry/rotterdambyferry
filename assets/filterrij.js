@@ -156,3 +156,61 @@
   }
   werkBij();
 })();
+
+// ---------- 3. Aantal gevonden en "Wis filters" ----------
+// Alleen zolang er een filter aan staat (een categorie, een gebied of een
+// soort anders dan Alles) staat onder de filterrij een regel met het aantal
+// gevonden verhalen/tips (homepage) of plekken (kaartpagina) en rechts de
+// knop "Wis filters". Die regel (.filter-status) staat al in de HTML en
+// style.css toont hem op basis van aria-pressed van de knoppen, zodat hij
+// er bij filters uit het webadres al staat voordat dit script draait (geen
+// verspringen). Dit script vult de tekst: die komt uit het voorleesvak
+// #filter-uitkomst dat de pagina zelf vult; het aantal is daarom
+// aria-hidden (anders hoort een screenreader het twee keer), de knop niet.
+// "Wis filters" drukt op de verborgen knopjes "Alles" die nog niet aan
+// staan (dus de filterlogica van de pagina doet het werk, en de kaart past
+// zich maar één keer opnieuw in) en zet daarna de focus op de
+// categorieknop "Alles" (op een telefoon, waar die verborgen is, op de knop
+// Gebied), want de knop zelf verdwijnt. Bewust nooit de klasse filterknop:
+// die pakken de filterscripts allemaal op.
+(function () {
+  var status = document.querySelector(".filter-status");
+  var uitkomst = document.getElementById("filter-uitkomst");
+  if (!status || !uitkomst) return;
+  var tekst = status.querySelector(".filter-status-tekst");
+  var wis = status.querySelector(".wisknop");
+  // Oudere browsers zonder :has() in CSS: dan zet dit script de regel aan en uit.
+  var zelfTonen = !(window.CSS && CSS.supports && CSS.supports("selector(:has(*))"));
+
+  function filterAan() {
+    return Boolean(document.querySelector(
+      '.filterknop[aria-pressed="true"]:not([data-waarde="alles"]), .formaatknop[aria-pressed="true"]:not([data-formaat="alles"])'
+    ));
+  }
+
+  function werkBij() {
+    if (zelfTonen) status.style.display = filterAan() ? "flex" : "none";
+    // "3 verhalen en 1 tip gevonden." zonder de punt aan het eind
+    tekst.textContent = uitkomst.textContent.trim().replace(/\.$/, "");
+  }
+
+  wis.addEventListener("click", function () {
+    document.querySelectorAll('.filterknop[data-waarde="alles"], .formaatknop[data-formaat="alles"]').forEach(function (k) {
+      if (k.getAttribute("aria-pressed") !== "true") k.click();
+    });
+    var alles = document.querySelector('.filterknop[data-filter="categorie"][data-waarde="alles"]');
+    var doel = alles && alles.offsetParent ? alles : document.querySelector(".gebiedkeuze-knop");
+    if (doel) doel.focus();
+  });
+
+  if (window.MutationObserver) {
+    var waarnemer = new MutationObserver(werkBij);
+    document.querySelectorAll(".filterknop, .formaatknop").forEach(function (k) {
+      waarnemer.observe(k, { attributes: true, attributeFilter: ["aria-pressed"] });
+    });
+    waarnemer.observe(uitkomst, { childList: true, characterData: true, subtree: true });
+  }
+  // Eerste keer meteen: op de homepage zijn de filters uit het adres al
+  // ingesteld voordat dit script draait, die mist de waarnemer anders.
+  werkBij();
+})();
