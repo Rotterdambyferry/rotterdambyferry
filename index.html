@@ -220,6 +220,18 @@ h2.kop { line-height: 1.7; }
   object-fit: cover;
   object-position: center;
 }
+/* Computer (vanaf 641px): een lagere hero, zodat de verhalen eerder in beeld
+   komen. Van de 16:9-foto is dan maar een smalle strook te zien (op 1920px
+   breed ongeveer een kwart van de hoogte), dus per foto een eigen uitsnede:
+   --foto-positie staat in de lijst heroFotos in index.html en het script zet
+   die op beide fotolagen. Zonder waarde: het midden. Op de telefoon (tot
+   600px) verandert er niets, daar is bijna de hele foto te zien. */
+@media (min-width: 641px) {
+  .hero { min-height: clamp(260px, 24vw, 300px); }
+}
+@media (min-width: 601px) {
+  .hero-foto { object-position: var(--foto-positie, 50% 50%); }
+}
 /* Fotowissel: er liggen twee fotolagen op elkaar (de tweede maakt het script
    in index.html). De laag met .is-weg is onzichtbaar; bij een wissel vloeien
    de twee in elkaar over. Wie "minder beweging" heeft ingesteld krijgt geen
@@ -1649,6 +1661,7 @@ body:has(.artikel) .site-footer .inner {
        sizes="100vw"
        width="1600" height="900"
        alt="Skyline van Rotterdam vanaf de Euromast"
+       style="--foto-positie: 50% 35%"
        loading="eager" fetchpriority="high">
   <div class="inner">
     <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
@@ -1687,20 +1700,27 @@ body:has(.artikel) .site-footer .inner {
   // omschrijving voor screenreaders (wisselt mee als alt-tekst). Hoort de
   // foto bij een verhaal, zet er dan plek (de naam op het label) en post
   // (de link naar het verhaal) bij; dan verschijnt het label op de foto.
+  // Op de computer is de hero laag en zie je maar een strook van de foto.
+  // Valt het belangrijkste (een gevel, letters, een neonreclame) daarbuiten,
+  // zet er dan positie bij: "50% 30%" schuift de uitsnede naar boven, "50%
+  // 80%" naar beneden (het tweede getal: 0% is de bovenkant van de foto,
+  // 100% de onderkant). Zonder positie: het midden. Op de telefoon telt dit
+  // niet, daar is bijna de hele foto te zien. Staat de foto bovenaan de lijst
+  // (de standaardfoto), zet de positie dan ook in de HTML hierboven.
   (function () {
     var heroFotos = [
-      { bestand: "hero-skyline-euromast.jpg", breedte: 1600, label: "Skyline van Rotterdam vanaf de Euromast" },
-      { bestand: "hero-hotel-new-york.jpg", breedte: 1600, label: "Hotel New York aan de Kop van Zuid" },
-      { bestand: "hero-willemsbrug.jpg", breedte: 1600, label: "De Willemsbrug bij avond" },
-      { bestand: "hero-erasmusbrug-winter.jpg", breedte: 1600, label: "De Erasmusbrug onder een dreigende winterlucht" },
+      { bestand: "hero-skyline-euromast.jpg", breedte: 1600, positie: "50% 35%", label: "Skyline van Rotterdam vanaf de Euromast" },
+      { bestand: "hero-hotel-new-york.jpg", breedte: 1600, positie: "50% 47%", label: "Hotel New York aan de Kop van Zuid" },
+      { bestand: "hero-willemsbrug.jpg", breedte: 1600, positie: "50% 30%", label: "De Willemsbrug bij avond" },
+      { bestand: "hero-erasmusbrug-winter.jpg", breedte: 1600, positie: "50% 80%", label: "De Erasmusbrug onder een dreigende winterlucht" },
       { bestand: "hero-centraal-station.jpg", breedte: 1600, label: "Rotterdam Centraal en de Delftse Poort op een zonnige dag" },
-      { bestand: "hero-laurenskerk.jpg", breedte: 1600, label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" },
-      { bestand: "hero-balkon-van-europa.jpg", breedte: 1400, label: "Het terras van het Balkon van Europa op de Maasvlakte, met een containerschip dat langsvaart", plek: "Balkon van Europa", post: "posts/balkon-van-europa.html" },
-      { bestand: "hero-containerschip-one.jpg", breedte: 1400, label: "Het roze containerschip van ONE aan de kade op de Maasvlakte", plek: "Portlantis", post: "posts/portlantis.html" },
-      { bestand: "hero-pleinbios.jpg", breedte: 1400, label: "Publiek bij Pleinbios voor Hotel New York op de Wilhelminapier", plek: "Pleinbios", post: "posts/pleinbios.html" },
+      { bestand: "hero-laurenskerk.jpg", breedte: 1600, positie: "50% 40%", label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" },
+      { bestand: "hero-balkon-van-europa.jpg", breedte: 1400, positie: "50% 55%", label: "Het terras van het Balkon van Europa op de Maasvlakte, met een containerschip dat langsvaart", plek: "Balkon van Europa", post: "posts/balkon-van-europa.html" },
+      { bestand: "hero-containerschip-one.jpg", breedte: 1400, positie: "50% 45%", label: "Het roze containerschip van ONE aan de kade op de Maasvlakte", plek: "Portlantis", post: "posts/portlantis.html" },
+      { bestand: "hero-pleinbios.jpg", breedte: 1400, positie: "50% 5%", label: "Publiek bij Pleinbios voor Hotel New York op de Wilhelminapier", plek: "Pleinbios", post: "posts/pleinbios.html" },
       { bestand: "hero-rif010.jpg", breedte: 1600, label: "Surfers in de Steigersgracht bij RiF010, met publiek op de kade", plek: "RiF010", post: "posts/rif010.html" },
       { bestand: "hero-vijgeboom.jpg", breedte: 1600, label: "Het terras van Tapperij De Vijgeboom bij avond", plek: "De Vijgeboom", post: "posts/vijgeboom.html" },
-      { bestand: "hero-due-tonino.jpg", breedte: 1600, label: "De neonreclame van Due Tonino aan de Goudsesingel", plek: "Due Tonino", post: "posts/due-tonino.html" }
+      { bestand: "hero-due-tonino.jpg", breedte: 1600, positie: "50% 35%", label: "De neonreclame van Due Tonino aan de Goudsesingel", plek: "Due Tonino", post: "posts/due-tonino.html" }
     ];
     var standaardFoto = "hero-skyline-euromast.jpg";
     var wisseltijd = 6000; // milliseconden dat één foto blijft staan
@@ -1713,8 +1733,11 @@ body:has(.artikel) .site-footer .inner {
     var huidige = heroFotos[0];
 
     // Zet een foto uit de lijst in een fotolaag. Eerst srcset, dan pas src: zo
-    // laadt de browser niet per ongeluk eerst nog de grote variant.
+    // laadt de browser niet per ongeluk eerst nog de grote variant. De
+    // uitsnede (positie) gaat mee naar dezelfde laag, voor beide lagen.
     function zetFoto(img, foto) {
+      if (foto.positie) img.style.setProperty("--foto-positie", foto.positie);
+      else img.style.removeProperty("--foto-positie");
       img.srcset = "assets/img/" + foto.bestand.replace(/\.jpg$/, "-mobiel.jpg") + " 800w, " +
                    "assets/img/" + foto.bestand + " " + foto.breedte + "w";
       img.src = "assets/img/" + foto.bestand;

@@ -192,6 +192,18 @@ h2.kop { line-height: 1.7; }
   object-fit: cover;
   object-position: center;
 }
+/* Computer (vanaf 641px): een lagere hero, zodat de verhalen eerder in beeld
+   komen. Van de 16:9-foto is dan maar een smalle strook te zien (op 1920px
+   breed ongeveer een kwart van de hoogte), dus per foto een eigen uitsnede:
+   --foto-positie staat in de lijst heroFotos in index.html en het script zet
+   die op beide fotolagen. Zonder waarde: het midden. Op de telefoon (tot
+   600px) verandert er niets, daar is bijna de hele foto te zien. */
+@media (min-width: 641px) {
+  .hero { min-height: clamp(260px, 24vw, 300px); }
+}
+@media (min-width: 601px) {
+  .hero-foto { object-position: var(--foto-positie, 50% 50%); }
+}
 /* Fotowissel: er liggen twee fotolagen op elkaar (de tweede maakt het script
    in index.html). De laag met .is-weg is onzichtbaar; bij een wissel vloeien
    de twee in elkaar over. Wie "minder beweging" heeft ingesteld krijgt geen
