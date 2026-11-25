@@ -214,3 +214,45 @@
   // ingesteld voordat dit script draait, die mist de waarnemer anders.
   werkBij();
 })();
+
+// ---------- 4. De filterkeuze in het webadres ----------
+// Kiest de bezoeker een filter, dan komt dat in het adres (?categorie=,
+// ?gebied=, ?formaat=; bij Alles gaat de parameter er weer uit), met
+// history.replaceState: dus geen extra stap voor de terugknop, maar wel een
+// adres dat bij herladen of delen hetzelfde filter opent. Andere parameters
+// blijven staan, behalve ?plek= op de kaartpagina: die telt niet meer zodra
+// de bezoeker zelf een filter kiest (het kaartscript laat de gekozen pin dan
+// los), en zou na herladen anders weer die pin met popup openen. De
+// canonical blijft gewoon de pagina zonder parameters, en de deelknoppen
+// delen bewust de canonical (zonder filter).
+// Alleen bij een wijziging ná het laden: de filters uit het adres zelf
+// staan er al in.
+(function () {
+  if (!window.history || !history.replaceState || !window.MutationObserver || !window.URL) return;
+  function waarde(selector, veld) {
+    var knop = document.querySelector(selector + '[aria-pressed="true"]');
+    return knop ? knop.getAttribute(veld) : "alles";
+  }
+  function schrijf() {
+    var adres = new URL(location.href);
+    var p = adres.searchParams;
+    var nu = {
+      categorie: waarde('.filterknop[data-filter="categorie"]', "data-waarde"),
+      gebied: waarde('.filterknop[data-filter="gebied"]', "data-waarde"),
+      formaat: waarde(".formaatknop", "data-formaat")
+    };
+    Object.keys(nu).forEach(function (sleutel) {
+      if (nu[sleutel] === "alles") p.delete(sleutel);
+      else p.set(sleutel, nu[sleutel]);
+    });
+    p.delete("plek");
+    var nieuw = adres.pathname + (p.toString() ? "?" + p.toString() : "") + adres.hash;
+    if (nieuw !== location.pathname + location.search + location.hash) {
+      history.replaceState(history.state, "", nieuw);
+    }
+  }
+  var waarnemer = new MutationObserver(schrijf);
+  document.querySelectorAll(".filterknop, .formaatknop").forEach(function (k) {
+    waarnemer.observe(k, { attributes: true, attributeFilter: ["aria-pressed"] });
+  });
+})();

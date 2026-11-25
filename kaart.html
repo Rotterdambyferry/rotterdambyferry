@@ -2035,7 +2035,9 @@ body:has(.artikel) .site-footer .inner {
     //    pagina of een andere afmeting van het kaartvak (dan zou de gekozen
     //    plek weer uit beeld schuiven en de popup sluiten).
     // Zodra de bezoeker zelf een filter kiest, gaat dit uit en werkt alles
-    // weer zoals gewoonlijk. Een onbekende naam wordt genegeerd.
+    // weer zoals gewoonlijk; assets/filterrij.js haalt ?plek= dan ook uit het
+    // adres (anders opent herladen de pin weer). Een onbekende naam wordt
+    // genegeerd.
     var plekUitAdres = adres.get("plek");
     var gekozen = null; // { data, marker }
 

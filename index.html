@@ -2328,6 +2328,8 @@ body:has(.artikel) .site-footer .inner {
   // Soort er is (vanaf SOORT_VANAF_TIPS live tips). Daarna springt de pagina
   // naar de filterbalk, zodat de bezoeker direct ziet welk filter aan staat
   // en de kaarten eronder (zonder eerst langs de hero te moeten scrollen).
+  // Een filter dat de bezoeker hier zelf kiest, komt ook in het adres
+  // (assets/filterrij.js, deel 4).
   const filterUitUrl = new URLSearchParams(location.search);
   let gekozenKnop = null;
   let naarFilters = false;
@@ -2359,7 +2361,13 @@ body:has(.artikel) .site-footer .inner {
       rij.scrollLeft = gekozenKnop.offsetLeft - rij.offsetLeft - (rij.clientWidth - gekozenKnop.offsetWidth) / 2;
     }
   }
-  if (naarFilters) {
+  // Niet springen bij herladen of met de terugknop: sinds de filterkeuze
+  // ook in het adres komt (assets/filterrij.js), staan de parameters er dan
+  // ook, maar de bezoeker wil terug naar waar hij was (de browser zet de
+  // leespositie zelf terug).
+  const navigatie = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
+  const terugOfHerladen = Boolean(navigatie && (navigatie.type === "reload" || navigatie.type === "back_forward"));
+  if (naarFilters && !terugOfHerladen) {
     // Daarna de filterbalk bovenaan het scherm. html heeft
     // scroll-padding-top, dus de vaste header valt er niet overheen.
     document.querySelector(".filters").scrollIntoView({ block: "start" });
