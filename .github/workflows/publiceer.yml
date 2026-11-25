@@ -33,12 +33,17 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# Twee jobs (sinds november 2026): "bouw" maakt de site en uploadt hem als
+# artifact, "publiceer" zet hem daarna online. Reden: deploy-pages vond de
+# artifact soms niet terug als hij direct na de upload in dezelfde job vroeg
+# (run 45704346726: upload klaar, een halve seconde later "Found 0
+# artifact(s)"). De aparte job, een wachtstap en zo nodig een tweede poging
+# vangen dat op. Secrets voor de build (BEHOLD_FEED_URL, INSTAGRAM_TOKEN)
+# moeten repository-secrets zijn: de job "bouw" draait niet in de environment
+# github-pages en ziet environment-secrets dus niet.
 jobs:
-  bouw-en-publiceer:
+  bouw:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.publicatie.outputs.page_url }}
     steps:
       - name: Code ophalen
         uses: actions/checkout@v4
@@ -79,6 +84,30 @@ jobs:
         with:
           path: _site
 
+  publiceer:
+    needs: bouw
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicatie.outputs.page_url || steps.publicatie2.outputs.page_url }}
+    steps:
+      - name: Wachten tot de artifact zichtbaar is
+        run: sleep 20
+
+      # Eerste poging. Mislukt die (bijvoorbeeld weer "Found 0 artifact(s)"),
+      # dan gaat de job door naar de tweede poging hieronder. Die fout valt
+      # voordat er een deployment is aangemaakt, dus opnieuw proberen is veilig.
       - name: Publiceren
         id: publicatie
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Nog even wachten
+        if: steps.publicatie.outcome == 'failure'
+        run: sleep 30
+
+      # Tweede en laatste poging; mislukt deze ook, dan wordt de run rood.
+      - name: Publiceren (tweede poging)
+        id: publicatie2
+        if: steps.publicatie.outcome == 'failure'
         uses: actions/deploy-pages@v4
