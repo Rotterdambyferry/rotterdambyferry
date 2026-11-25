@@ -32,3 +32,4 @@ d764f51e94bb96581df7e32cf62fc5629bbc6dc8  # 2026-11-13 labels boven posts klikba
 a2133e24776c2b2a524b21e1a0768ccdaaad516b  # 2026-11-25 rij Soort pas vanaf 5 tips: alleen commentaar in src/kaart.html (filterbalk-compact, taak B)
 af29496869c61d138395e1a5f8e9f5388f354368  # 2026-11-25 knop Gebied en compactere filterrij: alleen techniek en opmaak in src/kaart.html (filterbalk-compact, taak D)
 8c7e0ae0d6932f86505a1b2c6e1711548914290c  # 2026-11-25 regel Wis filters en filters uit het adres vóór het kaartscript: techniek in src/kaart.html (filterbalk-compact, taak E)
+fd6b8d10854a23dbbf2ce4faff3712abec9bf143  # 2026-11-25 filterkeuze in het adres: alleen commentaar in src/kaart.html (filterbalk-compact, taak F)
