@@ -1664,10 +1664,10 @@ body:has(.artikel) .site-footer .inner {
 <section class="filters" aria-label="Filter plekken">
   <div class="inner">
     <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
-         Staat verborgen zolang er geen tip live is: build.js haalt het
-         hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
-         want die pakken de filterscripts allemaal op. -->
-    <div class="groep groep-formaat">
+         Staat verborgen tot er genoeg tips live zijn: build.js haalt het
+         hidden-attribuut weg vanaf SOORT_VANAF_TIPS (5) tips. Bewust geen
+         klasse filterknop, want die pakken de filterscripts allemaal op. -->
+    <div class="groep groep-formaat" hidden>
       <span class="label" id="formaat-label">Soort</span>
       <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
         <button type="button" class="formaatknop" data-formaat="alles" aria-pressed="true">Alles</button>
@@ -1857,7 +1857,8 @@ body:has(.artikel) .site-footer .inner {
     var plekken = []; // { data, marker }
     var leeg = document.querySelector(".leeg");
     var formaatknoppen = document.querySelectorAll(".formaatknop");
-    // De rij Soort staat verborgen zolang er geen tip live is (build.js).
+    // Staat de rij Soort er (build.js, vanaf SOORT_VANAF_TIPS live tips)?
+    // Alleen dan doet ?formaat= iets. De tip-pins staan er altijd.
     var formaatGroep = document.querySelector(".groep-formaat");
     var metTips = Boolean(formaatGroep && !formaatGroep.hidden);
 

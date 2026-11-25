@@ -247,9 +247,9 @@
 <section class="filters" aria-label="Filter verhalen en tips">
   <div class="inner">
     <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
-         Staat verborgen zolang er geen tip live is: build.js haalt het
-         hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
-         want die pakken de filterscripts allemaal op. -->
+         Staat verborgen tot er genoeg tips live zijn: build.js haalt het
+         hidden-attribuut weg vanaf SOORT_VANAF_TIPS (5) tips. Bewust geen
+         klasse filterknop, want die pakken de filterscripts allemaal op. -->
     <div class="groep groep-formaat" hidden>
       <span class="label" id="formaat-label">Soort</span>
       <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
@@ -456,10 +456,12 @@
   // Filters: één actieve categorie, één actief gebied en één soort (alles,
   // alleen verhalen of alleen korte tips). Een kaart zonder data-formaat
   // telt als verhaal, zodat een gekopieerd oud kaartblokje gewoon meedoet.
+  // De tipkaarten staan er altijd tussen; alleen de rij Soort verschijnt
+  // pas vanaf een aantal tips (SOORT_VANAF_TIPS in build.js).
   const actief = { categorie: "alles", gebied: "alles", formaat: "alles" };
   const knoppen = document.querySelectorAll(".filterknop");
   const formaatknoppen = document.querySelectorAll(".formaatknop");
-  // De rij Soort staat verborgen zolang er geen tip live is (build.js).
+  // Staat de rij Soort er (build.js)? Alleen dan doet ?formaat= iets.
   const formaatGroep = document.querySelector(".groep-formaat");
   const metTips = Boolean(formaatGroep && !formaatGroep.hidden);
   const kaarten = document.querySelectorAll(".kaart");
@@ -495,11 +497,14 @@
     });
     leeg.hidden = verhalen + tips > 0;
     telPerGebied();
-    // Voor screenreaders: hoeveel verhalen en tips blijven er over?
+    // Voor screenreaders: hoeveel verhalen en tips blijven er over? Precies
+    // wat er zichtbaar is, ook als de rij Soort er (nog) niet is: een
+    // zichtbare tipkaart telt dus altijd mee. Een soort met 0 kaarten wordt
+    // niet genoemd ("3 verhalen gevonden.", "1 tip gevonden.").
     let tekst;
     if (verhalen + tips === 0) tekst = "Niets gevonden in deze combinatie.";
-    else if (!metTips || actief.formaat === "verhaal") tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " gevonden.";
-    else if (actief.formaat === "tip") tekst = aantalTekst(tips, "tip", "tips") + " gevonden.";
+    else if (tips === 0) tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " gevonden.";
+    else if (verhalen === 0) tekst = aantalTekst(tips, "tip", "tips") + " gevonden.";
     else tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " en " + aantalTekst(tips, "tip", "tips") + " gevonden.";
     document.getElementById("filter-uitkomst").textContent = tekst;
   }
@@ -548,7 +553,7 @@
   // een post) of ?formaat=tip (het label Even langs op een tippagina), dan
   // simuleren we een klik op dat knopje zodat de homepage meteen gefilterd
   // opent. Geen aparte filterlogica nodig. ?formaat= werkt alleen als de rij
-  // Soort er is (er staat minstens één tip live). Daarna springt de pagina
+  // Soort er is (vanaf SOORT_VANAF_TIPS live tips). Daarna springt de pagina
   // naar de filterbalk, zodat de bezoeker direct ziet welk filter aan staat
   // en de kaarten eronder (zonder eerst langs de hero te moeten scrollen).
   const filterUitUrl = new URLSearchParams(location.search);
