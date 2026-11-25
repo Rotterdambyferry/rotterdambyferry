@@ -35,6 +35,15 @@ const bronmap = path.join(__dirname, "src");
 const partialsmap = path.join(__dirname, "partials");
 const alles = process.argv.includes("--alles");
 
+// Vanaf hoeveel live korte tips de rij Soort (Alles / Verhalen / Tips)
+// verschijnt op de homepage en de kaartpagina. Met minder tips voegt dat
+// filter weinig toe en neemt het vooral ruimte in boven de verhalen. Onder
+// deze drempel is het label "Even langs" op een tippagina ook gewone tekst
+// in plaats van een link naar /?formaat=tip. De dagelijkse build zet de rij
+// vanzelf aan zodra de zoveelste tip live staat; daar is geen commit voor
+// nodig.
+const SOORT_VANAF_TIPS = 5;
+
 // Leest een tekstbestand en zet Windows-regeleinden (CRLF) meteen om naar
 // gewone regeleinden (LF). Alle zoekpatronen in dit script rekenen op LF;
 // zonder deze stap vonden ze in een bestand met CRLF stilletjes niets, en
@@ -917,6 +926,8 @@ const alleTips = (() => {
   }
 })();
 const liveTips = alleTips.filter((tip) => !tip.verborgen);
+// Staat de rij Soort aan? (zie SOORT_VANAF_TIPS bovenin)
+const metSoort = liveTips.length >= SOORT_VANAF_TIPS;
 
 // De pin van een tip, zoals hij in places.json komt (en in de lookups voor
 // broodkruimel en JSON-LD). image = de 16:10-kaartvariant van foto 1.
@@ -978,7 +989,11 @@ function plekVoorPagina(relatiefUrl) {
 // De kop van de pagina volgt src/posts/_template.html.
 function tipHtml(tip) {
   const labels = [
-    `    <a class="tag formaat-tip" href="/?formaat=tip">Even langs<span class="visueel-verborgen">, meer tips</span></a>`,
+    // Een link naar alle tips alleen als de rij Soort er is; anders zou
+    // /?formaat=tip niets doen en is het label gewone tekst (zelfde opmaak).
+    metSoort
+      ? `    <a class="tag formaat-tip" href="/?formaat=tip">Even langs<span class="visueel-verborgen">, meer tips</span></a>`
+      : `    <span class="tag formaat-tip">Even langs</span>`,
     ...tip.categorie.map((c) => `    <span class="tag">${CATEGORIE_LABELS[c]}</span>`),
     `    <span class="tag gebied">${gebiedLabel(tip.gebied)}</span>`,
   ].join("\n");
@@ -1677,9 +1692,10 @@ for (const { bronbestand, relatief, tip } of bronnen) {
   }
 
   // De rij Soort (Alles / Verhalen / Tips) op de homepage en de kaartpagina
-  // staat in de bron verborgen; pas als er een tip live staat, komt hij
-  // tevoorschijn. Zo ziet een bezoeker nooit een filter dat niets oplevert.
-  if (liveTips.length > 0) {
+  // staat in de bron verborgen; pas vanaf SOORT_VANAF_TIPS live tips komt hij
+  // tevoorschijn. Zo staat er geen filter boven de verhalen dat bijna niets
+  // oplevert. De tipkaarten zelf staan er wel altijd tussen.
+  if (metSoort) {
     resultaat = resultaat.replace('<div class="groep groep-formaat" hidden>', '<div class="groep groep-formaat">');
   }
 

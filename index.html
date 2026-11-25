@@ -220,6 +220,18 @@ h2.kop { line-height: 1.7; }
   object-fit: cover;
   object-position: center;
 }
+/* Computer (vanaf 641px): een lagere hero, zodat de verhalen eerder in beeld
+   komen. Van de 16:9-foto is dan maar een smalle strook te zien (op 1920px
+   breed ongeveer een kwart van de hoogte), dus per foto een eigen uitsnede:
+   --foto-positie staat in de lijst heroFotos in index.html en het script zet
+   die op beide fotolagen. Zonder waarde: het midden. Op de telefoon (tot
+   600px) verandert er niets, daar is bijna de hele foto te zien. */
+@media (min-width: 641px) {
+  .hero { min-height: clamp(260px, 24vw, 300px); }
+}
+@media (min-width: 601px) {
+  .hero-foto { object-position: var(--foto-positie, 50% 50%); }
+}
 /* Fotowissel: er liggen twee fotolagen op elkaar (de tweede maakt het script
    in index.html). De laag met .is-weg is onzichtbaar; bij een wissel vloeien
    de twee in elkaar over. Wie "minder beweging" heeft ingesteld krijgt geen
@@ -508,16 +520,139 @@ a.tag.gebied:focus-visible {
   border: 0;
 }
 
-/* ---------- Mobiel: alle filters in één rij ----------
-   Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
-   (gemaakt door assets/filterrij.js), daarachter de categorieknoppen,
-   horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
-   de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
-   pagina precies hetzelfde blijft. Op de computer verandert er niets. */
-.gebiedkeuze { display: none; }
-@media (max-width: 640px) {
+/* ---------- Keuzelijst voor het gebied (alle breedtes) ----------
+   Eén knop "Gebied ▾" met een keuzelijst die assets/filterrij.js maakt uit
+   de gewone gebiedknoppen. Die gebiedknoppen staan nog in de HTML (beide
+   filterscripts werken erop) maar zijn verborgen: de keuzelijst drukt ze op
+   de achtergrond in, zodat de filterlogica van de pagina hetzelfde blijft.
+   Op de telefoon staat de knop vooraan in de veegbare rij (lijst klapt naar
+   rechts uit), op de computer rechts naast de categorieën (lijst klapt naar
+   links uit, anders loopt hij buiten beeld). */
+.filters .groep-gebied { display: none; }
+.gebiedkeuze {
+  display: flex; /* geen regelhoogte rond de knop: lijnt precies uit met de chips */
+  position: relative;
+  flex: none;
+}
+.gebiedkeuze-knop {
+  min-height: 44px;
+  padding: 0.35rem 0.9rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+/* Een gekozen gebied (de knop toont dan dat gebied in plaats van "Gebied"):
+   donker, net als een ingedrukt filterknopje */
+.gebiedkeuze-knop.is-gekozen {
+  background: var(--ink);
+  color: var(--papier);
+}
+/* Het pijltje komt uit een ander lettertype en maakte de knop 1px hoger dan
+   een filterknopje ernaast */
+.gebiedkeuze-knop > [aria-hidden="true"] { line-height: 1; }
+.gebiedkeuze-lijst {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 1100; /* boven de kaart en de Leaflet-knoppen (1000), onder de header (1200) */
+  min-width: 12.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.3rem;
+  background: var(--papier);
+  border: 2px solid var(--ink);
+}
+.gebiedkeuze-lijst[hidden] { display: none; }
+.gebiedkeuze-optie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.gebiedkeuze-optie[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--papier);
+}
+/* Gebied zonder verhalen (bij de gekozen categorie): grijs */
+.gebiedkeuze-optie.is-leeg { color: var(--staal); }
+.gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
+.gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+@media (hover: hover) and (pointer: fine) {
+  .gebiedkeuze-knop:hover { border-color: var(--groen); }
+  .gebiedkeuze-knop.is-gekozen:hover { border-color: var(--groen); }
+  .gebiedkeuze-optie:hover { background: var(--groen-licht); }
+  .gebiedkeuze-optie[aria-pressed="true"]:hover { background: var(--ink); }
+}
+
+/* ---------- Computer (vanaf 641px): één compacte balk ----------
+   De categorieën in één rij met de keuzelijst Gebied rechts ernaast. Het
+   woord "Categorie" blijft er alleen voor screenreaders. Staat de rij Soort
+   er (vanaf 5 tips, zie build.js), dan krijgt die een eigen regel erboven,
+   met het label ervoor. */
+@media (min-width: 641px) {
   .filters {
     padding: 0.75rem 0;
+    margin-bottom: 1.5rem;
+  }
+  .filters .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+  .filters .groep { margin-bottom: 0; }
+  .filters .groep-formaat {
+    flex: 0 0 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  /* Zonder deze regel zou display: flex het hidden-attribuut opheffen */
+  .filters .groep-formaat[hidden] { display: none; }
+  .filters .groep-formaat .label { margin-bottom: 0; }
+  .filters .groep-categorie { flex: 1 1 0; min-width: 0; }
+  .filters .groep-categorie .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .gebiedkeuze { margin-left: auto; align-self: flex-start; }
+  .gebiedkeuze-knop {
+    min-height: 0;
+    padding: 0.35rem 0.9rem;
+    font-weight: 600;
+  }
+  .gebiedkeuze-lijst { left: auto; right: 0; }
+}
+
+/* ---------- Mobiel (tot 640px): alle filters in één rij ----------
+   Vooraan de knop "Gebied ▾", daarachter de categorieknoppen, horizontaal
+   veegbaar. Weinig ruimte boven en onder de rij (het blok is zo 62px hoog),
+   zodat het eerste verhaal hoger in beeld staat; de knoppen zelf blijven
+   44px hoog als tikdoel. */
+@media (max-width: 640px) {
+  .filters {
+    padding: 0.5rem 0;
     margin-bottom: 1.25rem;
   }
   .filters .inner {
@@ -530,7 +665,10 @@ a.tag.gebied:focus-visible {
     min-width: 0;
     margin-bottom: 0;
   }
-  .filters .groep-gebied { display: none; }
+  /* In de HTML staat de knop Gebied ná de categorieën (Tab-volgorde op de
+     computer); op de telefoon vooraan. De rij Soort (ook order -1) staat in
+     de HTML eerder en blijft dus bovenaan. */
+  .gebiedkeuze { order: -1; }
   /* Het woord "Categorie" blijft er voor screenreaders, maar neemt geen ruimte in */
   .filters .label {
     position: absolute;
@@ -541,78 +679,59 @@ a.tag.gebied:focus-visible {
     clip: rect(0 0 0 0);
     white-space: nowrap;
   }
-  .gebiedkeuze {
-    display: block;
-    position: relative;
-    flex: none;
-  }
-  .gebiedkeuze-knop {
-    min-height: 44px;
-    padding: 0.35rem 0.9rem;
-    font-family: "Archivo", sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  /* Een gekozen gebied (dus niet "Heel Rotterdam"): donker, net als een
-     ingedrukt filterknopje */
-  .gebiedkeuze-knop.is-gekozen {
-    background: var(--ink);
-    color: var(--papier);
-  }
-  .gebiedkeuze-lijst {
-    position: absolute;
-    top: calc(100% + 0.4rem);
-    left: 0;
-    z-index: 1100; /* boven de kaart en de Leaflet-knoppen (1000), onder de header (1200) */
-    min-width: 12.5rem;
-    display: flex;
-    flex-direction: column;
-    padding: 0.3rem;
-    background: var(--papier);
-    border: 2px solid var(--ink);
-  }
-  .gebiedkeuze-lijst[hidden] { display: none; }
-  .gebiedkeuze-optie {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    min-height: 44px;
-    padding: 0 0.8rem;
-    font-family: "Archivo", sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-align: left;
-    border: 0;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  .gebiedkeuze-optie[aria-pressed="true"] {
-    background: var(--ink);
-    color: var(--papier);
-  }
-  /* Gebied zonder verhalen (bij de gekozen categorie): grijs */
-  .gebiedkeuze-optie.is-leeg { color: var(--staal); }
-  .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
-  .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
 }
+/* Aantal gevonden en "Wis filters" (in de HTML, tekst en knop via
+   assets/filterrij.js), alleen zolang er een filter aan staat: een eigen
+   regel onder de filterrij, nooit erboven (anders springt de knop waar je
+   net op klikte omlaag). Aan of uit via :has() op aria-pressed, dus al
+   goed bij de eerste weergave. Het aantal links, de knop rechts: komt het
+   aantal later binnen (kaartpagina), dan schuift de knop niet op. */
+.filter-status {
+  flex: 0 0 100%;
+  order: 3;
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2rem;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.8rem;
+  color: var(--staal);
+}
+.filters:has(.filterknop[aria-pressed="true"]:not([data-waarde="alles"]), .formaatknop[aria-pressed="true"]:not([data-formaat="alles"])) .filter-status {
+  display: flex;
+}
+.filter-status-tekst { flex: 1; min-width: 0; }
+.wisknop {
+  position: relative;
+  min-height: 2rem;
+  padding: 0 0.1rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--groen);
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .wisknop:hover { color: var(--ink); }
+}
+/* Aanraakschermen: het tikvlak is 44px hoog, zonder dat de regel hoger wordt */
+@media (pointer: coarse) {
+  .wisknop::before {
+    content: "";
+    position: absolute;
+    inset: -6px -8px;
+  }
+}
+
 /* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
    gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
    op te tikken (assets/filterrij.js). */
 @media (max-width: 600px) {
   .filters .groep-categorie .filterknop[data-waarde="alles"] { display: none; }
-}
-@media (max-width: 640px) and (hover: hover) and (pointer: fine) {
-  .gebiedkeuze-knop:hover { border-color: var(--groen); }
-  .gebiedkeuze-optie:hover { background: var(--groen-licht); }
-  .gebiedkeuze-optie[aria-pressed="true"]:hover { background: var(--ink); }
 }
 
 /* ---------- Postkaarten ---------- */
@@ -1043,7 +1162,8 @@ a.tag.formaat-tip:focus-visible {
    segmentknop met drie delen. Bewust geen .filterknop (die pakken de
    filterscripts allemaal op). Geen overflow: hidden, anders valt de
    focusrand weg: de buitenste knoppen krijgen zelf de ronde hoeken. De rij
-   staat verborgen zolang er geen tip live is (build.js). */
+   staat verborgen tot er genoeg tips live zijn (SOORT_VANAF_TIPS in
+   build.js). */
 .formaatkeuze {
   display: inline-flex;
   border: 1.5px solid var(--ink);
@@ -1335,6 +1455,17 @@ body:has(.artikel) .site-footer .inner {
   min-height: 380px;
   border: 3px solid var(--ink);
   background: var(--ink);
+}
+/* Telefoon: de kaart minstens 546px hoog (binnenkant 540px). Dan houdt een
+   geopende popup (zo'n 350 tot 400px hoog) genoeg ruimte boven zich vrij
+   om onder de zoomknoppen te vallen (stelPopupRuimteIn in kaart.html: de
+   kaarthoogte min 430, tot 110px); bij een lagere kaart viel de popup een
+   stukje over de knoppen. Met de compactere filterbalk past dat nog
+   steeds onder de kop in beeld (zie het popupopen-script). Alleen op een
+   scherm van minstens 600px hoog: een telefoon in liggende stand houdt de
+   gewone hoogte, anders is de kaart hoger dan het scherm. */
+@media (max-width: 640px) and (min-height: 600px) {
+  #plattegrond { height: max(62vh, 546px); }
 }
 .kaart-sectie .leeg { margin-top: 1rem; }
 /* "Alle plekken op een rij" onder de kaart (door build.js gemaakt uit
@@ -1649,6 +1780,7 @@ body:has(.artikel) .site-footer .inner {
        sizes="100vw"
        width="1600" height="900"
        alt="Skyline van Rotterdam vanaf de Euromast"
+       style="--foto-positie: 50% 35%"
        loading="eager" fetchpriority="high">
   <div class="inner">
     <h1>Mijn Rotterdam <span class="groen">&#128154;</span></h1>
@@ -1687,20 +1819,27 @@ body:has(.artikel) .site-footer .inner {
   // omschrijving voor screenreaders (wisselt mee als alt-tekst). Hoort de
   // foto bij een verhaal, zet er dan plek (de naam op het label) en post
   // (de link naar het verhaal) bij; dan verschijnt het label op de foto.
+  // Op de computer is de hero laag en zie je maar een strook van de foto.
+  // Valt het belangrijkste (een gevel, letters, een neonreclame) daarbuiten,
+  // zet er dan positie bij: "50% 30%" schuift de uitsnede naar boven, "50%
+  // 80%" naar beneden (het tweede getal: 0% is de bovenkant van de foto,
+  // 100% de onderkant). Zonder positie: het midden. Op de telefoon telt dit
+  // niet, daar is bijna de hele foto te zien. Staat de foto bovenaan de lijst
+  // (de standaardfoto), zet de positie dan ook in de HTML hierboven.
   (function () {
     var heroFotos = [
-      { bestand: "hero-skyline-euromast.jpg", breedte: 1600, label: "Skyline van Rotterdam vanaf de Euromast" },
-      { bestand: "hero-hotel-new-york.jpg", breedte: 1600, label: "Hotel New York aan de Kop van Zuid" },
-      { bestand: "hero-willemsbrug.jpg", breedte: 1600, label: "De Willemsbrug bij avond" },
-      { bestand: "hero-erasmusbrug-winter.jpg", breedte: 1600, label: "De Erasmusbrug onder een dreigende winterlucht" },
+      { bestand: "hero-skyline-euromast.jpg", breedte: 1600, positie: "50% 35%", label: "Skyline van Rotterdam vanaf de Euromast" },
+      { bestand: "hero-hotel-new-york.jpg", breedte: 1600, positie: "50% 47%", label: "Hotel New York aan de Kop van Zuid" },
+      { bestand: "hero-willemsbrug.jpg", breedte: 1600, positie: "50% 30%", label: "De Willemsbrug bij avond" },
+      { bestand: "hero-erasmusbrug-winter.jpg", breedte: 1600, positie: "50% 80%", label: "De Erasmusbrug onder een dreigende winterlucht" },
       { bestand: "hero-centraal-station.jpg", breedte: 1600, label: "Rotterdam Centraal en de Delftse Poort op een zonnige dag" },
-      { bestand: "hero-laurenskerk.jpg", breedte: 1600, label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" },
-      { bestand: "hero-balkon-van-europa.jpg", breedte: 1400, label: "Het terras van het Balkon van Europa op de Maasvlakte, met een containerschip dat langsvaart", plek: "Balkon van Europa", post: "posts/balkon-van-europa.html" },
-      { bestand: "hero-containerschip-one.jpg", breedte: 1400, label: "Het roze containerschip van ONE aan de kade op de Maasvlakte", plek: "Portlantis", post: "posts/portlantis.html" },
-      { bestand: "hero-pleinbios.jpg", breedte: 1400, label: "Publiek bij Pleinbios voor Hotel New York op de Wilhelminapier", plek: "Pleinbios", post: "posts/pleinbios.html" },
+      { bestand: "hero-laurenskerk.jpg", breedte: 1600, positie: "50% 40%", label: "De Laurenskerk tussen de moderne hoogbouw van het centrum" },
+      { bestand: "hero-balkon-van-europa.jpg", breedte: 1400, positie: "50% 55%", label: "Het terras van het Balkon van Europa op de Maasvlakte, met een containerschip dat langsvaart", plek: "Balkon van Europa", post: "posts/balkon-van-europa.html" },
+      { bestand: "hero-containerschip-one.jpg", breedte: 1400, positie: "50% 45%", label: "Het roze containerschip van ONE aan de kade op de Maasvlakte", plek: "Portlantis", post: "posts/portlantis.html" },
+      { bestand: "hero-pleinbios.jpg", breedte: 1400, positie: "50% 5%", label: "Publiek bij Pleinbios voor Hotel New York op de Wilhelminapier", plek: "Pleinbios", post: "posts/pleinbios.html" },
       { bestand: "hero-rif010.jpg", breedte: 1600, label: "Surfers in de Steigersgracht bij RiF010, met publiek op de kade", plek: "RiF010", post: "posts/rif010.html" },
       { bestand: "hero-vijgeboom.jpg", breedte: 1600, label: "Het terras van Tapperij De Vijgeboom bij avond", plek: "De Vijgeboom", post: "posts/vijgeboom.html" },
-      { bestand: "hero-due-tonino.jpg", breedte: 1600, label: "De neonreclame van Due Tonino aan de Goudsesingel", plek: "Due Tonino", post: "posts/due-tonino.html" }
+      { bestand: "hero-due-tonino.jpg", breedte: 1600, positie: "50% 35%", label: "De neonreclame van Due Tonino aan de Goudsesingel", plek: "Due Tonino", post: "posts/due-tonino.html" }
     ];
     var standaardFoto = "hero-skyline-euromast.jpg";
     var wisseltijd = 6000; // milliseconden dat één foto blijft staan
@@ -1713,8 +1852,11 @@ body:has(.artikel) .site-footer .inner {
     var huidige = heroFotos[0];
 
     // Zet een foto uit de lijst in een fotolaag. Eerst srcset, dan pas src: zo
-    // laadt de browser niet per ongeluk eerst nog de grote variant.
+    // laadt de browser niet per ongeluk eerst nog de grote variant. De
+    // uitsnede (positie) gaat mee naar dezelfde laag, voor beide lagen.
     function zetFoto(img, foto) {
+      if (foto.positie) img.style.setProperty("--foto-positie", foto.positie);
+      else img.style.removeProperty("--foto-positie");
       img.srcset = "assets/img/" + foto.bestand.replace(/\.jpg$/, "-mobiel.jpg") + " 800w, " +
                    "assets/img/" + foto.bestand + " " + foto.breedte + "w";
       img.src = "assets/img/" + foto.bestand;
@@ -1846,22 +1988,16 @@ body:has(.artikel) .site-footer .inner {
 <section class="filters" aria-label="Filter verhalen en tips">
   <div class="inner">
     <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
-         Staat verborgen zolang er geen tip live is: build.js haalt het
-         hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
-         want die pakken de filterscripts allemaal op. -->
-    <div class="groep groep-formaat">
+         Staat verborgen tot er genoeg tips live zijn: build.js haalt het
+         hidden-attribuut weg vanaf SOORT_VANAF_TIPS tips. Bewust geen
+         klasse filterknop, want die pakken de filterscripts allemaal op. -->
+    <div class="groep groep-formaat" hidden>
       <span class="label" id="formaat-label">Soort</span>
       <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
         <button type="button" class="formaatknop" data-formaat="alles" aria-pressed="true">Alles</button>
         <button type="button" class="formaatknop" data-formaat="verhaal" aria-pressed="false">Verhalen</button>
         <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
       </div>
-    </div>
-    <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
-         computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
-    <div class="gebiedkeuze">
-      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
     </div>
     <div class="groep groep-categorie">
       <span class="label">Categorie</span>
@@ -1877,6 +2013,17 @@ body:has(.artikel) .site-footer .inner {
         <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
       </div>
     </div>
+    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
+         maakt uit de (verborgen) gebiedknoppen hieronder. Staat in de HTML
+         ná de categorieën, zodat de Tab-volgorde op de computer klopt met
+         wat je ziet (rechts naast de categorieën); op de telefoon zet
+         style.css hem vooraan in de rij. De
+         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
+         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
+         voorvoegsel gaat dan pas aan). -->
+    <div class="gebiedkeuze">
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
+    </div>
     <div class="groep groep-gebied">
       <span class="label">Gebied</span>
       <div class="chips">
@@ -1888,6 +2035,14 @@ body:has(.artikel) .site-footer .inner {
         <button class="filterknop" data-filter="gebied" data-waarde="west" aria-pressed="false">West</button>
         <button class="filterknop" data-filter="gebied" data-waarde="maasvlakte" aria-pressed="false">Maasvlakte</button>
       </div>
+    </div>
+    <!-- Aantal gevonden en de knop Wis filters: alleen te zien zolang er een
+         filter aan staat (style.css, .filter-status). Staat al in de HTML,
+         zodat er niets verspringt als de filters uit het webadres komen; de
+         tekst en de knop doen het via assets/filterrij.js. -->
+    <div class="filter-status">
+      <span class="filter-status-tekst" aria-hidden="true"></span>
+      <button type="button" class="wisknop">Wis filters</button>
     </div>
   </div>
   <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
@@ -2090,10 +2245,12 @@ body:has(.artikel) .site-footer .inner {
   // Filters: één actieve categorie, één actief gebied en één soort (alles,
   // alleen verhalen of alleen korte tips). Een kaart zonder data-formaat
   // telt als verhaal, zodat een gekopieerd oud kaartblokje gewoon meedoet.
+  // De tipkaarten staan er altijd tussen; alleen de rij Soort verschijnt
+  // pas vanaf een aantal tips (SOORT_VANAF_TIPS in build.js).
   const actief = { categorie: "alles", gebied: "alles", formaat: "alles" };
   const knoppen = document.querySelectorAll(".filterknop");
   const formaatknoppen = document.querySelectorAll(".formaatknop");
-  // De rij Soort staat verborgen zolang er geen tip live is (build.js).
+  // Staat de rij Soort er (build.js)? Alleen dan doet ?formaat= iets.
   const formaatGroep = document.querySelector(".groep-formaat");
   const metTips = Boolean(formaatGroep && !formaatGroep.hidden);
   const kaarten = document.querySelectorAll(".kaart");
@@ -2111,7 +2268,7 @@ body:has(.artikel) .site-footer .inner {
     return catOk && gebOk && formaatOk;
   }
 
-  // "1 verhaal", "3 verhalen", "0 tips"
+  // "1 verhaal", "3 verhalen", "1 tip"
   function aantalTekst(aantal, een, meer) {
     return aantal + " " + (aantal === 1 ? een : meer);
   }
@@ -2129,11 +2286,14 @@ body:has(.artikel) .site-footer .inner {
     });
     leeg.hidden = verhalen + tips > 0;
     telPerGebied();
-    // Voor screenreaders: hoeveel verhalen en tips blijven er over?
+    // Voor screenreaders: hoeveel verhalen en tips blijven er over? Precies
+    // wat er zichtbaar is, ook als de rij Soort er (nog) niet is: een
+    // zichtbare tipkaart telt dus altijd mee. Een soort met 0 kaarten wordt
+    // niet genoemd ("3 verhalen gevonden.", "1 tip gevonden.").
     let tekst;
     if (verhalen + tips === 0) tekst = "Niets gevonden in deze combinatie.";
-    else if (!metTips || actief.formaat === "verhaal") tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " gevonden.";
-    else if (actief.formaat === "tip") tekst = aantalTekst(tips, "tip", "tips") + " gevonden.";
+    else if (tips === 0) tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " gevonden.";
+    else if (verhalen === 0) tekst = aantalTekst(tips, "tip", "tips") + " gevonden.";
     else tekst = aantalTekst(verhalen, "verhaal", "verhalen") + " en " + aantalTekst(tips, "tip", "tips") + " gevonden.";
     document.getElementById("filter-uitkomst").textContent = tekst;
   }
@@ -2182,9 +2342,11 @@ body:has(.artikel) .site-footer .inner {
   // een post) of ?formaat=tip (het label Even langs op een tippagina), dan
   // simuleren we een klik op dat knopje zodat de homepage meteen gefilterd
   // opent. Geen aparte filterlogica nodig. ?formaat= werkt alleen als de rij
-  // Soort er is (er staat minstens één tip live). Daarna springt de pagina
+  // Soort er is (vanaf SOORT_VANAF_TIPS live tips). Daarna springt de pagina
   // naar de filterbalk, zodat de bezoeker direct ziet welk filter aan staat
   // en de kaarten eronder (zonder eerst langs de hero te moeten scrollen).
+  // Een filter dat de bezoeker hier zelf kiest, komt ook in het adres
+  // (assets/filterrij.js, deel 4).
   const filterUitUrl = new URLSearchParams(location.search);
   let gekozenKnop = null;
   let naarFilters = false;
@@ -2196,7 +2358,8 @@ body:has(.artikel) .site-footer .inner {
     );
     if (knop) {
       knop.click();
-      naarFilters = true;
+      // ?gebied=alles zet geen filter aan: dan ook niet springen
+      if (waarde !== "alles") naarFilters = true;
       if (!gekozenKnop || soort === "categorie") gekozenKnop = knop;
     }
   });
@@ -2205,7 +2368,7 @@ body:has(.artikel) .site-footer .inner {
     const knop = document.querySelector('.formaatknop[data-formaat="' + CSS.escape(formaatUitUrl) + '"]');
     if (knop) {
       knop.click();
-      naarFilters = true;
+      if (formaatUitUrl !== "alles") naarFilters = true;
     }
   }
   if (gekozenKnop) {
@@ -2216,7 +2379,13 @@ body:has(.artikel) .site-footer .inner {
       rij.scrollLeft = gekozenKnop.offsetLeft - rij.offsetLeft - (rij.clientWidth - gekozenKnop.offsetWidth) / 2;
     }
   }
-  if (naarFilters) {
+  // Niet springen bij herladen of met de terugknop: sinds de filterkeuze
+  // ook in het adres komt (assets/filterrij.js), staan de parameters er dan
+  // ook, maar de bezoeker wil terug naar waar hij was (de browser zet de
+  // leespositie zelf terug).
+  const navigatie = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
+  const terugOfHerladen = Boolean(navigatie && (navigatie.type === "reload" || navigatie.type === "back_forward"));
+  if (naarFilters && !terugOfHerladen) {
     // Daarna de filterbalk bovenaan het scherm. html heeft
     // scroll-padding-top, dus de vaste header valt er niet overheen.
     document.querySelector(".filters").scrollIntoView({ block: "start" });

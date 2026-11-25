@@ -43,9 +43,9 @@
 <section class="filters" aria-label="Filter plekken">
   <div class="inner">
     <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
-         Staat verborgen zolang er geen tip live is: build.js haalt het
-         hidden-attribuut weg zodra er een is. Bewust geen klasse filterknop,
-         want die pakken de filterscripts allemaal op. -->
+         Staat verborgen tot er genoeg tips live zijn: build.js haalt het
+         hidden-attribuut weg vanaf SOORT_VANAF_TIPS tips. Bewust geen
+         klasse filterknop, want die pakken de filterscripts allemaal op. -->
     <div class="groep groep-formaat" hidden>
       <span class="label" id="formaat-label">Soort</span>
       <div class="formaatkeuze" role="group" aria-labelledby="formaat-label">
@@ -53,12 +53,6 @@
         <button type="button" class="formaatknop" data-formaat="verhaal" aria-pressed="false">Verhalen</button>
         <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
       </div>
-    </div>
-    <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
-         computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
-    <div class="gebiedkeuze">
-      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
     </div>
     <div class="groep groep-categorie">
       <span class="label">Categorie</span>
@@ -74,6 +68,17 @@
         <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
       </div>
     </div>
+    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
+         maakt uit de (verborgen) gebiedknoppen hieronder. Staat in de HTML
+         ná de categorieën, zodat de Tab-volgorde op de computer klopt met
+         wat je ziet (rechts naast de categorieën); op de telefoon zet
+         style.css hem vooraan in de rij. De
+         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
+         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
+         voorvoegsel gaat dan pas aan). -->
+    <div class="gebiedkeuze">
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
+    </div>
     <div class="groep groep-gebied">
       <span class="label">Gebied</span>
       <div class="chips">
@@ -86,11 +91,47 @@
         <button class="filterknop" data-filter="gebied" data-waarde="maasvlakte" aria-pressed="false">Maasvlakte</button>
       </div>
     </div>
+    <!-- Aantal gevonden en de knop Wis filters: alleen te zien zolang er een
+         filter aan staat (style.css, .filter-status). Staat al in de HTML,
+         zodat er niets verspringt als de filters uit het webadres komen; de
+         tekst en de knop doen het via assets/filterrij.js. -->
+    <div class="filter-status">
+      <span class="filter-status-tekst" aria-hidden="true"></span>
+      <button type="button" class="wisknop">Wis filters</button>
+    </div>
   </div>
   <!-- Onzichtbaar, wel voorgelezen: na het filteren vertelt dit hoeveel
        plekken er overblijven (gevuld door het kaartscript onderaan). -->
   <p class="visueel-verborgen" role="status" id="filter-uitkomst"></p>
 </section>
+<script>
+  // Filters uit het webadres (?categorie=, ?gebied=, ?formaat=), zoals de
+  // labels en het broodkruimelpad op de homepage ze ook gebruiken. Meteen
+  // op de knoppen gezet (aria-pressed), direct na de filters en vóór de
+  // kaart, dus nog vóór de kaart voor het eerst getekend wordt, en zonder een klik na te bootsen: zo staan de knoppen,
+  // de knop Gebied en de regel met "Wis filters" er direct goed en
+  // verspringt er niets als het kaartscript hieronder (dat op de
+  // Leaflet-scripts wacht) en places.json later komen. Een onbekende waarde
+  // wordt genegeerd; ?formaat= alleen als de rij Soort er is.
+  (function () {
+    var adres = new URLSearchParams(location.search);
+    var formaatGroep = document.querySelector(".groep-formaat");
+    function kies(knop, groep) {
+      document.querySelectorAll(groep).forEach(function (k) {
+        k.setAttribute("aria-pressed", k === knop ? "true" : "false");
+      });
+    }
+    ["categorie", "gebied"].forEach(function (soort) {
+      var knop = adres.get(soort) && document.querySelector(
+        '.filterknop[data-filter="' + soort + '"][data-waarde="' + CSS.escape(adres.get(soort)) + '"]'
+      );
+      if (knop) kies(knop, '.filterknop[data-filter="' + soort + '"]');
+    });
+    var formaat = formaatGroep && !formaatGroep.hidden && adres.get("formaat") &&
+      document.querySelector('.formaatknop[data-formaat="' + CSS.escape(adres.get("formaat")) + '"]');
+    if (formaat) kies(formaat, ".formaatknop");
+  })();
+</script>
 
 <main class="kaart-sectie">
   <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen en tips"></div>
@@ -174,9 +215,9 @@
     var plekken = []; // { data, marker }
     var leeg = document.querySelector(".leeg");
     var formaatknoppen = document.querySelectorAll(".formaatknop");
-    // De rij Soort staat verborgen zolang er geen tip live is (build.js).
-    var formaatGroep = document.querySelector(".groep-formaat");
-    var metTips = Boolean(formaatGroep && !formaatGroep.hidden);
+    // De rij Soort staat er pas vanaf SOORT_VANAF_TIPS live tips (build.js);
+    // alleen dan doet ?formaat= iets (zie het script onder de filters). De tip-pins
+    // staan er altijd.
 
     // Past deze plek bij de gekozen filters? Met `gebied` kan een ander
     // gebied dan het gekozen worden nagerekend (voor de aantallen per gebied).
@@ -187,30 +228,16 @@
       return catOk && gebOk && formaatOk;
     }
 
-    // Filters uit het webadres (?categorie=, ?gebied=, ?formaat=), zoals
-    // de labels en het broodkruimelpad op de homepage ze ook gebruiken.
-    // Rechtstreeks ingesteld, dus zonder een klik na te bootsen: zo staan
-    // ze goed vóór de plekken binnen zijn. Een onbekende waarde wordt
-    // genegeerd; ?formaat= alleen als de rij Soort er is.
-    var adres = new URLSearchParams(location.search);
-    ["categorie", "gebied"].forEach(function (soort) {
-      var knop = adres.get(soort) && document.querySelector(
-        '.filterknop[data-filter="' + soort + '"][data-waarde="' + CSS.escape(adres.get(soort)) + '"]'
-      );
-      if (!knop) return;
-      actief[soort] = knop.dataset.waarde;
-      document.querySelectorAll('.filterknop[data-filter="' + soort + '"]').forEach(function (k) {
-        k.setAttribute("aria-pressed", k === knop ? "true" : "false");
-      });
-    });
-    var formaatUitAdres = metTips && adres.get("formaat") &&
-      document.querySelector('.formaatknop[data-formaat="' + CSS.escape(adres.get("formaat")) + '"]');
-    if (formaatUitAdres) {
-      actief.formaat = formaatUitAdres.dataset.formaat;
-      formaatknoppen.forEach(function (k) {
-        k.setAttribute("aria-pressed", k === formaatUitAdres ? "true" : "false");
-      });
+    // De filters uit het webadres staan al goed op de knoppen (het kleine
+    // script direct onder de filters); neem ze daarvan over.
+    function gekozenWaarde(selector, veld) {
+      var knop = document.querySelector(selector + '[aria-pressed="true"]');
+      return knop ? knop.dataset[veld] : "alles";
     }
+    actief.categorie = gekozenWaarde('.filterknop[data-filter="categorie"]', "waarde");
+    actief.gebied = gekozenWaarde('.filterknop[data-filter="gebied"]', "waarde");
+    actief.formaat = gekozenWaarde(".formaatknop", "formaat");
+    var adres = new URLSearchParams(location.search);
 
     // ?plek=<naam>: de link "Bekijk op de kaart" op een tippagina (werkt ook
     // voor verhalen). <naam> is de bestandsnaam van de pagina zonder .html,
@@ -223,7 +250,9 @@
     //    pagina of een andere afmeting van het kaartvak (dan zou de gekozen
     //    plek weer uit beeld schuiven en de popup sluiten).
     // Zodra de bezoeker zelf een filter kiest, gaat dit uit en werkt alles
-    // weer zoals gewoonlijk. Een onbekende naam wordt genegeerd.
+    // weer zoals gewoonlijk; assets/filterrij.js haalt ?plek= dan ook uit het
+    // adres (anders opent herladen de pin weer). Een onbekende naam wordt
+    // genegeerd.
     var plekUitAdres = adres.get("plek");
     var gekozen = null; // { data, marker }
 
@@ -392,8 +421,15 @@
             return plek.data.post === "posts/" + plekUitAdres + ".html";
           })[0] || null;
         }
-        toonPlekken();
+        var aantal = toonPlekken();
         if (gekozen) toonGekozen();
+        // Staat er al een filter aan uit het adres (?gebied=centrum), dan ook
+        // meteen het aantal invullen, anders staat "Wis filters" er zonder
+        // getal. Zonder filter blijft het voorleesvak leeg, zoals op de
+        // homepage (geen melding bij elk bezoek).
+        if (actief.categorie !== "alles" || actief.gebied !== "alles" || actief.formaat !== "alles") {
+          zetUitkomst(aantal);
+        }
         // Opnieuw passend maken bij het laden van alles en bij een andere
         // afmeting, behalve met ?plek= of als de bezoeker de kaart al gebruikt
         // (dan alleen de afmeting bijwerken).
@@ -447,12 +483,15 @@
       marker.openPopup();
     }
 
-    function naFilteren() {
-      var aantal = toonPlekken();
-      // Voor screenreaders: hoeveel plekken blijven er over?
+    // Voor screenreaders: hoeveel plekken blijven er over? (Ook de bron van
+    // het aantal naast "Wis filters", zie assets/filterrij.js.)
+    function zetUitkomst(aantal) {
       document.getElementById("filter-uitkomst").textContent = aantal === 0
         ? "Geen plekken in deze combinatie."
         : aantal + (aantal === 1 ? " plek" : " plekken") + " op de kaart.";
+    }
+    function naFilteren() {
+      zetUitkomst(toonPlekken());
     }
 
     document.querySelectorAll(".filterknop").forEach(function (knop) {
