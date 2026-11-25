@@ -44,7 +44,7 @@
   <div class="inner">
     <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
          Staat verborgen tot er genoeg tips live zijn: build.js haalt het
-         hidden-attribuut weg vanaf SOORT_VANAF_TIPS (5) tips. Bewust geen
+         hidden-attribuut weg vanaf SOORT_VANAF_TIPS tips. Bewust geen
          klasse filterknop, want die pakken de filterscripts allemaal op. -->
     <div class="groep groep-formaat" hidden>
       <span class="label" id="formaat-label">Soort</span>
@@ -54,11 +54,14 @@
         <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
       </div>
     </div>
-    <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
-         computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
+    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
+         maakt uit de (verborgen) gebiedknoppen hieronder. Op de telefoon
+         vooraan in de rij, op de computer rechts naast de categorieën. De
+         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
+         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
+         voorvoegsel gaat dan pas aan). -->
     <div class="gebiedkeuze">
-      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
     </div>
     <div class="groep groep-categorie">
       <span class="label">Categorie</span>

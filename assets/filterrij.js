@@ -51,6 +51,9 @@
   if (!houder) return;
   var knop = houder.querySelector(".gebiedkeuze-knop");
   var knopTekst = houder.querySelector(".gebiedkeuze-tekst");
+  // Verborgen voorvoegsel "Gebied: " voor screenreaders, alleen aan als er
+  // een gebied gekozen is (anders zou de knop "Gebied: Gebied" heten).
+  var voorvoegsel = houder.querySelector(".gebiedkeuze-voor");
   var bronknoppen = document.querySelectorAll('.filterknop[data-filter="gebied"]');
   if (!knop || !bronknoppen.length) return;
 
@@ -93,7 +96,10 @@
       o.optie.classList.toggle("is-leeg", n === "0");
       if (gekozen) {
         var alles = o.bron.getAttribute("data-waarde") === "alles";
-        knopTekst.textContent = alles ? "Heel Rotterdam" : o.bron.textContent.trim();
+        // Dezelfde tekst als in de HTML ("Gebied"), zodat er bij het laden
+        // niets verspringt; alleen een gekozen gebied verandert de tekst.
+        knopTekst.textContent = alles ? "Gebied" : o.bron.textContent.trim();
+        if (voorvoegsel) voorvoegsel.hidden = alles;
         knop.classList.toggle("is-gekozen", !alles);
       }
     });

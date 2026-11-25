@@ -523,7 +523,7 @@ a.tag.gebied:focus-visible {
 }
 
 /* ---------- Keuzelijst voor het gebied (alle breedtes) ----------
-   Eén knop voor het gebied met een keuzelijst die assets/filterrij.js maakt uit
+   Eén knop "Gebied ▾" met een keuzelijst die assets/filterrij.js maakt uit
    de gewone gebiedknoppen. Die gebiedknoppen staan nog in de HTML (beide
    filterscripts werken erop) maar zijn verborgen: de keuzelijst drukt ze op
    de achtergrond in, zodat de filterlogica van de pagina hetzelfde blijft.
@@ -549,8 +549,8 @@ a.tag.gebied:focus-visible {
   color: var(--ink);
   cursor: pointer;
 }
-/* Een gekozen gebied (dus niet heel Rotterdam): donker, net als een
-   ingedrukt filterknopje */
+/* Een gekozen gebied (de knop toont dan dat gebied in plaats van "Gebied"):
+   donker, net als een ingedrukt filterknopje */
 .gebiedkeuze-knop.is-gekozen {
   background: var(--ink);
   color: var(--papier);
@@ -648,11 +648,13 @@ a.tag.gebied:focus-visible {
 }
 
 /* ---------- Mobiel (tot 640px): alle filters in één rij ----------
-   Vooraan de knop voor het gebied, daarachter de categorieknoppen,
-   horizontaal veegbaar. */
+   Vooraan de knop "Gebied ▾", daarachter de categorieknoppen, horizontaal
+   veegbaar. Weinig ruimte boven en onder de rij (het blok is zo 62px hoog),
+   zodat het eerste verhaal hoger in beeld staat; de knoppen zelf blijven
+   44px hoog als tikdoel. */
 @media (max-width: 640px) {
   .filters {
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     margin-bottom: 1.25rem;
   }
   .filters .inner {
@@ -1720,7 +1722,7 @@ body:has(.artikel) .site-footer .inner {
   <div class="inner">
     <!-- Soort: alles, alleen verhalen of alleen korte tips (Even langs).
          Staat verborgen tot er genoeg tips live zijn: build.js haalt het
-         hidden-attribuut weg vanaf SOORT_VANAF_TIPS (5) tips. Bewust geen
+         hidden-attribuut weg vanaf SOORT_VANAF_TIPS tips. Bewust geen
          klasse filterknop, want die pakken de filterscripts allemaal op. -->
     <div class="groep groep-formaat" hidden>
       <span class="label" id="formaat-label">Soort</span>
@@ -1730,11 +1732,14 @@ body:has(.artikel) .site-footer .inner {
         <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
       </div>
     </div>
-    <!-- Alleen op mobiel: één knop voor het gebied, met een keuzelijst die
-         assets/filterrij.js maakt uit de gebiedknoppen hieronder. Op de
-         computer verborgen; daar blijven de gewone gebiedknoppen staan. -->
+    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
+         maakt uit de (verborgen) gebiedknoppen hieronder. Op de telefoon
+         vooraan in de rij, op de computer rechts naast de categorieën. De
+         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
+         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
+         voorvoegsel gaat dan pas aan). -->
     <div class="gebiedkeuze">
-      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="visueel-verborgen">Gebied: </span><span class="gebiedkeuze-tekst">Heel Rotterdam</span> <span aria-hidden="true">&#9662;</span></button>
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
     </div>
     <div class="groep groep-categorie">
       <span class="label">Categorie</span>

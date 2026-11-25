@@ -288,8 +288,8 @@ Claude om te helpen.
   met kijken? Sluit gewoon het zwarte venster.
 - Een nieuwe categorie of gebied toevoegen aan de filters? Vraag het
   aan Claude Code, dat is een kleine aanpassing in `src\index.html` en
-  `src\kaart.html`. De keuzelijst "Heel Rotterdam ▾" die je op een
-  telefoon ziet, past zich daar vanzelf op aan.
+  `src\kaart.html`. De keuzelijst "Gebied ▾" naast de categorieën
+  past zich daar vanzelf op aan.
 - Noemt je nieuwe post een straat of plek waar al een andere post over
   gaat (bijvoorbeeld nog een kroeg op de Oude Binnenweg, of een plek
   vlak bij een eerdere post)? Link die vermelding dan in de lopende

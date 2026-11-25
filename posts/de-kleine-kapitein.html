@@ -521,7 +521,7 @@ a.tag.gebied:focus-visible {
 }
 
 /* ---------- Keuzelijst voor het gebied (alle breedtes) ----------
-   Eén knop voor het gebied met een keuzelijst die assets/filterrij.js maakt uit
+   Eén knop "Gebied ▾" met een keuzelijst die assets/filterrij.js maakt uit
    de gewone gebiedknoppen. Die gebiedknoppen staan nog in de HTML (beide
    filterscripts werken erop) maar zijn verborgen: de keuzelijst drukt ze op
    de achtergrond in, zodat de filterlogica van de pagina hetzelfde blijft.
@@ -547,8 +547,8 @@ a.tag.gebied:focus-visible {
   color: var(--ink);
   cursor: pointer;
 }
-/* Een gekozen gebied (dus niet heel Rotterdam): donker, net als een
-   ingedrukt filterknopje */
+/* Een gekozen gebied (de knop toont dan dat gebied in plaats van "Gebied"):
+   donker, net als een ingedrukt filterknopje */
 .gebiedkeuze-knop.is-gekozen {
   background: var(--ink);
   color: var(--papier);
@@ -646,11 +646,13 @@ a.tag.gebied:focus-visible {
 }
 
 /* ---------- Mobiel (tot 640px): alle filters in één rij ----------
-   Vooraan de knop voor het gebied, daarachter de categorieknoppen,
-   horizontaal veegbaar. */
+   Vooraan de knop "Gebied ▾", daarachter de categorieknoppen, horizontaal
+   veegbaar. Weinig ruimte boven en onder de rij (het blok is zo 62px hoog),
+   zodat het eerste verhaal hoger in beeld staat; de knoppen zelf blijven
+   44px hoog als tikdoel. */
 @media (max-width: 640px) {
   .filters {
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     margin-bottom: 1.25rem;
   }
   .filters .inner {
