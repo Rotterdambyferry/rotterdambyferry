@@ -520,13 +520,134 @@ a.tag.gebied:focus-visible {
   border: 0;
 }
 
-/* ---------- Mobiel: alle filters in één rij ----------
-   Vooraan de knop "Heel Rotterdam ▾" met een keuzelijst voor het gebied
-   (gemaakt door assets/filterrij.js), daarachter de categorieknoppen,
-   horizontaal veegbaar. De gewone gebiedknoppen zijn op mobiel verborgen:
-   de keuzelijst drukt ze op de achtergrond in, zodat de filterlogica van de
-   pagina precies hetzelfde blijft. Op de computer verandert er niets. */
-.gebiedkeuze { display: none; }
+/* ---------- Keuzelijst voor het gebied (alle breedtes) ----------
+   Eén knop voor het gebied met een keuzelijst die assets/filterrij.js maakt uit
+   de gewone gebiedknoppen. Die gebiedknoppen staan nog in de HTML (beide
+   filterscripts werken erop) maar zijn verborgen: de keuzelijst drukt ze op
+   de achtergrond in, zodat de filterlogica van de pagina hetzelfde blijft.
+   Op de telefoon staat de knop vooraan in de veegbare rij (lijst klapt naar
+   rechts uit), op de computer rechts naast de categorieën (lijst klapt naar
+   links uit, anders loopt hij buiten beeld). */
+.filters .groep-gebied { display: none; }
+.gebiedkeuze {
+  display: flex; /* geen regelhoogte rond de knop: lijnt precies uit met de chips */
+  position: relative;
+  flex: none;
+}
+.gebiedkeuze-knop {
+  min-height: 44px;
+  padding: 0.35rem 0.9rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+/* Een gekozen gebied (dus niet heel Rotterdam): donker, net als een
+   ingedrukt filterknopje */
+.gebiedkeuze-knop.is-gekozen {
+  background: var(--ink);
+  color: var(--papier);
+}
+/* Het pijltje komt uit een ander lettertype en maakte de knop 1px hoger dan
+   een filterknopje ernaast */
+.gebiedkeuze-knop > [aria-hidden="true"] { line-height: 1; }
+.gebiedkeuze-lijst {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 1100; /* boven de kaart en de Leaflet-knoppen (1000), onder de header (1200) */
+  min-width: 12.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.3rem;
+  background: var(--papier);
+  border: 2px solid var(--ink);
+}
+.gebiedkeuze-lijst[hidden] { display: none; }
+.gebiedkeuze-optie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.gebiedkeuze-optie[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--papier);
+}
+/* Gebied zonder verhalen (bij de gekozen categorie): grijs */
+.gebiedkeuze-optie.is-leeg { color: var(--staal); }
+.gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
+.gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
+@media (hover: hover) and (pointer: fine) {
+  .gebiedkeuze-knop:hover { border-color: var(--groen); }
+  .gebiedkeuze-knop.is-gekozen:hover { border-color: var(--groen); }
+  .gebiedkeuze-optie:hover { background: var(--groen-licht); }
+  .gebiedkeuze-optie[aria-pressed="true"]:hover { background: var(--ink); }
+}
+
+/* ---------- Computer (vanaf 641px): één compacte balk ----------
+   De categorieën in één rij met de keuzelijst Gebied rechts ernaast. Het
+   woord "Categorie" blijft er alleen voor screenreaders. Staat de rij Soort
+   er (vanaf 5 tips, zie build.js), dan krijgt die een eigen regel erboven,
+   met het label ervoor. */
+@media (min-width: 641px) {
+  .filters {
+    padding: 0.75rem 0;
+    margin-bottom: 1.5rem;
+  }
+  .filters .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+  .filters .groep { margin-bottom: 0; }
+  .filters .groep-formaat {
+    flex: 0 0 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  /* Zonder deze regel zou display: flex het hidden-attribuut opheffen */
+  .filters .groep-formaat[hidden] { display: none; }
+  .filters .groep-formaat .label { margin-bottom: 0; }
+  .filters .groep-categorie { order: 1; flex: 1 1 0; min-width: 0; }
+  .filters .groep-categorie .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .gebiedkeuze { order: 2; margin-left: auto; align-self: flex-start; }
+  .gebiedkeuze-knop {
+    min-height: 0;
+    padding: 0.35rem 0.9rem;
+    font-weight: 600;
+  }
+  .gebiedkeuze-lijst { left: auto; right: 0; }
+}
+
+/* ---------- Mobiel (tot 640px): alle filters in één rij ----------
+   Vooraan de knop voor het gebied, daarachter de categorieknoppen,
+   horizontaal veegbaar. */
 @media (max-width: 640px) {
   .filters {
     padding: 0.75rem 0;
@@ -542,7 +663,6 @@ a.tag.gebied:focus-visible {
     min-width: 0;
     margin-bottom: 0;
   }
-  .filters .groep-gebied { display: none; }
   /* Het woord "Categorie" blijft er voor screenreaders, maar neemt geen ruimte in */
   .filters .label {
     position: absolute;
@@ -553,78 +673,12 @@ a.tag.gebied:focus-visible {
     clip: rect(0 0 0 0);
     white-space: nowrap;
   }
-  .gebiedkeuze {
-    display: block;
-    position: relative;
-    flex: none;
-  }
-  .gebiedkeuze-knop {
-    min-height: 44px;
-    padding: 0.35rem 0.9rem;
-    font-family: "Archivo", sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  /* Een gekozen gebied (dus niet "Heel Rotterdam"): donker, net als een
-     ingedrukt filterknopje */
-  .gebiedkeuze-knop.is-gekozen {
-    background: var(--ink);
-    color: var(--papier);
-  }
-  .gebiedkeuze-lijst {
-    position: absolute;
-    top: calc(100% + 0.4rem);
-    left: 0;
-    z-index: 1100; /* boven de kaart en de Leaflet-knoppen (1000), onder de header (1200) */
-    min-width: 12.5rem;
-    display: flex;
-    flex-direction: column;
-    padding: 0.3rem;
-    background: var(--papier);
-    border: 2px solid var(--ink);
-  }
-  .gebiedkeuze-lijst[hidden] { display: none; }
-  .gebiedkeuze-optie {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    min-height: 44px;
-    padding: 0 0.8rem;
-    font-family: "Archivo", sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-align: left;
-    border: 0;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  .gebiedkeuze-optie[aria-pressed="true"] {
-    background: var(--ink);
-    color: var(--papier);
-  }
-  /* Gebied zonder verhalen (bij de gekozen categorie): grijs */
-  .gebiedkeuze-optie.is-leeg { color: var(--staal); }
-  .gebiedkeuze-optie.is-leeg[aria-pressed="true"] { color: var(--lijn); }
-  .gebiedkeuze-optie:focus-visible { outline-offset: -3px; }
 }
 /* Op een telefoon (tot 600px) geen categorieknop "Alles": geen categorie
    gekozen betekent alles. Een actieve categorie zet je uit door er nog eens
    op te tikken (assets/filterrij.js). */
 @media (max-width: 600px) {
   .filters .groep-categorie .filterknop[data-waarde="alles"] { display: none; }
-}
-@media (max-width: 640px) and (hover: hover) and (pointer: fine) {
-  .gebiedkeuze-knop:hover { border-color: var(--groen); }
-  .gebiedkeuze-optie:hover { background: var(--groen-licht); }
-  .gebiedkeuze-optie[aria-pressed="true"]:hover { background: var(--ink); }
 }
 
 /* ---------- Postkaarten ---------- */
@@ -1055,7 +1109,8 @@ a.tag.formaat-tip:focus-visible {
    segmentknop met drie delen. Bewust geen .filterknop (die pakken de
    filterscripts allemaal op). Geen overflow: hidden, anders valt de
    focusrand weg: de buitenste knoppen krijgen zelf de ronde hoeken. De rij
-   staat verborgen zolang er geen tip live is (build.js). */
+   staat verborgen tot er genoeg tips live zijn (SOORT_VANAF_TIPS in
+   build.js). */
 .formaatkeuze {
   display: inline-flex;
   border: 1.5px solid var(--ink);

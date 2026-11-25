@@ -1,5 +1,5 @@
-// De filterrij op mobiel (homepage en kaartpagina): de keuzelijst voor het
-// gebied, en het aan- en uitzetten van een categorie.
+// De filterrij (homepage en kaartpagina): de keuzelijst voor het gebied, en
+// op een telefoon het aan- en uitzetten van een categorie.
 //
 // 1. Categorieën (tot 600px breed): op een telefoon staat er geen knop
 // "Alles" bij de categorieën (verborgen via style.css); geen categorie
@@ -9,13 +9,14 @@
 // aantallen in de keuzelijst bijwerkt). Op bredere schermen verandert er
 // niets: daar blijft "Alles" gewoon staan.
 //
-// 2. Keuzelijst voor het gebied (tot 640px breed).
-// Op een telefoon staan de filters in één rij: vooraan de knop
-// "Heel Rotterdam ▾" (staat al in de HTML, zodat er bij het laden niets
-// verspringt), daarachter de categorieknoppen. Dit script maakt bij die knop
-// een kleine keuzelijst met alle gebieden, gebouwd uit de gewone
-// gebiedknopjes (.filterknop[data-filter="gebied"]) die op de computer
-// zichtbaar zijn en op mobiel verborgen.
+// 2. Keuzelijst voor het gebied (alle breedtes, sinds november 2026 ook op
+// de computer). De knop voor het gebied staat al in de HTML, zodat er bij
+// het laden niets verspringt. Op een telefoon staat hij vooraan in de
+// veegbare rij met categorieknoppen, op de computer rechts naast de
+// categorieën (zie style.css). Dit script maakt bij die knop een kleine
+// keuzelijst met alle gebieden, gebouwd uit de gewone gebiedknopjes
+// (.filterknop[data-filter="gebied"]), die in de HTML blijven staan maar
+// niet te zien zijn.
 //
 // De filterlogica zelf blijft van de pagina: een keuze in de lijst "drukt"
 // gewoon op het bijbehorende (verborgen) gebiedknopje. Andersom houdt dit
