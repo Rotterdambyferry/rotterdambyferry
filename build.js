@@ -1130,9 +1130,11 @@ function metTipkaarten(html) {
   const strook = tipStrookHtml(tips);
   // Direct na het eerste verhaal (zie hierboven). [ \t]*: na het wegfilteren
   // van de kaart van een voorbereid verhaal kan de volgende kaart dieper
-  // ingesprongen staan. Geen verhaalkaart (of alleen een binnenkort-kaart)?
-  // Dan achteraan, voor de melding "Nog niets in deze combinatie".
-  const eerste = html.match(/^[ \t]*<article class="kaart"[^>]*>[\s\S]*?<\/article>\n/m);
+  // ingesprongen staan. Een kaart "binnenkort" telt mee als eerste kaart:
+  // plaatsStrook in src/index.html telt ook elke .kaart, zo blijven build en
+  // script gelijk. Geen kaart? Dan achteraan, voor de melding "Nog niets in
+  // deze combinatie".
+  const eerste = html.match(/^[ \t]*<article class="kaart(?: binnenkort)?"[^>]*>[\s\S]*?<\/article>\n/m);
   if (eerste) {
     const plek = eerste.index + eerste[0].length;
     return html.slice(0, plek) + "\n" + strook + html.slice(plek);

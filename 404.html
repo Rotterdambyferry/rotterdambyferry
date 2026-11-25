@@ -1156,9 +1156,22 @@ a.tag.formaat-tip:focus-visible {
   flex: 1 1 calc((100% - (var(--tip-kol) - 1) * 1rem) / var(--tip-kol) - 1px);
   min-width: 0;
 }
-/* Eén tip (na een filter): niet over de hele breedte uitrekken. */
+/* Eén tip (na een filter, of als er maar één tip live is): niet over de
+   hele breedte uitrekken. Vanaf 664px staat het kopje links en het kaartje
+   rechts, zodat de band gevuld is in plaats van half leeg. :not([hidden]),
+   anders wint display: grid van het hidden-attribuut. Op een telefoon blijft
+   het gewoon kopje boven en kaartje eronder (zie de media query hieronder). */
 .tipstrook[data-zichtbaar="1"] .tipstrook-lijst > .kaart-tip {
   flex: 0 1 34rem;
+}
+@media (min-width: 664px) {
+  .tipstrook[data-zichtbaar="1"]:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .tipstrook[data-zichtbaar="1"] .tipstrook-lijst { margin-top: 0; }
 }
 @media (min-width: 664px) and (max-width: 999px) {
   .tipstrook-lijst { --tip-kol: 2; }
