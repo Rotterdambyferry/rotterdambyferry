@@ -1063,67 +1063,85 @@ ${foto(tip.foto2, tip.alt2, 2, false)}
 `;
 }
 
-// ---------- Tipkaarten op de homepage ----------
-// Elke live tip krijgt op de homepage een compacte kaart tussen de
-// verhalen (opmaak: .kaart-tip in style.css). De verhaalkaarten blijven met
-// de hand in src/index.html staan, in hun eigen volgorde; een tip komt
-// vóór het eerste verhaal met een oudere publicatiedatum (bij een gelijke
-// datum eerst het verhaal), en anders achteraan. Dat sorteert alleen goed
-// zolang de verhaalkaarten zelf op datum staan (nieuwste bovenaan), zoals
-// NIEUWE-POST.md voorschrijft. Meerdere tips onderling: nieuwste eerst, dan
-// op naam. Alles wat uit het tipbestand komt, gaat door htmlTekst.
+// ---------- Tipstrook "Even langs" op de homepage ----------
+// Alle live tips staan samen in één strook over de volle breedte van het
+// raster (opmaak: .tipstrook en .kaart-tip in style.css), met een kopje en
+// een regel eronder. De verhaalkaarten blijven met de hand in src/index.html
+// staan, in hun eigen volgorde. De strook komt in de bron direct na het
+// eerste verhaal te staan: dat is precies de volgorde op een telefoon (één
+// kolom). Op een tablet (2 kolommen) en computer (3 kolommen) zet CSS hem
+// met `order` visueel na de eerste rij; zodra de pagina geladen is
+// verplaatst het filterscript in src/index.html hem ook echt in de HTML
+// (plaatsStrook), zodat de tabvolgorde klopt met wat je ziet. Tips
+// onderling: nieuwste eerst, dan op naam. Alles wat uit het tipbestand
+// komt, gaat door htmlTekst. De tipkaart in de strook heeft een h3 (het
+// kopje "Even langs" is de h2) en niet het zwarte label "Even langs": dat
+// staat al in het kopje.
 function tipKaartHtml(tip) {
   const foto = `assets/img/${tip.foto1.basis}-kaart.jpg`;
   const maat = jpegAfmetingen(path.join(__dirname, foto)) || { breedte: 800, hoogte: 500 };
   const labels = [
-    `      <span class="tag formaat-tip">Even langs</span>`,
-    ...tip.categorie.map((c) => `      <span class="tag">${CATEGORIE_LABELS[c]}</span>`),
-    `      <span class="tag gebied">${gebiedLabel(tip.gebied)}</span>`,
+    ...tip.categorie.map((c) => `          <span class="tag">${CATEGORIE_LABELS[c]}</span>`),
+    `          <span class="tag gebied">${gebiedLabel(tip.gebied)}</span>`,
   ].join("\n");
-  return `  <article class="kaart kaart-tip" data-formaat="tip" data-categorie="${tip.categorie.join(" ")}" data-gebied="${tip.gebied}">
-    <a class="thumb" href="${tip.post}" aria-hidden="true" tabindex="-1">
-      <img src="${foto}" alt="${htmlTekst(tip.alt1)}" width="${maat.breedte}" height="${maat.hoogte}" loading="lazy">
-    </a>
-    <h2><a href="${tip.post}">${htmlTekst(tip.titel)}</a></h2>
-    <div class="tags">
+  return `      <article class="kaart kaart-tip" data-formaat="tip" data-categorie="${tip.categorie.join(" ")}" data-gebied="${tip.gebied}">
+        <a class="thumb" href="${tip.post}" aria-hidden="true" tabindex="-1">
+          <img src="${foto}" alt="${htmlTekst(tip.alt1)}" width="${maat.breedte}" height="${maat.hoogte}" loading="lazy">
+        </a>
+        <h3><a href="${tip.post}">${htmlTekst(tip.titel)}</a></h3>
+        <div class="tags">
 ${labels}
+        </div>
+        <p>${htmlTekst(tip.kaartTekst)}</p>
+        <a class="lees" href="${tip.post}">Lees de tip &rarr;</a>
+      </article>
+`;
+}
+
+// Aantal kolommen voor de tips op de computer bij n zichtbare tips: tot 3
+// naast elkaar, maar 4 tips als 2 plus 2 (3 plus 1 geeft een onrustig
+// uitgerekt vierde kaartje). Het filterscript houdt dit bij met het aantal
+// zichtbare tips (tipKolommen in src/index.html); houd beide gelijk.
+function tipKolommen(n) {
+  return n === 4 ? 2 : Math.min(n, 3);
+}
+
+function tipStrookHtml(tips) {
+  const kaarten = tips.map(tipKaartHtml).join("");
+  return `  <section class="tipstrook" aria-labelledby="tipstrook-kop" data-zichtbaar="${tips.length}" style="--kol-breed: ${tipKolommen(tips.length)}">
+    <div class="tipstrook-kop-blok">
+      <h2 class="tipstrook-kop" id="tipstrook-kop">Even langs</h2>
+      <p class="tipstrook-intro">Korte tips van plekken waar ik zelf ben geweest</p>
     </div>
-    <p>${htmlTekst(tip.kaartTekst)}</p>
-    <a class="lees" href="${tip.post}">Lees de tip &rarr;</a>
-  </article>
+    <div class="tipstrook-lijst">
+${kaarten}    </div>
+  </section>
 
 `;
 }
 
 function metTipkaarten(html) {
-  const datumVan = (post) => {
-    const bestand = path.join(bronmap, post);
-    return fs.existsSync(bestand) ? publicatiedatum(bestand) : null;
-  };
-  // [ \t]*: na het wegfilteren van de kaart van een voorbereid verhaal kan
-  // de volgende kaart dieper ingesprongen staan.
-  const verhaalkaarten = [...html.matchAll(/^[ \t]*<article class="kaart"[^>]*>[\s\S]*?<\/article>\n/gm)].map((m) => {
-    const link = m[0].match(/href="(posts\/[^"]+\.html)"/);
-    return { plek: m.index, datum: link ? datumVan(link[1]) : null };
+  const datumVan = (tip) => publicatiedatum(tip.bestand);
+  const tips = [...liveTips].sort((a, b) => {
+    const da = datumVan(a);
+    const db = datumVan(b);
+    return da < db ? 1 : da > db ? -1 : alfabetisch(a.naam, b.naam);
   });
+  const strook = tipStrookHtml(tips);
+  // Direct na het eerste verhaal (zie hierboven). [ \t]*: na het wegfilteren
+  // van de kaart van een voorbereid verhaal kan de volgende kaart dieper
+  // ingesprongen staan. Een kaart "binnenkort" telt mee als eerste kaart:
+  // plaatsStrook in src/index.html telt ook elke .kaart, zo blijven build en
+  // script gelijk. Geen kaart? Dan achteraan, voor de melding "Nog niets in
+  // deze combinatie".
+  const eerste = html.match(/^[ \t]*<article class="kaart(?: binnenkort)?"[^>]*>[\s\S]*?<\/article>\n/m);
+  if (eerste) {
+    const plek = eerste.index + eerste[0].length;
+    return html.slice(0, plek) + "\n" + strook + html.slice(plek);
+  }
   const eind = html.search(/^  <p class="leeg"/m);
   const achteraan = eind === -1 ? html.indexOf("</main>") : eind;
-  const tips = liveTips
-    .map((tip) => ({ tip, datum: publicatiedatum(tip.bestand) }))
-    .sort((a, b) => (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : alfabetisch(a.tip.naam, b.tip.naam)));
-  // Per invoegplek de tips in volgorde verzamelen, daarna van achter naar
-  // voren invoegen, zodat de eerdere plekken niet verschuiven.
-  const perPlek = new Map();
-  for (const { tip, datum } of tips) {
-    const ouder = verhaalkaarten.find((k) => k.datum && k.datum < datum);
-    const plek = ouder ? ouder.plek : achteraan;
-    if (!perPlek.has(plek)) perPlek.set(plek, []);
-    perPlek.get(plek).push(tipKaartHtml(tip));
-  }
-  for (const plek of [...perPlek.keys()].sort((a, b) => b - a)) {
-    html = html.slice(0, plek) + perPlek.get(plek).join("") + html.slice(plek);
-  }
-  return html;
+  return html.slice(0, achteraan) + strook + html.slice(achteraan);
 }
 
 // Leest de echte pixelafmetingen van een JPEG-bestand, puur door de
@@ -1684,7 +1702,7 @@ for (const { bronbestand, relatief, tip } of bronnen) {
     );
   }
 
-  // Op de homepage: de tipkaarten tussen de verhalen zetten. Pas ná het
+  // Op de homepage: de tipstrook na het eerste verhaal zetten. Pas ná het
   // wegfilteren hierboven, zodat een tip met dezelfde naam als een nog
   // verborgen verhaal niet mee weggefilterd wordt.
   if (relatief === "index.html" && liveTips.length > 0) {
@@ -1694,7 +1712,7 @@ for (const { bronbestand, relatief, tip } of bronnen) {
   // De rij Soort (Alles / Verhalen / Tips) op de homepage en de kaartpagina
   // staat in de bron verborgen; pas vanaf SOORT_VANAF_TIPS live tips komt hij
   // tevoorschijn. Zo staat er geen filter boven de verhalen dat bijna niets
-  // oplevert. De tipkaarten zelf staan er wel altijd tussen.
+  // oplevert. De tipstrook zelf staat er wel altijd.
   if (metSoort) {
     resultaat = resultaat.replace('<div class="groep groep-formaat" hidden>', '<div class="groep groep-formaat">');
   }
@@ -1702,11 +1720,12 @@ for (const { bronbestand, relatief, tip } of bronnen) {
   // Op de homepage: de foto van de eerste kaart meteen laden in plaats van
   // "lui". Sinds de lagere hero op telefoons (audit M2) staat die kaart daar
   // direct in beeld en is die foto het grootste beeld (LCP); lui laden liet
-  // hem onnodig wachten. Is die eerste kaart een tip (met een klein
-  // fotootje), dan ook de foto van het eerste verhaal: dat staat op de
-  // computer in dezelfde eerste rij en is daar het grote beeld. Bewust
+  // hem onnodig wachten. Sinds de tipstrook (november 2026) is de eerste
+  // kaart altijd een verhaal: de strook staat erna. De tak voor een tip als
+  // eerste kaart (dan ook de foto van het eerste verhaal) is daarmee een
+  // reserve die normaal niet meer voorkomt; hij kan blijven staan. Bewust
   // zonder fetchpriority="high" (de herofoto gaat voor). Hier in de build
-  // (ná het wegfilteren en het invoegen van tipkaarten), zodat het vanzelf
+  // (ná het wegfilteren en het invoegen van de strook), zodat het vanzelf
   // klopt als er een nieuwe kaart bovenaan komt. De andere foto's blijven
   // gewoon lui laden.
   if (relatief === "index.html") {
