@@ -1424,6 +1424,15 @@ body:has(.artikel) .site-footer .inner {
   border: 3px solid var(--ink);
   background: var(--ink);
 }
+/* Telefoon: de kaart minstens 546px hoog (binnenkant 540px). Dan houdt een
+   geopende popup (zo'n 350 tot 400px hoog) genoeg ruimte boven zich vrij
+   om onder de zoomknoppen te vallen (stelPopupRuimteIn in kaart.html: de
+   kaarthoogte min 430, tot 110px); bij een lagere kaart viel de popup een
+   stukje over de knoppen. Met de compactere filterbalk past dat nog
+   steeds onder de kop in beeld (zie het popupopen-script). */
+@media (max-width: 640px) {
+  #plattegrond { height: max(62vh, 546px); }
+}
 .kaart-sectie .leeg { margin-top: 1rem; }
 /* "Alle plekken op een rij" onder de kaart (door build.js gemaakt uit
    places.json): gewone links naar de posts, ook zonder JavaScript. Kolommen
