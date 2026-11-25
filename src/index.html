@@ -258,15 +258,6 @@
         <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
       </div>
     </div>
-    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
-         maakt uit de (verborgen) gebiedknoppen hieronder. Op de telefoon
-         vooraan in de rij, op de computer rechts naast de categorieën. De
-         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
-         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
-         voorvoegsel gaat dan pas aan). -->
-    <div class="gebiedkeuze">
-      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
-    </div>
     <div class="groep groep-categorie">
       <span class="label">Categorie</span>
       <div class="chips">
@@ -280,6 +271,17 @@
         <button class="filterknop" data-filter="categorie" data-waarde="borrelplek" aria-pressed="false">Borrelplek</button>
         <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
       </div>
+    </div>
+    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
+         maakt uit de (verborgen) gebiedknoppen hieronder. Staat in de HTML
+         ná de categorieën, zodat de Tab-volgorde op de computer klopt met
+         wat je ziet (rechts naast de categorieën); op de telefoon zet
+         style.css hem vooraan in de rij. De
+         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
+         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
+         voorvoegsel gaat dan pas aan). -->
+    <div class="gebiedkeuze">
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
     </div>
     <div class="groep groep-gebied">
       <span class="label">Gebied</span>
@@ -580,7 +582,8 @@
     );
     if (knop) {
       knop.click();
-      naarFilters = true;
+      // ?gebied=alles zet geen filter aan: dan ook niet springen
+      if (waarde !== "alles") naarFilters = true;
       if (!gekozenKnop || soort === "categorie") gekozenKnop = knop;
     }
   });
@@ -589,7 +592,7 @@
     const knop = document.querySelector('.formaatknop[data-formaat="' + CSS.escape(formaatUitUrl) + '"]');
     if (knop) {
       knop.click();
-      naarFilters = true;
+      if (formaatUitUrl !== "alles") naarFilters = true;
     }
   }
   if (gekozenKnop) {

@@ -625,7 +625,7 @@ a.tag.gebied:focus-visible {
   /* Zonder deze regel zou display: flex het hidden-attribuut opheffen */
   .filters .groep-formaat[hidden] { display: none; }
   .filters .groep-formaat .label { margin-bottom: 0; }
-  .filters .groep-categorie { order: 1; flex: 1 1 0; min-width: 0; }
+  .filters .groep-categorie { flex: 1 1 0; min-width: 0; }
   .filters .groep-categorie .label {
     position: absolute;
     width: 1px;
@@ -635,7 +635,7 @@ a.tag.gebied:focus-visible {
     clip: rect(0 0 0 0);
     white-space: nowrap;
   }
-  .gebiedkeuze { order: 2; margin-left: auto; align-self: flex-start; }
+  .gebiedkeuze { margin-left: auto; align-self: flex-start; }
   .gebiedkeuze-knop {
     min-height: 0;
     padding: 0.35rem 0.9rem;
@@ -664,6 +664,10 @@ a.tag.gebied:focus-visible {
     min-width: 0;
     margin-bottom: 0;
   }
+  /* In de HTML staat de knop Gebied ná de categorieën (Tab-volgorde op de
+     computer); op de telefoon vooraan. De rij Soort (ook order -1) staat in
+     de HTML eerder en blijft dus bovenaan. */
+  .gebiedkeuze { order: -1; }
   /* Het woord "Categorie" blijft er voor screenreaders, maar neemt geen ruimte in */
   .filters .label {
     position: absolute;
@@ -1456,8 +1460,10 @@ body:has(.artikel) .site-footer .inner {
    om onder de zoomknoppen te vallen (stelPopupRuimteIn in kaart.html: de
    kaarthoogte min 430, tot 110px); bij een lagere kaart viel de popup een
    stukje over de knoppen. Met de compactere filterbalk past dat nog
-   steeds onder de kop in beeld (zie het popupopen-script). */
-@media (max-width: 640px) {
+   steeds onder de kop in beeld (zie het popupopen-script). Alleen op een
+   scherm van minstens 600px hoog: een telefoon in liggende stand houdt de
+   gewone hoogte, anders is de kaart hoger dan het scherm. */
+@media (max-width: 640px) and (min-height: 600px) {
   #plattegrond { height: max(62vh, 546px); }
 }
 .kaart-sectie .leeg { margin-top: 1rem; }

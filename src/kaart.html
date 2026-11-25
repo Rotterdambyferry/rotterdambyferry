@@ -54,15 +54,6 @@
         <button type="button" class="formaatknop" data-formaat="tip" aria-pressed="false">Tips</button>
       </div>
     </div>
-    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
-         maakt uit de (verborgen) gebiedknoppen hieronder. Op de telefoon
-         vooraan in de rij, op de computer rechts naast de categorieën. De
-         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
-         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
-         voorvoegsel gaat dan pas aan). -->
-    <div class="gebiedkeuze">
-      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
-    </div>
     <div class="groep groep-categorie">
       <span class="label">Categorie</span>
       <div class="chips">
@@ -76,6 +67,17 @@
         <button class="filterknop" data-filter="categorie" data-waarde="borrelplek" aria-pressed="false">Borrelplek</button>
         <button class="filterknop" data-filter="categorie" data-waarde="dagje-uit" aria-pressed="false">Dagje uit</button>
       </div>
+    </div>
+    <!-- Eén knop voor het gebied, met een keuzelijst die assets/filterrij.js
+         maakt uit de (verborgen) gebiedknoppen hieronder. Staat in de HTML
+         ná de categorieën, zodat de Tab-volgorde op de computer klopt met
+         wat je ziet (rechts naast de categorieën); op de telefoon zet
+         style.css hem vooraan in de rij. De
+         knop heet "Gebied"; is er een gebied gekozen, dan toont hij dat
+         gebied en leest een screenreader "Gebied: Centrum" (het verborgen
+         voorvoegsel gaat dan pas aan). -->
+    <div class="gebiedkeuze">
+      <button type="button" class="gebiedkeuze-knop" aria-expanded="false" aria-controls="gebiedkeuze-lijst"><span class="gebiedkeuze-voor visueel-verborgen" hidden>Gebied: </span><span class="gebiedkeuze-tekst">Gebied</span> <span aria-hidden="true">&#9662;</span></button>
     </div>
     <div class="groep groep-gebied">
       <span class="label">Gebied</span>
@@ -102,23 +104,11 @@
        plekken er overblijven (gevuld door het kaartscript onderaan). -->
   <p class="visueel-verborgen" role="status" id="filter-uitkomst"></p>
 </section>
-
-<main class="kaart-sectie">
-  <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen en tips"></div>
-  <p class="leeg" hidden>Nog geen plekken in deze combinatie. Die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">@rotterdambyferry</a> voor het laatste nieuws.</p>
-
-  <!-- PLEKKENLIJST -->
-</main>
-
-<!-- INCLUDE:footer -->
-
-<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script defer src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin=""></script>
 <script>
   // Filters uit het webadres (?categorie=, ?gebied=, ?formaat=), zoals de
   // labels en het broodkruimelpad op de homepage ze ook gebruiken. Meteen
-  // op de knoppen gezet (aria-pressed), nog vóór de pagina voor het eerst
-  // getekend wordt, en zonder een klik na te bootsen: zo staan de knoppen,
+  // op de knoppen gezet (aria-pressed), direct na de filters en vóór de
+  // kaart, dus nog vóór de kaart voor het eerst getekend wordt, en zonder een klik na te bootsen: zo staan de knoppen,
   // de knop Gebied en de regel met "Wis filters" er direct goed en
   // verspringt er niets als het kaartscript hieronder (dat op de
   // Leaflet-scripts wacht) en places.json later komen. Een onbekende waarde
@@ -142,6 +132,18 @@
     if (formaat) kies(formaat, ".formaatknop");
   })();
 </script>
+
+<main class="kaart-sectie">
+  <div id="plattegrond" role="region" aria-label="Kaart van Rotterdam met alle plekken uit de verhalen en tips"></div>
+  <p class="leeg" hidden>Nog geen plekken in deze combinatie. Die komen eraan. Volg <a href="https://www.instagram.com/rotterdambyferry/" target="_blank" rel="noopener noreferrer">@rotterdambyferry</a> voor het laatste nieuws.</p>
+
+  <!-- PLEKKENLIJST -->
+</main>
+
+<!-- INCLUDE:footer -->
+
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script defer src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin=""></script>
 <script>
   // De kaart: donkere CARTO-ondergrond met groene pins in de huisstijl.
   // De plekken komen uit places.json; de filterchips werken hetzelfde als
@@ -214,7 +216,7 @@
     var leeg = document.querySelector(".leeg");
     var formaatknoppen = document.querySelectorAll(".formaatknop");
     // De rij Soort staat er pas vanaf SOORT_VANAF_TIPS live tips (build.js);
-    // alleen dan doet ?formaat= iets (zie het script hierboven). De tip-pins
+    // alleen dan doet ?formaat= iets (zie het script onder de filters). De tip-pins
     // staan er altijd.
 
     // Past deze plek bij de gekozen filters? Met `gebied` kan een ander
@@ -227,7 +229,7 @@
     }
 
     // De filters uit het webadres staan al goed op de knoppen (het kleine
-    // script hierboven); neem ze daarvan over.
+    // script direct onder de filters); neem ze daarvan over.
     function gekozenWaarde(selector, veld) {
       var knop = document.querySelector(selector + '[aria-pressed="true"]');
       return knop ? knop.dataset[veld] : "alles";
