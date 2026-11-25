@@ -30,3 +30,4 @@ a8681821b76ad2bf35f393e67a70121fc1ee65a8  # 2026-08-26 Instagram-linkje in het d
 214921afc57ca24d603b95fad6dbe6c92ee11612  # 2026-11-13 Instagram-link (knop Reageer op Instagram) bij De Vijgeboom en RiF010
 d764f51e94bb96581df7e32cf62fc5629bbc6dc8  # 2026-11-13 labels boven posts klikbaar (techniek, alle posts en style.css)
 a2133e24776c2b2a524b21e1a0768ccdaaad516b  # 2026-11-25 rij Soort pas vanaf 5 tips: alleen commentaar in src/kaart.html (filterbalk-compact, taak B)
+af29496869c61d138395e1a5f8e9f5388f354368  # 2026-11-25 knop Gebied en compactere filterrij: alleen techniek en opmaak in src/kaart.html (filterbalk-compact, taak D)
