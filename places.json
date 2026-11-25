@@ -173,5 +173,21 @@
     "teaser": "Voor een goede kinderboekwinkel in Rotterdam is dit al jaren mijn vaste adres.",
     "straat": "Botersloot 173",
     "postcode": "3011 HE"
+  },
+  {
+    "naam": "Panzerò",
+    "formaat": "tip",
+    "lat": 51.922023,
+    "lon": 4.488115,
+    "categorie": [
+      "lunchplek"
+    ],
+    "gebied": "centrum",
+    "post": "posts/panzero.html",
+    "image": "assets/img/panzero-puccia-kaart.jpg",
+    "alt": "Puccia met capocollo, stracciatella en rucola, doormidden gesneden, met een flesje Aranciata Rossa op de achtergrond",
+    "teaser": "Zin in een Italiaanse lunch in de binnenstad?",
+    "straat": "Botersloot 50A",
+    "postcode": "3011 HH"
   }
 ]
